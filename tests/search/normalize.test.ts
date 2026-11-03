@@ -12,6 +12,8 @@ describe('normalize', () => {
     ['Nidoran♀', 'nidoran f'],
     ['Nidoran♂', 'nidoran m'],
     ['  sleep   powder ', 'sleep powder'],
+    ['speed over 99.5', 'speed over 99.5'],
+    ['the end.', 'the end'],
   ])('%s → %s', (text, expected) => {
     expect(normalize(text)).toBe(expected)
   })

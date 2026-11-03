@@ -66,7 +66,7 @@ function readStatCondition(
   }
   const end = start + stat.length + comparison.length
   const value = words[end]
-  if (!value || !/^\d+$/.test(value)) {
+  if (!value || !/^\d+(?:\.\d+)?$/.test(value)) {
     return undefined
   }
   return {

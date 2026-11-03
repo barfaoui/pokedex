@@ -37,18 +37,6 @@ export function tagOf(
   return TAGS_BY_ITEM.get(itemKey(concept, kind, name))
 }
 
-/** Names of the moves and abilities that cause a concept. */
-export function inflictorsOf(concept: ConceptId): {
-  moves: Set<string>
-  abilities: Set<string>
-} {
-  const inflicting = DICTIONARY[concept].inflicts
-  return {
-    moves: namesOf(inflicting, 'move'),
-    abilities: namesOf(inflicting, 'ability'),
-  }
-}
-
 function applyCorrections(
   generated: Concepts,
   corrections: typeof CORRECTIONS,
@@ -97,11 +85,4 @@ function itemKey(
   name: string,
 ): string {
   return `${concept}/${kind}/${name}`
-}
-
-function namesOf(
-  tags: GeneratedTag[],
-  kind: GeneratedTag['kind'],
-): Set<string> {
-  return new Set(tags.filter((tag) => tag.kind === kind).map((tag) => tag.name))
 }

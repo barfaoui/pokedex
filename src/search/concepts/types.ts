@@ -13,7 +13,7 @@ export type ConceptId =
 
 export interface Concept {
   id: ConceptId
-  group: 'status' | 'weather'
+  group: 'statusCondition' | 'weather'
   /** Forms found in the effect texts, matched as whole words. */
   roots: string[]
   /** What a user might type for it, roots included. */

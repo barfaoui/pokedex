@@ -10,6 +10,8 @@ describe('parseQuery', () => {
       ['hp below 50', 'hp', 'under', 50],
       ['defense at most 40', 'defense', 'atMost', 40],
       ['total more than 500', 'total', 'over', 500],
+      ['speed over 99.5', 'speed', 'over', 99.5],
+      ['attack >= 100.0', 'attack', 'atLeast', 100],
     ])('%s', (query, stat, comparison, value) => {
       expect(parseQuery(query).parts).toEqual([
         { kind: 'stat', stat, comparison, value },
