@@ -22,7 +22,7 @@ Scope from the metadata: *Pokémon #1–151 with English species data, abilities
 
 - Relationships go both ways (Pokémon ↔ moves, Pokémon ↔ abilities), and every move listed on a Pokémon exists in `moves`.
 - Every move and ability has a long `effect` and a `short_effect`; none are empty.
-- 17 types. Typing and abilities are **modern** (abilities come from later generations; Fairy and Steel are present, e.g. Clefairy is Fairy), while moves are first-generation only.
+- 18 types: 17 on Pokémon, plus Dark, used only by the move Bite. Typing and abilities are **modern** (abilities come from later generations; Fairy and Steel are present, e.g. Clefairy is Fairy), while moves are first-generation only.
 - No type-effectiveness data.
 
 ## 2. What the data can answer for the brief's examples
@@ -42,6 +42,7 @@ Scope from the metadata: *Pokémon #1–151 with English species data, abilities
 - Abilities that benefit from rain: Swift Swim (13 Pokémon), Rain Dish (5), Hydration (4), Dry Skin (3).
 - Moves affected by rain: Thunder (always hits), Solar Beam (power halved).
 - **Nothing in the dataset starts rain** (no Rain Dance, no Drizzle).
+- Other weather: only sun can be started (ability Drought: Vulpix, Ninetales). Nothing starts sandstorm or hail.
 
 **Evolutions:** Pokémon sharing `species.evolution_chain_id` form a family, and ordering by Pokédex number gives the right order. 78 families; 23 Pokémon don't evolve; Eevee's family branches into Vaporeon, Jolteon and Flareon. Family members outside the 151 (e.g. Crobat) aren't in the data.
 
@@ -49,6 +50,7 @@ Scope from the metadata: *Pokémon #1–151 with English species data, abilities
 
 - "rain" as a substring matches *d**rain**s* (Absorb, Mega Drain, Leech Life) and *t**rain**ers* (Roar, Whirlwind).
 - "sleep" matches many unrelated moves whose description only mentions *Sleep Talk* (Dig, Fly, Bide…), *Rest* (the user sleeps, not the target), and abilities that do the **opposite** (Insomnia, Vital Spirit: "Prevents sleep").
+- Drought's effect **mentions** Drizzle (a rain ability) without being about rain: a rain synonym "drizzle" must not make it a rain result.
 - Some mechanics appear **only in the long `effect`**: Thunder's `short_effect` doesn't mention rain.
 
 **Consequence for search:** match whole words, understand meaning (who is affected; causing vs preventing), and search both effect fields. The test set in the [PRD](./01-prd.md#7-success-metrics) locks these cases in.

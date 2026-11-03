@@ -61,9 +61,9 @@ Each story has an example query and a "done when" acceptance criterion.
 
 #### M2. Criteria search *(challenge 2)*
 
-> As a player filling the last slot of my team, I want to search by criteria (type, stat, ability, move), so that I get a short list of candidates I can compare.
+> As a player filling the last slot of my team, I want to search by criteria (type, stat, ability, move, colour, habitat, shape), so that I get a short list of candidates I can compare.
 
-- Examples: "fast electric", "electric" sorted by speed
+- Examples: "fast electric", "electric" sorted by speed, "green", "cave"
 - Done when: results match the criteria and are sorted by the relevant attribute.
 
 #### M3. Search by effect, in my own words *(challenge 3)*
@@ -79,7 +79,8 @@ Each story has an example query and a "done when" acceptance criterion.
 > As a player building a team, I want to explore a theme in one search, so that I see everything connected to it without searching each category separately.
 
 - Example: "rain team"
-- Done when: results are grouped by category (abilities, moves, Pokémon), each item opens its card, and when the data has a known gap, the app says so. For rain, nothing in the dataset can start rain (see [data discovery](./02-data-discovery.md)).
+- Done when: results are grouped by category (abilities, moves, Pokémon) and each item opens its card.
+- Gaps in the data (e.g. nothing can start rain) aren't detected by the app; they're stated in [Limits](#8-limits).
 
 #### M5. Show what matched
 
@@ -179,14 +180,16 @@ Each query below is an automated test:
 | "bulba" | Bulbasaur first |
 | "pikachoo" | Pikachu first |
 | "fast electric" | Electrode (150), Jolteon (130), Raichu (110), in that order |
+| "green" | The 9 green Pokémon: Bulbasaur, Ivysaur, Venusaur, Caterpie, Metapod, Bellsprout, Weepinbell, Victreebel, Scyther |
 | "put my opponent to sleep" | Sing, Sleep Powder, Hypnosis, Lovely Kiss, Spore (and the ability Effect Spore) with their Pokémon, e.g. Jigglypuff · Sing. **Not** Insomnia, Vital Spirit or Rest |
-| "rain team" | Abilities Swift Swim, Rain Dish, Hydration, Dry Skin; moves Thunder, Solar Beam; their Pokémon; a note that nothing in the data starts rain |
+| "rain team" | Abilities Swift Swim, Rain Dish, Hydration, Dry Skin; moves Thunder, Solar Beam; their Pokémon |
 | "drain", "trainer" | No rain results |
 | "spaghetti" | No results, with example queries suggested |
 
 ## 8. Limits
 
 - **Data:** first-generation Pokémon (151) as provided. No type chart, so no matchup questions.
+- **Gaps aren't detected.** The app shows what the data has, not what it lacks: a search for a "rain team" doesn't say that nothing can start rain. Known gaps are in [data discovery](./02-data-discovery.md#2-what-the-data-can-answer-for-the-briefs-examples).
 - **Not a battle tool:** no damage calculation or optimisation.
 - **No accounts:** favourites and teams live in the browser (cleared with browser data, not shared across devices).
 - **English only.** Accents don't matter ("é" matches "e").
@@ -201,6 +204,7 @@ I used Claude (chat) as a thinking partner. The decisions in this document are m
 - **Where I disagreed.**
   - **How results are displayed.** The AI proposed showing, on each result, a sentence explaining *why* it matched, a list of which parts of the query it met or missed, and a separate section for close matches. I disagreed: users care about *what* matched (the speed, the move), not how the engine reasoned. My design shows the matched attribute on the result, in a single list ranked by a match score, with exact matches highlighted.
   - It suggested replacing favourites with a team builder. I kept favourites and made teams a separate story.
+- **A decision I changed later.** M4 first required the app to say when a theme has a known gap in the data. The AI pointed out it could be computed from the concept dictionary (a weather that things benefit from but nothing starts). I dropped it anyway: it would only cover the concepts in the dictionary, so it would look more complete than it is. Known gaps are stated in [Limits](#8-limits) instead.
 - **Ideas that came from me:** comparing two Pokémon, the match score with highlighted exact matches, the no-false-positive rule, semantic search with a small in-browser model when the manual search isn't confident, favourites, and evolution families. The final scope and priorities were my call.
 
 ---

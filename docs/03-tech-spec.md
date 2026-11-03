@@ -86,7 +86,8 @@ The normalised query is split into **parts**; each part is matched by its kind.
 | Kind | Examples | Matching |
 | --- | --- | --- |
 | Name | "bulba", "pikachoo" | Exact, prefix, or typo (see below) |
-| Type | "electric" | The 17 types in the data, typo-tolerant |
+| Type | "electric" | The 18 types in the data, typo-tolerant |
+| Descriptor | "green", "cave", "fish" | The colours, habitats and shapes in the data (e.g. users who only remember a Pokémon was green) |
 | Number | "speed over 150" | Stat name + comparison |
 | Concept | "sleep", "rain" | Concept dictionary (5.4) → the moves and abilities that **inflict** it, then the Pokémon that have them |
 | Sort word | "fast", "strong" | Sets the order only: fast → speed · slow → speed ascending · strong → attack · strongest → total stats · heavy → weight · tall → height · tanky → hp + defense |
@@ -94,7 +95,7 @@ The normalised query is split into **parts**; each part is matched by its kind.
 
 - **Typos (fuzzy matching):** at most **30% of the matched word's letters** can be wrong (a swap of two letters counts as one change). Short words therefore need an exact match: 3 letters → 0 changes, 4–6 → 1, 7–9 → 2. "pikachoo" → Pikachu (2 / 7 = 29%) passes; "pikachooo" doesn't.
 - **Relationships:** a matched move or ability brings in the Pokémon that learn or have it, which keep *what* matched (shown on the result, [PRD M5](./01-prd.md#m5-show-what-matched)).
-- **Themes** ([PRD M4](./01-prd.md#m4-theme-search-across-categories-challenge-4)): results grouped by kind (abilities, moves, Pokémon); known gaps in the data (nothing starts rain) are shown as a note.
+- **Themes** ([PRD M4](./01-prd.md#m4-theme-search-across-categories-challenge-4)): results grouped by kind (abilities, moves, Pokémon). Gaps in the data aren't detected ([PRD limits](./01-prd.md#8-limits)).
 
 ### 5.3 Scoring
 
@@ -103,7 +104,7 @@ The normalised query is split into **parts**; each part is matched by its kind.
 | Part | Score |
 | --- | --- |
 | Name | Exact = 1 · prefix = high, more when it covers more of the name · typo = 1 − (changes ÷ length), so ≥ 0.7 |
-| Type, ability, move | 1 or 0 |
+| Type, ability, move, descriptor | 1 or 0 |
 | Number | 1 if met, otherwise how close (150 for "over 150" ≈ 0.95) |
 | Concept | 1 if the item inflicts it |
 | Unknown | Semantic similarity, rescaled to 0–1 |
