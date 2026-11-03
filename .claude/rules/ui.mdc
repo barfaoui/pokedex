@@ -1,15 +1,42 @@
 ---
-description: React and SCSS conventions for the interface
+description: React, SCSS and accessibility conventions for the interface
 globs: src/**/*.tsx,src/**/*.scss
 alwaysApply: false
 ---
 
 # UI
 
-- React function components. Components only display: search logic stays in `src/search/`.
+Follow `docs/04-design-spec.md` for layout, states, interactions, motion and accessibility.
+
+## React
+
+- Function components with typed props; one component per file, named in PascalCase like the file (`ResultCard.tsx`).
+- **Modular components:** small, with one job each (e.g. `SearchBar`, `ResultTabs`, `ResultCard`, `DetailOverlay`). A component that grows a second job gets split.
+- Components only display: search logic stays in `src/search/`, and components call it, never reimplement it.
+- Follow the standard React conventions: hooks only at the top level, stable `key`s from the data (never the array index), controlled inputs, derived values computed instead of stored in state, effects only to sync with something outside React.
+- Each component sits next to its stylesheet: `ResultCard/ResultCard.tsx` + `ResultCard/ResultCard.scss`.
+
+## Styling
+
+- **No inline styles or embedded styling** (`style={{…}}`, CSS-in-JS): all styling lives in `.scss` files.
+- **One class per element.** Class names say what the element *is*, in BEM form where it helps: `result-card`, `result-card__name`, `result-card__match`.
+- **Variants without a second class:** prefer state attributes, which also serve accessibility (`[aria-selected="true"]`, `[aria-pressed="true"]`, `[data-exact="true"]`). If a real variant is needed, write it as its own full class (`result-card--compact`) that includes the shared styles through a mixin.
+- **No tag selectors**, except for app-wide base styles (fonts and sizes for `body`, `h1`–`h3`, a reset). Everything else is selected by its class.
+- **Mixins whenever a style pattern repeats** (pixel borders, the exact-match glow, card layout, focus ring, breakpoints, screen-reader-only text), defined once in a shared partial.
+- **Variables for every design value:** colours (palette roles and type colours), spacing in `rem`, font sizes, breakpoints, durations. No magic numbers repeated across files.
+- Mobile first: base styles for phones, one breakpoint for desktop.
+
+## Accessibility
+
+- **Every image has an `alt`:** the Pokémon's name for its picture; `alt=""` for purely decorative images.
+- **Every control has an accessible name:** visible text, or an `aria-label` for icon buttons ("Add Pikachu to the Pokédex", "Select Pikachu", "Close").
+- Everything works with the keyboard, focus is always visible, and overlays move focus in and back out.
+- No information carried by colour alone: pair it with text or a symbol (✓, ✕, ▲ ▼ =).
+- Respect `prefers-reduced-motion`.
+
+## Results
+
 - **Show what matched** on every result (the speed for "fast electric", the move and its effect for "sleep"), not why the engine chose it.
-- Exact matches (score 1) are highlighted; close matches follow in the same list. No separate "close results" section.
-- **Accessibility is required, not optional:** every control is reachable and usable with the keyboard, has an accessible name, and no information is carried by colour alone (pair colour with text or an icon such as ▲ ▼ =).
+- Exact matches (score 1) are highlighted; close matches follow in the same list.
 - Pokémon images are links to GitHub: always show a placeholder when an image fails to load, and keep the name and types visible.
-- SCSS: shared colours (including type colours), spacing and breakpoints are variables in one place. No magic numbers repeated across files.
-- Mobile first: the search and result list must work on a phone screen.
+- Hide controls for features that aren't built.
