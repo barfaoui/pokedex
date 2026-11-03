@@ -99,6 +99,35 @@ describe('parseQuery', () => {
     })
   })
 
+  describe('concepts', () => {
+    it.each([
+      ['sleep', 'sleep'],
+      ['doze', 'sleep'],
+      ['paralyze', 'paralysis'],
+      ['flinch', 'flinch'],
+    ] as const)('"%s" → %s', (word, concept) => {
+      expect(parseQuery(word).parts).toEqual([
+        { kind: 'word', text: word, concept },
+      ])
+    })
+
+    it('does not recognise weather words yet (M4)', () => {
+      expect(parseQuery('rain').parts).toEqual([{ kind: 'word', text: 'rain' }])
+    })
+  })
+
+  describe('filler words', () => {
+    it('drops them around the words that matter', () => {
+      expect(parseQuery('put my opponent to sleep').parts).toEqual([
+        { kind: 'word', text: 'sleep', concept: 'sleep' },
+      ])
+    })
+
+    it('keeps them when the query is only filler', () => {
+      expect(parseQuery('to').parts).toEqual([{ kind: 'word', text: 'to' }])
+    })
+  })
+
   it('keeps unknown words as plain words', () => {
     expect(parseQuery('spaghetti').parts).toEqual([
       { kind: 'word', text: 'spaghetti' },

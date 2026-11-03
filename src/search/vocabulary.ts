@@ -1,4 +1,6 @@
 import { COLORS, HABITATS, SHAPES } from '../data/types/model'
+import { CONCEPTS } from './concepts/seed.ts'
+import type { ConceptId } from './concepts/types.ts'
 import { normalize } from './normalize'
 import type { Comparison, Descriptor, Sort, StatCriterion } from './types/query'
 
@@ -48,4 +50,46 @@ export const DESCRIPTORS = new Map<string, Descriptor>([
   ...HABITATS.map(
     (value) => [normalize(value), { field: 'habitat', value }] as const,
   ),
+])
+
+export const CONCEPT_WORDS = new Map<string, ConceptId>(
+  CONCEPTS.filter((concept) => concept.group === 'status').flatMap((concept) =>
+    concept.words.map((word) => [word, concept.id] as const),
+  ),
+)
+
+// Dropped from a query unless it is made only of them ("put my opponent to sleep").
+export const FILLER_WORDS = new Set([
+  'a',
+  'an',
+  'the',
+  'my',
+  'your',
+  'its',
+  'their',
+  'to',
+  'put',
+  'puts',
+  'make',
+  'makes',
+  'get',
+  'gets',
+  'give',
+  'gives',
+  'opponent',
+  'opponents',
+  'enemy',
+  'enemies',
+  'foe',
+  'foes',
+  'target',
+  'it',
+  'them',
+  'that',
+  'which',
+  'with',
+  'can',
+  'want',
+  'i',
+  'something',
 ])

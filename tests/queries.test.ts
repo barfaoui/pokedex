@@ -79,6 +79,7 @@ describe('PRD test queries', () => {
       expect(jigglypuff?.matched).toContainEqual({
         field: 'move',
         value: 'sing',
+        detail: 'Puts the target to sleep.',
       })
     })
 
@@ -103,6 +104,7 @@ describe('PRD test queries', () => {
       expect(drowzee?.matched).toContainEqual({
         field: 'move',
         value: 'hypnosis',
+        detail: 'Puts the target to sleep.',
       })
     })
   })

@@ -3,7 +3,9 @@ import { normalize } from './normalize'
 import type { ParsedQuery, StatPart, WordPart } from './types/query'
 import {
   COMPARISON_WORDS,
+  CONCEPT_WORDS,
   DESCRIPTORS,
+  FILLER_WORDS,
   SORT_WORDS,
   STAT_WORDS,
 } from './vocabulary'
@@ -19,7 +21,9 @@ interface Read<T> {
  * Only the first sort word sorts; later ones are kept as words.
  */
 export function parseQuery(query: string): ParsedQuery {
-  const words = normalize(spellOutOperators(query)).split(' ').filter(Boolean)
+  const words = withoutFiller(
+    normalize(spellOutOperators(query)).split(' ').filter(Boolean),
+  )
   const parsed: ParsedQuery = { parts: [] }
   let i = 0
   while (i < words.length) {
@@ -34,6 +38,12 @@ export function parseQuery(query: string): ParsedQuery {
     i += part.length
   }
   return parsed
+}
+
+/** Drops filler words ("put my opponent to"), unless nothing else is left. */
+function withoutFiller(words: string[]): string[] {
+  const meaningful = words.filter((word) => !FILLER_WORDS.has(word))
+  return meaningful.length ? meaningful : words
 }
 
 function spellOutOperators(query: string): string {
@@ -80,12 +90,14 @@ function readWord(words: string[], start: number): Read<WordPart> {
   const length = descriptor?.length ?? 1
   const text = words.slice(start, start + length).join(' ')
   const type = matchType(text)
+  const concept = CONCEPT_WORDS.get(text)
   return {
     value: {
       kind: 'word',
       text,
       ...(type && { type }),
       ...(descriptor && { descriptor: descriptor.value }),
+      ...(concept && { concept }),
     },
     length,
   }
