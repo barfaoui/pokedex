@@ -52,85 +52,99 @@ Each story has an example query and a "done when" acceptance criterion.
 
 ### Must
 
-**M1. Name search: partial, typos, accents** *(challenge 1)*
+#### M1. Name search: partial, typos, accents *(challenge 1)*
+
 > As a new trainer, I want to type part of a name, even misspelled, so that I find a Pokémon I only half remember.
 
 - Examples: "bulba", "pikachoo", "char"
 - Done when: the intended Pokémon is in the top 3, with its image and types visible so I can confirm it's the right one. Accents don't matter: "é" matches "e", "à" matches "a".
 
-**M2. Criteria search** *(challenge 2)*
+#### M2. Criteria search *(challenge 2)*
+
 > As a player filling the last slot of my team, I want to search by criteria (type, stat, ability, move), so that I get a short list of candidates I can compare.
 
 - Examples: "fast electric", "electric" sorted by speed
 - Done when: results match the criteria and are sorted by the relevant attribute.
 
-**M3. Search by effect, in my own words** *(challenge 3)*
+#### M3. Search by effect, in my own words *(challenge 3)*
+
 > As a new trainer, I want to describe what I want to happen in my own words, so that I find the moves and abilities that do it and the Pokémon that have them.
 
 - Example: "put my opponent to sleep"
 - Done when: results show the Pokémon together with the move or ability that does it and its effect (e.g. Jigglypuff · *Sing* · "Puts the target to sleep.").
 - Never returns the opposite meaning: *Insomnia* / *Vital Spirit* ("Prevents sleep") or *Rest* (puts the **user** to sleep).
 
-**M4. Theme search across categories** *(challenge 4)*
+#### M4. Theme search across categories *(challenge 4)*
+
 > As a player building a team, I want to explore a theme in one search, so that I see everything connected to it without searching each category separately.
 
 - Example: "rain team"
 - Done when: results are grouped by category (abilities, moves, Pokémon), each item opens its card, and when the data has a known gap, the app says so. For rain, nothing in the dataset can start rain (see [data discovery](./02-data-discovery.md)).
 
-**M5. Show what matched**
+#### M5. Show what matched
+
 > As any user, I want each result to show the information I searched on, so that I can judge it without opening the card.
 
 - Done when: the result shows the matched attribute and its value: speed for "fast electric", the move and its effect for "put my opponent to sleep", the ability for "rain team".
 
-**M6. Ranked by how well it matches**
+#### M6. Ranked by how well it matches
+
 > As any user, I want the best matches first, so that I don't have to scan the whole list.
 
 - Done when: every result has a match score from 0 to 1, results are sorted by it, and exact matches (score 1) are highlighted. Close matches simply come after, in the same list.
 
-**M7. No match means no results**
+#### M7. No match means no results
+
 > As any user, when my query has nothing to do with Pokémon, I want to be told nothing matched, so that I'm not shown random results.
 
 - Example: "spaghetti"
 - Done when: results below a minimum score are not shown; if none remain, the app says nothing matched and suggests example queries.
 
-**M8. Detail card**
+#### M8. Detail card
+
 > As any user, I want to open a Pokémon to see everything about it, so that I can confirm my choice.
 
 - Done when: the card shows image, types, stats, abilities, moves and description.
 
 ### Should
 
-**S1. Semantic search for unusual phrasing**
+#### S1. Semantic search for unusual phrasing
+
 > As any user, when the manual search isn't confident about my query, I want the app to search by meaning, so that I still get an answer when I phrase things in an unexpected way.
 
 - Done when: if no result reaches the confidence threshold, the query is compared by meaning with the move effects, ability effects and descriptions, using a small model that runs in the browser. Results still come only from the dataset, and if nothing reaches the threshold, M7 applies.
 - No server, API key or paid service: the model ships with the app and works offline.
 
-**S2. Compare two Pokémon**
+#### S2. Compare two Pokémon
+
 > As a player choosing between two candidates, I want to see them side by side, so that I can decide quickly.
 
 - Entry points: "Compare with" on a card, and selecting two results in the list.
 - Done when: for each stat, I can tell which of the two is higher, and I can see which types and abilities they share.
 
-**S3. Browse and filter**
+#### S3. Browse and filter
+
 > As a researcher, I want to browse all Pokémon and filter by type, ability or move, including or excluding a value, so that I can explore without typing a query.
 
 - Examples: Electric only · everything except Electric · Fire but not Flying
 - Done when: each filter value can be set to include or exclude, filters combine, and the result count updates.
 
-**S4. Evolution family on the card**
+#### S4. Evolution family on the card
+
 > As any user, I want to see a Pokémon's evolution family, so that I can find its earlier or later forms.
 
 - Done when: the card shows the family in order, with Eevee's family shown as a branch.
 
 ### Could
 
-**C1. Favourites**
+#### C1. Favourites
+
 > As any user, I want to mark Pokémon as favourites and browse them, so that I can come back to the ones I care about.
 
 - Done when: favourites can be added or removed from a result and from the card, persist after a refresh (stored in the browser), and can be browsed together.
 
-**C2. Teams (up to 6)**
+#### C2. Teams (up to 6)
+
 > As a player, I want to build a team of up to 6 Pokémon, so that I can plan a lineup (e.g. a rain team, or fill a last slot).
 
 ## 5. Requirements
