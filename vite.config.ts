@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   test: {
     // Vitest runs tests/**/*.test.ts; Playwright runs tests/e2e/*.spec.ts.
-    // The PRD queries are their own project so they don't block CI until they all pass.
+    // The PRD queries are their own project (npm run test:queries), a separate CI step.
     projects: [
       {
         test: {

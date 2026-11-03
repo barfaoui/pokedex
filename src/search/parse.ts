@@ -21,10 +21,9 @@ interface Read<T> {
  * Only the first sort word sorts; later ones are kept as words.
  */
 export function parseQuery(query: string): ParsedQuery {
-  const words = withoutFiller(
-    normalize(spellOutOperators(query)).split(' ').filter(Boolean),
-  )
-  const parsed: ParsedQuery = { parts: [] }
+  const typed = normalize(spellOutOperators(query)).split(' ').filter(Boolean)
+  const words = withoutFiller(typed)
+  const parsed: ParsedQuery = { parts: [], normalizedQuery: typed.join(' ') }
   let i = 0
   while (i < words.length) {
     const sort = SORT_WORDS.get(words[i])

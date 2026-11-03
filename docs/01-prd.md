@@ -184,6 +184,7 @@ Each query below is an automated test:
 | "green" | The 9 green Pokémon: Bulbasaur, Ivysaur, Venusaur, Caterpie, Metapod, Bellsprout, Weepinbell, Victreebel, Scyther |
 | "put my opponent to sleep" | Sing, Sleep Powder, Hypnosis, Lovely Kiss, Spore (and the ability Effect Spore) with their Pokémon, e.g. Jigglypuff · Sing. **Not** Insomnia, Vital Spirit or Rest |
 | "rain team" | Abilities Swift Swim, Rain Dish, Hydration, Dry Skin; moves Thunder, Solar Beam; their Pokémon |
+| "sun team" | Drought, Chlorophyll, Solar Power, Growth, Solar Beam, and Thunder as affected; **not** Mirror Move |
 | "drain", "trainer" | No rain results |
 | "spaghetti" | No results, with example queries suggested |
 

@@ -17,6 +17,26 @@ export const DICTIONARY: Concepts = applyCorrections(
   CORRECTIONS,
 )
 
+const TAGS_BY_ITEM = new Map(
+  Object.entries(DICTIONARY).flatMap(([concept, byDirection]) =>
+    DIRECTIONS.flatMap((direction) =>
+      byDirection[direction].map((tag) => [
+        itemKey(concept as ConceptId, tag.kind, tag.name),
+        { ...tag, direction },
+      ]),
+    ),
+  ),
+)
+
+/** How a move or ability relates to a concept, with its evidence; none if it doesn't. */
+export function tagOf(
+  concept: ConceptId,
+  kind: GeneratedTag['kind'],
+  name: string,
+): (GeneratedTag & { direction: Direction }) | undefined {
+  return TAGS_BY_ITEM.get(itemKey(concept, kind, name))
+}
+
 /** Names of the moves and abilities that cause a concept. */
 export function inflictorsOf(concept: ConceptId): {
   moves: Set<string>
@@ -69,6 +89,14 @@ function correctedDirection(
       (c) => c.kind === tag.kind && c.name === tag.name,
     ),
   )
+}
+
+function itemKey(
+  concept: ConceptId,
+  kind: GeneratedTag['kind'],
+  name: string,
+): string {
+  return `${concept}/${kind}/${name}`
 }
 
 function namesOf(

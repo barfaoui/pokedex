@@ -96,6 +96,7 @@ describe('parseQuery', () => {
           type: { value: 'electric', score: 1 },
         },
       ],
+      normalizedQuery: 'fast electric',
     })
   })
 
@@ -111,8 +112,19 @@ describe('parseQuery', () => {
       ])
     })
 
-    it('does not recognise weather words yet (M4)', () => {
-      expect(parseQuery('rain').parts).toEqual([{ kind: 'word', text: 'rain' }])
+    it.each([
+      ['rain', 'rain'],
+      ['sunny', 'sun'],
+    ] as const)('recognises weather: "%s" → %s', (word, concept) => {
+      expect(parseQuery(word).parts).toEqual([
+        { kind: 'word', text: word, concept },
+      ])
+    })
+
+    it('drops "team": it only tells the UI to show Pokémon first', () => {
+      expect(parseQuery('rain team').parts).toEqual([
+        { kind: 'word', text: 'rain', concept: 'rain' },
+      ])
     })
   })
 
@@ -135,6 +147,11 @@ describe('parseQuery', () => {
   })
 
   it('returns no parts for an empty query', () => {
-    expect(parseQuery('  ')).toEqual({ parts: [] })
+    expect(parseQuery('  ')).toEqual({ parts: [], normalizedQuery: '' })
+  })
+
+  it('keeps the whole normalised query, filler words included', () => {
+    expect(parseQuery('Double Team').normalizedQuery).toBe('double team')
+    expect(parseQuery('speed > 100').normalizedQuery).toBe('speed over 100')
   })
 })

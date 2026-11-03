@@ -10,6 +10,8 @@ import type { ConceptId } from '../concepts/types.ts'
 export interface ParsedQuery {
   parts: QueryPart[]
   sort?: Sort
+  /** Every word typed, normalised, before filler words are dropped ("double team"). */
+  normalizedQuery: string
 }
 
 export type QueryPart = WordPart | StatPart
