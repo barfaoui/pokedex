@@ -14,7 +14,8 @@
     "typecheck": "tsc -b",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "test": "vitest run",
+    "test": "vitest run --project unit",
+    "test:queries": "vitest run --project queries",
     "test:watch": "vitest",
     "test:e2e": "playwright test"
   },

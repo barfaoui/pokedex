@@ -1,5 +1,4 @@
-export type StatName =
-  'hp' | 'attack' | 'defense' | 'special-attack' | 'special-defense' | 'speed'
+import type { StatName } from './model'
 
 export interface RawPokemon {
   id: number

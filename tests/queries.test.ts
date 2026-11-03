@@ -1,0 +1,127 @@
+// The PRD's test queries (docs/01-prd.md, section 7), end to end through the search core.
+import { describe, expect, it } from 'vitest'
+import { dataset } from '../src/data/dataset'
+import { search } from '../src/search/search'
+import type { ResultKind, SearchResult } from '../src/search/types'
+
+function namesOf(results: SearchResult[], kind: ResultKind): string[] {
+  return results.filter((r) => r.kind === kind).map((r) => r.name)
+}
+
+const SLEEP_MOVES = ['sing', 'sleep-powder', 'hypnosis', 'lovely-kiss', 'spore']
+const SLEEP_OPPOSITES = ['insomnia', 'vital-spirit', 'rest']
+const RAIN_ABILITIES = ['swift-swim', 'rain-dish', 'hydration', 'dry-skin']
+const RAIN_MOVES = ['thunder', 'solar-beam']
+
+describe('PRD test queries', () => {
+  it('"bulba" → Bulbasaur first', () => {
+    expect(search('bulba')[0]).toMatchObject({
+      kind: 'pokemon',
+      name: 'bulbasaur',
+    })
+  })
+
+  it('"pikachoo" → Pikachu first', () => {
+    expect(search('pikachoo')[0]).toMatchObject({
+      kind: 'pokemon',
+      name: 'pikachu',
+    })
+  })
+
+  it('"fast electric" → Electrode (150), Jolteon (130), Raichu (110), in that order', () => {
+    expect(namesOf(search('fast electric'), 'pokemon').slice(0, 3)).toEqual([
+      'electrode',
+      'jolteon',
+      'raichu',
+    ])
+  })
+
+  it('"green" → the 9 green Pokémon', () => {
+    const results = search('green')
+    expect(namesOf(results, 'pokemon')).toHaveLength(9)
+    expect(new Set(namesOf(results, 'pokemon'))).toEqual(
+      new Set([
+        'bulbasaur',
+        'ivysaur',
+        'venusaur',
+        'caterpie',
+        'metapod',
+        'bellsprout',
+        'weepinbell',
+        'victreebel',
+        'scyther',
+      ]),
+    )
+  })
+
+  describe('"put my opponent to sleep"', () => {
+    const results = search('put my opponent to sleep')
+
+    it('returns Sing, Sleep Powder, Hypnosis, Lovely Kiss, Spore and the ability Effect Spore', () => {
+      for (const move of SLEEP_MOVES)
+        expect(namesOf(results, 'move'), move).toContain(move)
+      expect(namesOf(results, 'ability')).toContain('effect-spore')
+    })
+
+    it('returns their Pokémon with what matched, e.g. Jigglypuff · Sing', () => {
+      const jigglypuff = results.find(
+        (r) => r.kind === 'pokemon' && r.name === 'jigglypuff',
+      )
+      expect(jigglypuff?.matched).toContainEqual({
+        field: 'move',
+        value: 'sing',
+      })
+    })
+
+    it('never returns Insomnia, Vital Spirit or Rest, nor shows them as what matched', () => {
+      for (const result of results) {
+        expect(SLEEP_OPPOSITES, result.name).not.toContain(result.name)
+        for (const match of result.matched)
+          expect(
+            SLEEP_OPPOSITES,
+            `${result.name} · ${match.value}`,
+          ).not.toContain(match.value)
+      }
+    })
+
+    it('returns Drowzee for Hypnosis, even though it has Insomnia', () => {
+      const drowzee = results.find(
+        (r) => r.kind === 'pokemon' && r.name === 'drowzee',
+      )
+      expect(drowzee?.matched).toContainEqual({
+        field: 'move',
+        value: 'hypnosis',
+      })
+    })
+  })
+
+  describe('"rain team"', () => {
+    const results = search('rain team')
+
+    it('returns Swift Swim, Rain Dish, Hydration, Dry Skin, Thunder and Solar Beam', () => {
+      for (const ability of RAIN_ABILITIES)
+        expect(namesOf(results, 'ability'), ability).toContain(ability)
+      for (const move of RAIN_MOVES)
+        expect(namesOf(results, 'move'), move).toContain(move)
+    })
+
+    it('returns every Pokémon with a rain ability', () => {
+      const rainPokemon = dataset.pokemon
+        .filter((p) => p.abilities.some((a) => RAIN_ABILITIES.includes(a)))
+        .map((p) => p.name)
+      expect(rainPokemon).toHaveLength(25)
+      for (const name of rainPokemon)
+        expect(namesOf(results, 'pokemon'), name).toContain(name)
+    })
+  })
+
+  it.each(['drain', 'trainer'])('"%s" → no rain results', (query) => {
+    const names = search(query).map((r) => r.name)
+    for (const rain of [...RAIN_ABILITIES, ...RAIN_MOVES])
+      expect(names, rain).not.toContain(rain)
+  })
+
+  it('"spaghetti" → no results', () => {
+    expect(search('spaghetti')).toEqual([])
+  })
+})
