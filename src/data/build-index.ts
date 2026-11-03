@@ -1,4 +1,5 @@
 import { displayName } from './display-name'
+import { normalize } from '../search/normalize'
 import {
   COLORS,
   DAMAGE_CLASSES,
@@ -48,6 +49,7 @@ function toPokemon(p: RawPokemon, evolutions: Map<number, Evolution>): Pokemon {
     id: p.id,
     name: p.name,
     displayName: displayName(p.name),
+    searchName: normalize(p.name),
     types: p.types.flatMap((t) => known(POKEMON_TYPES, t) ?? []),
     stats: { ...p.stats },
     heightM: p.height_decimetres / 10,
@@ -72,6 +74,7 @@ function toMove(m: RawMove, learnedBy: string[]): Move {
   return {
     name: m.name,
     displayName: displayName(m.name),
+    searchName: normalize(m.name),
     type: known(POKEMON_TYPES, m.type),
     power: m.power,
     pp: m.pp,
@@ -89,6 +92,7 @@ function toAbility(a: RawAbility, pokemon: string[]): Ability {
   return {
     name: a.name,
     displayName: displayName(a.name),
+    searchName: normalize(a.name),
     effect: a.effect,
     shortEffect: a.short_effect,
     isMainSeries: a.is_main_series,

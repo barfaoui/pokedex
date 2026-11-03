@@ -94,6 +94,7 @@ export interface Pokemon {
   id: number
   name: string
   displayName: string
+  searchName: string
   types: PokemonType[]
   stats: Record<StatName, number>
   heightM: number
@@ -121,6 +122,7 @@ export interface Evolution {
 export interface Move {
   name: string
   displayName: string
+  searchName: string
   type: PokemonType | undefined
   power: number | null
   pp: number
@@ -136,6 +138,7 @@ export interface Move {
 export interface Ability {
   name: string
   displayName: string
+  searchName: string
   effect: string
   shortEffect: string
   isMainSeries: boolean

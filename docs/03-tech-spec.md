@@ -85,7 +85,7 @@ The normalised query is split into **parts**; each part is matched by its kind.
 
 | Kind | Examples | Matching |
 | --- | --- | --- |
-| Name | "bulba", "pikachoo" | Exact, prefix, or typo (see below) |
+| Name | "bulba", "saur", "pikachoo" | Exact, start of the name, anywhere in it (3+ letters), or typo (see below) |
 | Type | "electric" | The 18 types in the data, typo-tolerant |
 | Descriptor | "green", "cave", "fish" | The colours, habitats and shapes in the data (e.g. users who only remember a Pokémon was green) |
 | Number | "speed over 150" | Stat name + comparison |
@@ -103,7 +103,7 @@ The normalised query is split into **parts**; each part is matched by its kind.
 
 | Part | Score |
 | --- | --- |
-| Name | Exact = 1 · prefix = high, more when it covers more of the name · typo = 1 − (changes ÷ length), so ≥ 0.7 |
+| Name | Exact = 1 · start of the name > anywhere in it, both higher when they cover more of the name · typo = 1 − (changes ÷ length), so ≥ 0.7 |
 | Type, ability, move, descriptor | 1 or 0 |
 | Number | 1 if met, otherwise how close (150 for "over 150" ≈ 0.95) |
 | Concept | 1 if the item inflicts it |

@@ -51,6 +51,13 @@ describe('buildIndex', () => {
     })
   })
 
+  it('normalises names for search', () => {
+    expect(get(index.pokemon, 'mr-mime').searchName).toBe('mr mime')
+    expect(get(index.pokemon, 'nidoran-f').searchName).toBe('nidoran f')
+    expect(get(index.moves, 'sleep-powder').searchName).toBe('sleep powder')
+    expect(get(index.abilities, 'rain-dish').searchName).toBe('rain dish')
+  })
+
   it('flattens species fields onto the Pokémon', () => {
     const bulbasaur = get(index.pokemon, 'bulbasaur')
     expect(bulbasaur.id).toBe(1)

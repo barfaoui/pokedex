@@ -4,7 +4,7 @@ import { search } from '../src/search/search'
 import type { ResultKind, SearchResult } from '../src/search/types'
 
 function namesOf(results: SearchResult[], kind: ResultKind): string[] {
-  return results.filter((r) => r.kind === kind).map((r) => r.name)
+  return results.filter((r) => r.kind === kind).map((r) => r.item.name)
 }
 
 const SLEEP_MOVES = ['sing', 'sleep-powder', 'hypnosis', 'lovely-kiss', 'spore']
@@ -16,15 +16,24 @@ describe('PRD test queries', () => {
   it('"bulba" → Bulbasaur first', () => {
     expect(search('bulba')[0]).toMatchObject({
       kind: 'pokemon',
-      name: 'bulbasaur',
+      item: { name: 'bulbasaur' },
     })
   })
 
   it('"pikachoo" → Pikachu first', () => {
     expect(search('pikachoo')[0]).toMatchObject({
       kind: 'pokemon',
-      name: 'pikachu',
+      item: { name: 'pikachu' },
     })
+  })
+
+  it('"saur" → Bulbasaur, Ivysaur, Venusaur', () => {
+    const results = search('saur')
+    expect(results.every((r) => r.kind === 'pokemon')).toBe(true)
+    expect(new Set(results.map((r) => r.item.name))).toEqual(
+      new Set(['bulbasaur', 'ivysaur', 'venusaur']),
+    )
+    expect(results).toHaveLength(3)
   })
 
   it('"fast electric" → Electrode (150), Jolteon (130), Raichu (110), in that order', () => {
@@ -65,7 +74,7 @@ describe('PRD test queries', () => {
 
     it('returns their Pokémon with what matched, e.g. Jigglypuff · Sing', () => {
       const jigglypuff = results.find(
-        (r) => r.kind === 'pokemon' && r.name === 'jigglypuff',
+        (r) => r.kind === 'pokemon' && r.item.name === 'jigglypuff',
       )
       expect(jigglypuff?.matched).toContainEqual({
         field: 'move',
@@ -75,11 +84,13 @@ describe('PRD test queries', () => {
 
     it('never returns Insomnia, Vital Spirit or Rest, nor shows them as what matched', () => {
       for (const result of results) {
-        expect(SLEEP_OPPOSITES, result.name).not.toContain(result.name)
+        expect(SLEEP_OPPOSITES, result.item.name).not.toContain(
+          result.item.name,
+        )
         for (const match of result.matched) {
           expect(
             SLEEP_OPPOSITES,
-            `${result.name} · ${match.value}`,
+            `${result.item.name} · ${match.value}`,
           ).not.toContain(match.value)
         }
       }
@@ -87,7 +98,7 @@ describe('PRD test queries', () => {
 
     it('returns Drowzee for Hypnosis, even though it has Insomnia', () => {
       const drowzee = results.find(
-        (r) => r.kind === 'pokemon' && r.name === 'drowzee',
+        (r) => r.kind === 'pokemon' && r.item.name === 'drowzee',
       )
       expect(drowzee?.matched).toContainEqual({
         field: 'move',
@@ -120,7 +131,7 @@ describe('PRD test queries', () => {
   })
 
   it.each(['drain', 'trainer'])('"%s" → no rain results', (query) => {
-    const names = search(query).map((r) => r.name)
+    const names = search(query).map((r) => r.item.name)
     for (const rain of [...RAIN_ABILITIES, ...RAIN_MOVES]) {
       expect(names, rain).not.toContain(rain)
     }
@@ -144,9 +155,9 @@ describe('M6 · match score on the PRD queries', () => {
   it.each(QUERIES)('"%s" → scores between 0 and 1', (query) => {
     const results = search(query)
     expect(results.length).toBeGreaterThan(0)
-    for (const { name, score } of results) {
-      expect(score, name).toBeGreaterThanOrEqual(0)
-      expect(score, name).toBeLessThanOrEqual(1)
+    for (const { item, score } of results) {
+      expect(score, item.name).toBeGreaterThanOrEqual(0)
+      expect(score, item.name).toBeLessThanOrEqual(1)
     }
   })
 
@@ -158,7 +169,7 @@ describe('M6 · match score on the PRD queries', () => {
 
   it('"bulbasaur" → exact match, scored 1', () => {
     expect(search('bulbasaur')[0]).toMatchObject({
-      name: 'bulbasaur',
+      item: { name: 'bulbasaur' },
       score: 1,
     })
   })

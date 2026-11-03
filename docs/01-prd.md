@@ -179,6 +179,7 @@ Each query below is an automated test:
 | --- | --- |
 | "bulba" | Bulbasaur first |
 | "pikachoo" | Pikachu first |
+| "saur" | Bulbasaur, Ivysaur, Venusaur (only these 3) |
 | "fast electric" | Electrode (150), Jolteon (130), Raichu (110), in that order |
 | "green" | The 9 green Pokémon: Bulbasaur, Ivysaur, Venusaur, Caterpie, Metapod, Bellsprout, Weepinbell, Victreebel, Scyther |
 | "put my opponent to sleep" | Sing, Sleep Powder, Hypnosis, Lovely Kiss, Spore (and the ability Effect Spore) with their Pokémon, e.g. Jigglypuff · Sing. **Not** Insomnia, Vital Spirit or Rest |

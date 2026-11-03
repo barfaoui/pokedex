@@ -1,6 +1,9 @@
-import { STAT_NAMES } from '../data/types/model'
-
-export type ResultKind = 'pokemon' | 'move' | 'ability'
+import {
+  STAT_NAMES,
+  type Ability,
+  type Move,
+  type Pokemon,
+} from '../data/types/model'
 
 export const MATCH_FIELDS = [
   'name',
@@ -24,9 +27,14 @@ export interface Match {
   value: string | number
 }
 
-export interface SearchResult {
-  kind: ResultKind
-  name: string
+export type SearchableItem =
+  | { kind: 'pokemon'; item: Pokemon }
+  | { kind: 'move'; item: Move }
+  | { kind: 'ability'; item: Ability }
+
+export type ResultKind = SearchableItem['kind']
+
+export type SearchResult = SearchableItem & {
   score: number
   matched: Match[]
 }
