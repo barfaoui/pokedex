@@ -1,5 +1,5 @@
-import { matchType } from './match-type'
-import { normalize } from './normalize'
+import { matchType } from './match/type'
+import { normalize } from '../text/normalize'
 import type { ParsedQuery, StatPart, WordPart } from './types/query'
 import {
   COMPARISON_WORDS,

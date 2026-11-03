@@ -1,6 +1,6 @@
 import type { PokedexIndex } from '../data/types/model'
-import { matchConcept } from './match-concept'
-import { nameScore } from './match-name'
+import { matchConcept } from './match/concept'
+import { nameScore } from './match/name'
 import { statValue } from './stat-value'
 import type { ParsedQuery, QueryPart, StatPart, WordPart } from './types/query'
 import type { Scored, SearchableItem } from './types/result'

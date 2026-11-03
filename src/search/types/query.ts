@@ -5,7 +5,7 @@ import type {
   Shape,
   StatName,
 } from '../../data/types/model'
-import type { ConceptId } from '../concepts/types.ts'
+import type { ConceptId } from '../concepts/types'
 
 export interface ParsedQuery {
   parts: QueryPart[]

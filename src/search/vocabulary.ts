@@ -1,7 +1,7 @@
 import { COLORS, HABITATS, SHAPES } from '../data/types/model'
-import { CONCEPTS } from './concepts/seed.ts'
-import type { ConceptId } from './concepts/types.ts'
-import { normalize } from './normalize'
+import { CONCEPTS } from './concepts/seed'
+import type { ConceptId } from './concepts/types'
+import { normalize } from '../text/normalize'
 import type { Comparison, Descriptor, Sort, StatCriterion } from './types/query'
 
 export const SORT_WORDS = new Map<string, Omit<Sort, 'word'>>([

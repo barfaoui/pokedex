@@ -4,7 +4,7 @@ import {
   type Move,
   type Pokemon,
 } from '../../data/types/model'
-import type { Direction } from '../concepts/types.ts'
+import type { Direction } from '../concepts/types'
 
 export type SearchableItem =
   | { kind: 'pokemon'; item: Pokemon }

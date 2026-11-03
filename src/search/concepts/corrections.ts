@@ -1,6 +1,6 @@
 // Human corrections to generated.ts, from the review, grouped like it:
 // concept → corrected direction. The dictionary is generated + these.
-import type { Corrections } from './types.ts'
+import type { Corrections } from './types'
 
 export const CORRECTIONS: Corrections = {
   sleep: {

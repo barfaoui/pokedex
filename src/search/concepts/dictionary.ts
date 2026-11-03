@@ -1,5 +1,5 @@
-import { CORRECTIONS } from './corrections.ts'
-import { GENERATED_TAGS } from './generated.ts'
+import { CORRECTIONS } from './corrections'
+import { GENERATED_TAGS } from './generated'
 import {
   DIRECTIONS,
   type ConceptId,
@@ -7,7 +7,7 @@ import {
   type Correction,
   type Direction,
   type GeneratedTag,
-} from './types.ts'
+} from './types'
 
 type ByDirection = Record<Direction, GeneratedTag[]>
 

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { nameScore } from '../../src/search/match-name'
+import { nameScore } from '../../../src/search/match/name'
 
 describe('nameScore', () => {
   it('scores an exact match 1', () => {

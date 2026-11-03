@@ -1,8 +1,8 @@
-import type { PokedexIndex, Pokemon } from '../data/types/model'
-import { tagOf } from './concepts/dictionary.ts'
-import { CONCEPT_BY_ID } from './concepts/seed.ts'
-import type { Concept, ConceptId, Direction } from './concepts/types.ts'
-import type { Match, Scored, SearchableItem } from './types/result'
+import type { PokedexIndex, Pokemon } from '../../data/types/model'
+import { tagOf } from '../concepts/dictionary'
+import { CONCEPT_BY_ID } from '../concepts/seed'
+import type { Concept, ConceptId, Direction } from '../concepts/types'
+import type { Match, Scored, SearchableItem } from '../types/result'
 
 type Tag = NonNullable<ReturnType<typeof tagOf>>
 

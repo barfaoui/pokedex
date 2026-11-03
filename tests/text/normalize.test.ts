@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { normalize } from '../../src/search/normalize'
+import { normalize } from '../../src/text/normalize'
 
 describe('normalize', () => {
   it.each([

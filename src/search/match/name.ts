@@ -1,4 +1,4 @@
-import { editDistance, typoLimit } from './typo'
+import { editDistance, typoLimit } from '../typo'
 
 const MIN_ANYWHERE_LENGTH = 3
 

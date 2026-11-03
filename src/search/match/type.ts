@@ -1,5 +1,5 @@
-import { POKEMON_TYPES, type PokemonType } from '../data/types/model'
-import { editDistance, typoLimit } from './typo'
+import { POKEMON_TYPES, type PokemonType } from '../../data/types/model'
+import { editDistance, typoLimit } from '../typo'
 
 /** The type a word most likely means, allowing typos within 30% of the type's length. */
 export function matchType(

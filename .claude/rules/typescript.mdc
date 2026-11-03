@@ -9,6 +9,7 @@ alwaysApply: false
 - Strict mode is on. No `any`; use `unknown` and narrow it. No non-null `!` except where the value is guaranteed (e.g. the root element).
 - Types live next to the code that uses them (e.g. `src/data/types/`, `src/search/`). No central `types/` folder.
 - Use `.ts` for our own types, never `.d.ts` (`.d.ts` files skip type-checking here).
+- **Layers:** `src/text/` is shared by `src/data/` and `src/search/`. `src/data/` never imports from `src/search/`.
 - Prefer small, pure functions: same input, same output, no hidden state. The search core must stay pure.
 - **One responsibility per function and per module.** A function does the one thing its name says; if describing it needs "and", split it. A module groups one concern (normalising, typo distance, name matching…), not a mix.
 - Name things by what they mean in the domain (`matchScore`, `typoLimit`, `conceptDirection`), not by their type (`data`, `obj`, `arr`).

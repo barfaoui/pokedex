@@ -1,5 +1,5 @@
 import { displayName } from './display-name'
-import { normalize } from '../search/normalize'
+import { normalize } from '../text/normalize'
 import {
   COLORS,
   DAMAGE_CLASSES,
