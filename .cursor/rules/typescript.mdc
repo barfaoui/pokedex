@@ -1,0 +1,14 @@
+---
+description: TypeScript conventions for app code
+globs: src/**/*.ts,src/**/*.tsx
+alwaysApply: false
+---
+
+# TypeScript
+
+- Strict mode is on. No `any`; use `unknown` and narrow it. No non-null `!` except where the value is guaranteed (e.g. the root element).
+- Types live next to the code that uses them (e.g. `src/data/types/`, `src/search/`). No central `types/` folder.
+- Use `.ts` for our own types, never `.d.ts` (`.d.ts` files skip type-checking here).
+- Prefer small, pure functions: same input, same output, no hidden state. The search core must stay pure.
+- Name things by what they mean in the domain (`matchScore`, `typoLimit`, `conceptDirection`), not by their type (`data`, `obj`, `arr`).
+- Handle the nullable fields of the dataset explicitly: some moves have no `power`, `accuracy` or `effect_chance`.

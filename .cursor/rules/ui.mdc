@@ -1,0 +1,15 @@
+---
+description: React and SCSS conventions for the interface
+globs: src/**/*.tsx,src/**/*.scss
+alwaysApply: false
+---
+
+# UI
+
+- React function components. Components only display: search logic stays in `src/search/`.
+- **Show what matched** on every result (the speed for "fast electric", the move and its effect for "sleep"), not why the engine chose it.
+- Exact matches (score 1) are highlighted; close matches follow in the same list. No separate "close results" section.
+- **Accessibility is required, not optional:** every control is reachable and usable with the keyboard, has an accessible name, and no information is carried by colour alone (pair colour with text or an icon such as ▲ ▼ =).
+- Pokémon images are links to GitHub: always show a placeholder when an image fails to load, and keep the name and types visible.
+- SCSS: shared colours (including type colours), spacing and breakpoints are variables in one place. No magic numbers repeated across files.
+- Mobile first: the search and result list must work on a phone screen.

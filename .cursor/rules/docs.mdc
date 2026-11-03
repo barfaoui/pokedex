@@ -1,0 +1,14 @@
+---
+description: How the project documents are written
+globs: docs/**,README.md
+alwaysApply: false
+---
+
+# Docs
+
+- Plain, direct English. Short sentences. No filler.
+- **Each fact lives in one place.** Link to it instead of repeating it.
+- Docs describe decisions and their reasons, not code (no function names or file-by-file descriptions in specs).
+- Every doc starts with a contents list and ends with a "🤖 How I used AI for this document" section, then Previous / Next links.
+- When a new doc is added, update `docs/00-steps.md` in the same change: link the step and remove its ⏳.
+- Don't change a documented decision without saying so explicitly.

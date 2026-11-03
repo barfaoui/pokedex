@@ -1,0 +1,31 @@
+---
+description: Project context, architecture constraints and how to work in this repo
+alwaysApply: true
+---
+
+# Pokédex Search
+
+A search over the first 151 Pokémon (plus their moves and abilities) for the Biolevate take-home. Users type part of a name, a typo, criteria ("fast electric") or an effect in their own words ("put my opponent to sleep"); results are ranked by a 0–1 match score and show what matched.
+
+The documents in `docs/` are the source of truth: read the relevant one before changing behaviour.
+
+- What the product must do: `docs/01-prd.md` (user stories M1–M8, S1–S4, C1–C2; test queries in section 7)
+- What the data can answer: `docs/02-data-discovery.md`
+- How it's built: `docs/03-tech-spec.md`
+
+## Architecture (don't break these)
+
+- **No back end.** Everything runs in the browser. No server, API route, database or paid service.
+- **The search core (`src/search/`) is plain TypeScript with no UI dependency**: no React, no DOM, no `window`. It must be testable in Node.
+- **Semantic search runs in a Web Worker**, only when manual search isn't confident. Manual search never waits for it.
+- **The dataset (`src/data/pokedex.json`) is read-only.** Never edit it to make something work.
+- Links between Pokémon, moves and abilities are built from the Pokémon side only.
+
+## How to work
+
+- **Tests first.** For any new behaviour, write or update the failing test, then make it pass.
+- **Never commit or push.** I review and commit myself.
+- **Ask before adding a dependency**, and say why it's needed.
+- **If the code needs to differ from the spec, say so.** Don't silently change a documented decision.
+- Keep changes small and focused on one step; explain what changed and why in a few lines.
+- Write in English.
