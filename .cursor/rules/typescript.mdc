@@ -12,3 +12,4 @@ alwaysApply: false
 - Prefer small, pure functions: same input, same output, no hidden state. The search core must stay pure.
 - Name things by what they mean in the domain (`matchScore`, `typoLimit`, `conceptDirection`), not by their type (`data`, `obj`, `arr`).
 - Handle the nullable fields of the dataset explicitly: some moves have no `power`, `accuracy` or `effect_chance`.
+- **Comments only say what the code can't.** Don't add a comment that restates a name, a type or what the next line does (`/** Searches the Pokédex. */`), and don't mark stubs or TODOs in comments. Comment a non-obvious reason, constraint or unit (`/** 0–1; 1 is an exact match. */`, why a test project is separate). When in doubt, leave it out.

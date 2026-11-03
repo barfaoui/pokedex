@@ -13,5 +13,5 @@ disable-model-invocation: true
    - `npm test`
    - `npm run test:e2e`
 2. If something fails, show the relevant part of the output and propose a fix. Don't fix tests by weakening them.
-3. If everything passes, look at the staged and unstaged changes and suggest a commit message in the Conventional Commits style used in this repo (`feat(search): …`, `test(queries): …`, `docs(prd): …`, `chore: …`, `ci: …`). If the changes mix unrelated things, suggest splitting them into several commits.
+3. If everything passes, suggest a commit message by following the `commit-message` skill.
 4. Never run `git commit` or `git push`.
