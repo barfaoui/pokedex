@@ -28,7 +28,7 @@ const tags: ConceptTag[] = CONCEPTS.flatMap((concept) =>
     ...moves.map((item) => ({ kind: 'move' as const, item })),
     ...abilities.map((item) => ({ kind: 'ability' as const, item })),
   ].flatMap(({ kind, item }) => {
-    const tag = tagItem(item.short_effect, item.effect, concept.roots)
+    const tag = tagItem(item.short_effect, item.effect, concept)
     return tag ? [{ concept: concept.id, kind, name: item.name, ...tag }] : []
   }),
 )
@@ -86,7 +86,12 @@ function printSummary(all: ConceptTag[]): void {
       ]),
     ),
   )
-  for (const direction of ['inflicts', 'unclear'] as const) {
+  for (const direction of [
+    'inflicts',
+    'starts',
+    'benefits',
+    'unclear',
+  ] as const) {
     console.log(`\n${direction.toUpperCase()}`)
     for (const t of all.filter((tag) => tag.direction === direction)) {
       console.log(

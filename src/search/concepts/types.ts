@@ -23,11 +23,12 @@ export interface Concept {
 /** In review order: what search uses first, noise last. */
 export const DIRECTIONS = [
   'inflicts',
+  'starts',
+  'benefits',
   'affected',
   'prevents',
   'self',
   'unclear',
-  'mentions',
 ] as const
 
 export type Direction = (typeof DIRECTIONS)[number]

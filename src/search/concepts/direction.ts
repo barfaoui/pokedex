@@ -1,23 +1,100 @@
-import type { ConceptTag, Direction } from './types.ts'
+import type { Concept, ConceptTag, Direction } from './types.ts'
 
 export type ItemTag = Pick<ConceptTag, 'direction' | 'evidence' | 'source'>
 
+// Rule vocabulary, in the order the rules are tried.
+
+// Sentences that only name the concept in passing are skipped: without this,
+// "cannot be selected by Sleep Talk" would read as "prevents sleep".
+const MENTIONS = [
+  /\bselected by\b/i,
+  /\bcopied by\b/i,
+  /\bfull list\b/i,
+  /^for example\b/i,
+  /^an? (extra effect|effect chance)\b/i,
+]
+
+const PREVENT_WORDS =
+  'prevents?|cannot(?: be)?|protects? against|blocks?|immune to'
+
+// "the user", but not "the move's user" (the attacker hit by a contact ability).
+const SELF = /(?<!move's )\buser\b/i
+
+const AFFECTED_WORDS = 'during|when|whenever|while|upon|only works on'
+
+const INFLICTS =
+  /\b(?:puts?|summons|chance (?:to|of)|the target|weather changes to)\b|(?<!self-)\binflict\w*|\binflct\w*/i
+
+// Weather only: an "affected" clause with one of these benefits from the weather.
+const POSITIVE =
+  /\b(?:doubles?|increases?|raises?|heals?|cures?|restores?|protects?|strengthens?|boosts?|skipped)\b|100%/i
+
 /**
- * The direction a sentence gives a concept, or undefined when none of the
- * roots appears in it as a whole word. Rules are tried in order; the first
- * that fits wins.
+ * Tags a move or ability for a concept: its short effect is read first, then
+ * its full effect. The first sentence with a clear direction decides and is
+ * kept as evidence; otherwise the item is unclear. No tag when the concept
+ * never appears, or only in passing.
+ */
+export function tagItem(
+  shortEffect: string,
+  effect: string,
+  concept: Concept,
+): ItemTag | undefined {
+  const classified = [
+    ...sentencesOf(shortEffect, 'short_effect'),
+    ...sentencesOf(effect, 'effect'),
+  ].flatMap(({ sentence, source }) => {
+    const direction = classifySentence(sentence, concept)
+    return direction ? [{ direction, evidence: sentence, source }] : []
+  })
+  return classified.find((t) => t.direction !== 'unclear') ?? classified[0]
+}
+
+/**
+ * The direction a sentence gives a concept, or undefined when it doesn't
+ * concern it: none of its roots appears as a whole word, or only in passing
+ * ("cannot be selected by Sleep Talk"). For weather, "inflicts" becomes
+ * "starts", and "affected" becomes "benefits" when the clause is positive.
  */
 export function classifySentence(
   sentence: string,
-  roots: string[],
+  concept: Concept,
 ): Direction | undefined {
-  const root = rootPattern(roots)
-  if (!new RegExp(`\\b${root}\\b`, 'i').test(sentence)) {
+  const root = rootPattern(concept.roots)
+  if (!wholeWord(root).test(sentence) || mentions(sentence, root)) {
     return undefined
   }
-  if (mentions(sentence, root)) {
-    return 'mentions'
-  }
+  const direction = baseDirection(sentence, root)
+  return concept.group === 'weather'
+    ? weatherDirection(direction, sentence, root)
+    : direction
+}
+
+function sentencesOf(
+  text: string,
+  source: ConceptTag['source'],
+): { sentence: string; source: ConceptTag['source'] }[] {
+  return text
+    .replace(/\s+/g, ' ')
+    .trim()
+    .split(/(?<=[.!?])\s+(?=[A-Z])/)
+    .map((sentence) => ({ sentence, source }))
+}
+
+// Longest roots first, so "rain dance" is tried before "rain".
+function rootPattern(roots: string[]): string {
+  const escaped = [...roots]
+    .sort((a, b) => b.length - a.length)
+    .map((root) => root.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
+  return `(?:${escaped.join('|')})`
+}
+
+function wholeWord(root: string): RegExp {
+  return new RegExp(`\\b${root}\\b`, 'i')
+}
+
+/** The ordered rules, shared by every concept; the first that fits wins. */
+function baseDirection(sentence: string, root: string): Direction {
   if (followedByRoot(PREVENT_WORDS, root).test(sentence)) {
     return 'prevents'
   }
@@ -33,51 +110,6 @@ export function classifySentence(
   return 'unclear'
 }
 
-/**
- * Tags a move or ability for a concept: its short effect is read first, then
- * its full effect. The first sentence with a clear direction decides and is
- * kept as evidence; otherwise the item is unclear, or only mentions it.
- */
-export function tagItem(
-  shortEffect: string,
-  effect: string,
-  roots: string[],
-): ItemTag | undefined {
-  const classified = [
-    ...sentencesOf(shortEffect, 'short_effect'),
-    ...sentencesOf(effect, 'effect'),
-  ].flatMap(({ sentence, source }) => {
-    const direction = classifySentence(sentence, roots)
-    return direction ? [{ direction, evidence: sentence, source }] : []
-  })
-  return (
-    classified.find((t) => !UNDECIDED.includes(t.direction)) ??
-    classified.find((t) => t.direction === 'unclear') ??
-    classified[0]
-  )
-}
-
-const UNDECIDED: Direction[] = ['mentions', 'unclear']
-
-const MENTIONS = [
-  /\bselected by\b/i,
-  /\bcopied by\b/i,
-  /\bfull list\b/i,
-  /^for example\b/i,
-  /^an? (extra effect|effect chance)\b/i,
-]
-
-const PREVENT_WORDS =
-  'prevents?|cannot(?: be)?|protects? against|blocks?|immune to'
-
-const AFFECTED_WORDS = 'during|when|whenever|while|upon|only works on'
-
-// "the user", but not "the move's user" (the attacker hit by a contact ability).
-const SELF = /(?<!move's )\buser\b/i
-
-const INFLICTS =
-  /\b(?:puts?|summons|chance (?:to|of)|the target|weather changes to)\b|(?<!self-)\binflict\w*|\binflct\w*/i
-
 function mentions(sentence: string, root: string): boolean {
   return (
     MENTIONS.some((pattern) => pattern.test(sentence)) ||
@@ -90,21 +122,25 @@ function followedByRoot(words: string, root: string): RegExp {
   return new RegExp(`\\b(?:${words})(?:\\s+\\S+){0,3}?\\s+${root}\\b`, 'i')
 }
 
-// Longest roots first, so "rain dance" is tried before "rain".
-function rootPattern(roots: string[]): string {
-  const escaped = [...roots]
-    .sort((a, b) => b.length - a.length)
-    .map((root) => root.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'))
-  return `(?:${escaped.join('|')})`
+function weatherDirection(
+  direction: Direction,
+  sentence: string,
+  root: string,
+): Direction {
+  if (direction === 'inflicts') {
+    return 'starts'
+  }
+  if (direction === 'affected') {
+    return POSITIVE.test(clauseWith(sentence, root)) ? 'benefits' : 'affected'
+  }
+  return direction
 }
 
-function sentencesOf(
-  text: string,
-  source: ConceptTag['source'],
-): { sentence: string; source: ConceptTag['source'] }[] {
-  return text
-    .replace(/\s+/g, ' ')
-    .trim()
-    .split(/(?<=[.!?])\s+(?=[A-Z])/)
-    .map((sentence) => ({ sentence, source }))
+// "Causes damage during strong sunlight, but heals during rain": each weather gets its own clause.
+function clauseWith(sentence: string, root: string): string {
+  return (
+    sentence
+      .split(/,\s*but\s+|;\s*/)
+      .find((clause) => wholeWord(root).test(clause)) ?? sentence
+  )
 }

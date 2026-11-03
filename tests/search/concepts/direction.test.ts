@@ -5,12 +5,12 @@ import {
   tagItem,
 } from '../../../src/search/concepts/direction'
 import { CONCEPTS } from '../../../src/search/concepts/seed'
-import type { ConceptId } from '../../../src/search/concepts/types'
+import type { Concept, ConceptId } from '../../../src/search/concepts/types'
 
-function rootsOf(id: ConceptId): string[] {
+function conceptOf(id: ConceptId): Concept {
   const concept = CONCEPTS.find((c) => c.id === id)
   expect(concept, id).toBeDefined()
-  return concept?.roots ?? []
+  return concept as Concept
 }
 
 function tag(name: string, concept: ConceptId) {
@@ -18,7 +18,7 @@ function tag(name: string, concept: ConceptId) {
     (i) => i.name === name,
   )
   expect(item, name).toBeDefined()
-  return item && tagItem(item.short_effect, item.effect, rootsOf(concept))
+  return item && tagItem(item.short_effect, item.effect, conceptOf(concept))
 }
 
 describe('classifySentence', () => {
@@ -28,7 +28,7 @@ describe('classifySentence', () => {
     [
       'Summons strong sunlight that lasts indefinitely upon entering battle.',
       'sun',
-      'inflicts',
+      'starts',
     ],
     ['Prevents sleep.', 'sleep', 'prevents'],
     ['This Pokémon cannot be asleep.', 'sleep', 'prevents'],
@@ -42,10 +42,24 @@ describe('classifySentence', () => {
       'confusion',
       'self',
     ],
-    ['This move cannot be selected by Sleep Talk.', 'sleep', 'mentions'],
-    ['Never misses when used by a Poison-type Pokémon.', 'poison', 'mentions'],
-    ['Doubles Speed during rain.', 'rain', 'affected'],
-    ['During Rain Dance, this move has 100% accuracy.', 'rain', 'affected'],
+    ['Doubles Speed during rain.', 'rain', 'benefits'],
+    ['During Rain Dance, this move has 100% accuracy.', 'rain', 'benefits'],
+    ['During Sunny Day, this move has 50% accuracy.', 'sun', 'affected'],
+    [
+      'During Hail, Rain Dance, or Sandstorm, power is halved.',
+      'rain',
+      'affected',
+    ],
+    [
+      'Causes 1/8 max HP in damage each turn during strong sunlight, but heals for 1/8 max HP during rain.',
+      'rain',
+      'benefits',
+    ],
+    [
+      'Causes 1/8 max HP in damage each turn during strong sunlight, but heals for 1/8 max HP during rain.',
+      'sun',
+      'affected',
+    ],
     ['Doubles evasion when confused.', 'confusion', 'affected'],
     [
       'Self-inflicted damage from confusion or recoil is not absorbed.',
@@ -53,18 +67,32 @@ describe('classifySentence', () => {
       'unclear',
     ],
   ] as const)('%s → %s: %s', (sentence, concept, direction) => {
-    expect(classifySentence(sentence, rootsOf(concept))).toBe(direction)
+    expect(classifySentence(sentence, conceptOf(concept))).toBe(direction)
   })
+
+  it.each([
+    ['This move cannot be selected by Sleep Talk.', 'sleep'],
+    ['Never misses when used by a Poison-type Pokémon.', 'poison'],
+    [
+      "An effect chance is a move's chance to inflict a status ailment, cause a stat change, or make the target flinch in addition to the move's usual effects.",
+      'flinch',
+    ],
+  ] as const)(
+    'skips a sentence that only mentions it: %s',
+    (sentence, concept) => {
+      expect(classifySentence(sentence, conceptOf(concept))).toBeUndefined()
+    },
+  )
 
   it('only matches whole words: "drains" and "trainers" are not rain', () => {
     expect(
       classifySentence(
         'Drains half the damage inflicted to heal the user.',
-        rootsOf('rain'),
+        conceptOf('rain'),
       ),
     ).toBeUndefined()
     expect(
-      classifySentence('Forces trainers to switch Pokémon.', rootsOf('rain')),
+      classifySentence('Forces trainers to switch Pokémon.', conceptOf('rain')),
     ).toBeUndefined()
   })
 })
@@ -85,8 +113,8 @@ describe('tagItem: the traps', () => {
     })
   })
 
-  it('Dig only mentions sleep (Sleep Talk)', () => {
-    expect(tag('dig', 'sleep')?.direction).toBe('mentions')
+  it('Dig gets no sleep tag: it only mentions Sleep Talk', () => {
+    expect(tag('dig', 'sleep')).toBeUndefined()
   })
 
   it('Effect Spore inflicts sleep, despite the "inflcting" typo in the data', () => {
@@ -99,6 +127,18 @@ describe('tagItem: the traps', () => {
       evidence: 'Puts the target to sleep.',
       source: 'short_effect',
     })
+  })
+
+  it('Drought starts sun', () => {
+    expect(tag('drought', 'sun')?.direction).toBe('starts')
+  })
+
+  it('Swift Swim benefits from rain', () => {
+    expect(tag('swift-swim', 'rain')?.direction).toBe('benefits')
+  })
+
+  it('Solar Beam is affected by rain', () => {
+    expect(tag('solar-beam', 'rain')?.direction).toBe('affected')
   })
 
   it('gives no tag when the concept never appears', () => {
