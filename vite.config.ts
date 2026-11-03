@@ -6,7 +6,7 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   plugins: [react()],
   test: {
-    // Unit tests live next to the code; end-to-end tests (tests/e2e) are run by Playwright
-    include: ['src/**/*.test.ts'],
+    // Vitest runs tests/**/*.test.ts; Playwright runs tests/e2e/*.spec.ts
+    include: ['tests/**/*.test.ts'],
   },
 })

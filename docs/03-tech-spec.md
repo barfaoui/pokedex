@@ -57,7 +57,7 @@ flowchart LR
 
 ## 4. Data
 
-- **Index built at start:** the app loads the dataset and builds typed objects in memory (a few milliseconds): names normalised (lowercase, accents removed, hyphens to spaces), Pokémon ↔ moves ↔ abilities linked both ways, evolution families grouped by chain and ordered by Pokédex number (Eevee's, the only branching family here, shown as a branch).
+- **Index built at start:** the app loads the dataset and builds typed objects in memory (a few milliseconds): names normalised (lowercase, accents removed, hyphens to spaces), Pokémon ↔ moves ↔ abilities linked both ways (built from the Pokémon side; the dataset's reverse lists are identical), evolution families grouped by chain and ordered by Pokédex number (Eevee's, the only branching family here, shown as a branch).
 - **Data checks as tests:** expected counts (151 / 164 / 114), no empty effect texts, every move and ability named on a Pokémon exists. If the dataset ever changes, these fail first.
 - **Source:** a fixed copy of the dataset provided with the exercise, credited in the README.
 
