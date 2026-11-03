@@ -20,15 +20,15 @@ One commit = one reason to change. If the changes mix unrelated things (e.g. a s
 
 `<type>(<scope>): <subject>`
 
-| Type | When |
-| --- | --- |
-| `feat` | New behaviour users or the search core can rely on |
-| `fix` | A bug fix |
-| `test` | Tests only (including red tests written before the code) |
-| `refactor` | Same behaviour, different code |
-| `docs` | `docs/`, `README.md` |
-| `ci` | `.github/` |
-| `chore` | Tooling, config, dependencies, Cursor rules and skills |
+| Type       | When                                                     |
+| ---------- | -------------------------------------------------------- |
+| `feat`     | New behaviour users or the search core can rely on       |
+| `fix`      | A bug fix                                                |
+| `test`     | Tests only (including red tests written before the code) |
+| `refactor` | Same behaviour, different code                           |
+| `docs`     | `docs/`, `README.md`                                     |
+| `ci`       | `.github/`                                               |
+| `chore`    | Tooling, config, dependencies, Cursor rules and skills   |
 
 - **Scope** (optional): the area touched: `data`, `search`, `queries`, `ui`, `e2e`, or the doc (`prd`, `tech-spec`, `data-discovery`). Leave it out when the change spans several areas.
 - **Subject:** imperative, lowercase, no full stop, at most ~60 characters. Say what changed from the user's or the project's point of view, not which files ("add the data model and red tests for buildIndex", not "update model.ts").

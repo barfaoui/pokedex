@@ -16,6 +16,7 @@
     "format:check": "prettier --check .",
     "test": "vitest run --project unit",
     "test:queries": "vitest run --project queries",
+    "concepts": "node scripts/build-concepts.ts && prettier --write src/search/concepts/generated.ts",
     "test:watch": "vitest",
     "test:e2e": "playwright test"
   },

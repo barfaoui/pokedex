@@ -10,12 +10,12 @@ disable-model-invocation: true
 
 Ask for anything missing: the input and the expected result. Then classify the request:
 
-| It's about… | Example | Kind of test | Where |
-| --- | --- | --- | --- |
-| A **search query** and what it should return | "legendary fire" → Moltres first | Query test (Vitest) | `tests/queries.test.ts` + a row in `docs/01-prd.md` section 7 |
-| A **PRD user story** (M1–M8, S1–S4, C1–C2) as the user sees it | M5: a result shows what matched | End-to-end (Playwright) | `tests/e2e/` |
-| An **internal rule** of the search | the 30% typo rule, concept direction (Insomnia = prevents) | Unit test (Vitest) | `tests/search/` |
-| The **dataset** itself | every ability has a short effect | Data check (Vitest) | `tests/data/` |
+| It's about…                                                    | Example                                                    | Kind of test            | Where                                                         |
+| -------------------------------------------------------------- | ---------------------------------------------------------- | ----------------------- | ------------------------------------------------------------- |
+| A **search query** and what it should return                   | "legendary fire" → Moltres first                           | Query test (Vitest)     | `tests/queries.test.ts` + a row in `docs/01-prd.md` section 7 |
+| A **PRD user story** (M1–M8, S1–S4, C1–C2) as the user sees it | M5: a result shows what matched                            | End-to-end (Playwright) | `tests/e2e/`                                                  |
+| An **internal rule** of the search                             | the 30% typo rule, concept direction (Insomnia = prevents) | Unit test (Vitest)      | `tests/search/`                                               |
+| The **dataset** itself                                         | every ability has a short effect                           | Data check (Vitest)     | `tests/data/`                                                 |
 
 If it fits more than one row, say which ones and why, and ask before writing several.
 
