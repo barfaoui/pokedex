@@ -103,12 +103,12 @@ export interface Pokemon {
   moves: string[]
   genus: string
   description: string
-  color: Color
-  shape: Shape
-  habitat: Habitat
+  color: Color | undefined
+  shape: Shape | undefined
+  habitat: Habitat | undefined
   isLegendary: boolean
   isMythical: boolean
-  evolution: Evolution
+  evolution: Evolution | undefined
   sprite: string
   artwork: string
 }
@@ -121,12 +121,12 @@ export interface Evolution {
 export interface Move {
   name: string
   displayName: string
-  type: PokemonType
+  type: PokemonType | undefined
   power: number | null
   pp: number
   accuracy: number | null
   priority: number
-  damageClass: DamageClass
+  damageClass: DamageClass | undefined
   effectChance: number | null
   effect: string
   shortEffect: string

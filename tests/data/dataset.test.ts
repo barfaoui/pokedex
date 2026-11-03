@@ -49,10 +49,12 @@ describe('dataset', () => {
     const moveNames = new Set(moves.map((m) => m.name))
     const abilityNames = new Set(abilities.map((a) => a.name))
     for (const p of pokemon) {
-      for (const m of p.moves)
+      for (const m of p.moves) {
         expect(moveNames.has(m), `${p.name} → ${m}`).toBe(true)
-      for (const a of p.abilities)
+      }
+      for (const a of p.abilities) {
         expect(abilityNames.has(a), `${p.name} → ${a}`).toBe(true)
+      }
     }
   })
 })

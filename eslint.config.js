@@ -26,6 +26,10 @@ export default defineConfig([
       ],
     },
   },
-  // Last: turns off style rules that Prettier handles
   prettier,
+  {
+    rules: {
+      curly: ['error', 'all'],
+    },
+  },
 ])

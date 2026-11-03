@@ -1,4 +1,3 @@
-// The PRD's test queries (docs/01-prd.md, section 7), end to end through the search core.
 import { describe, expect, it } from 'vitest'
 import { dataset } from '../src/data/dataset'
 import { search } from '../src/search/search'
@@ -58,8 +57,9 @@ describe('PRD test queries', () => {
     const results = search('put my opponent to sleep')
 
     it('returns Sing, Sleep Powder, Hypnosis, Lovely Kiss, Spore and the ability Effect Spore', () => {
-      for (const move of SLEEP_MOVES)
+      for (const move of SLEEP_MOVES) {
         expect(namesOf(results, 'move'), move).toContain(move)
+      }
       expect(namesOf(results, 'ability')).toContain('effect-spore')
     })
 
@@ -76,11 +76,12 @@ describe('PRD test queries', () => {
     it('never returns Insomnia, Vital Spirit or Rest, nor shows them as what matched', () => {
       for (const result of results) {
         expect(SLEEP_OPPOSITES, result.name).not.toContain(result.name)
-        for (const match of result.matched)
+        for (const match of result.matched) {
           expect(
             SLEEP_OPPOSITES,
             `${result.name} · ${match.value}`,
           ).not.toContain(match.value)
+        }
       }
     })
 
@@ -99,10 +100,12 @@ describe('PRD test queries', () => {
     const results = search('rain team')
 
     it('returns Swift Swim, Rain Dish, Hydration, Dry Skin, Thunder and Solar Beam', () => {
-      for (const ability of RAIN_ABILITIES)
+      for (const ability of RAIN_ABILITIES) {
         expect(namesOf(results, 'ability'), ability).toContain(ability)
-      for (const move of RAIN_MOVES)
+      }
+      for (const move of RAIN_MOVES) {
         expect(namesOf(results, 'move'), move).toContain(move)
+      }
     })
 
     it('returns every Pokémon with a rain ability', () => {
@@ -110,18 +113,63 @@ describe('PRD test queries', () => {
         .filter((p) => p.abilities.some((a) => RAIN_ABILITIES.includes(a)))
         .map((p) => p.name)
       expect(rainPokemon).toHaveLength(25)
-      for (const name of rainPokemon)
+      for (const name of rainPokemon) {
         expect(namesOf(results, 'pokemon'), name).toContain(name)
+      }
     })
   })
 
   it.each(['drain', 'trainer'])('"%s" → no rain results', (query) => {
     const names = search(query).map((r) => r.name)
-    for (const rain of [...RAIN_ABILITIES, ...RAIN_MOVES])
+    for (const rain of [...RAIN_ABILITIES, ...RAIN_MOVES]) {
       expect(names, rain).not.toContain(rain)
+    }
   })
 
   it('"spaghetti" → no results', () => {
     expect(search('spaghetti')).toEqual([])
   })
+})
+
+describe('M6 · match score on the PRD queries', () => {
+  const QUERIES = [
+    'bulba',
+    'pikachoo',
+    'fast electric',
+    'green',
+    'put my opponent to sleep',
+    'rain team',
+  ]
+
+  it.each(QUERIES)('"%s" → scores between 0 and 1', (query) => {
+    const results = search(query)
+    expect(results.length).toBeGreaterThan(0)
+    for (const { name, score } of results) {
+      expect(score, name).toBeGreaterThanOrEqual(0)
+      expect(score, name).toBeLessThanOrEqual(1)
+    }
+  })
+
+  it.each(QUERIES)('"%s" → sorted by score, best first', (query) => {
+    const scores = search(query).map((r) => r.score)
+    expect(scores.length).toBeGreaterThan(0)
+    expect(scores).toEqual([...scores].sort((a, b) => b - a))
+  })
+
+  it('"bulbasaur" → exact match, scored 1', () => {
+    expect(search('bulbasaur')[0]).toMatchObject({
+      name: 'bulbasaur',
+      score: 1,
+    })
+  })
+
+  it.each(['bulba', 'pikachoo'])(
+    '"%s" → best match scored below 1',
+    (query) => {
+      const [best] = search(query)
+      expect(best, query).toBeDefined()
+      expect(best.score, query).toBeGreaterThan(0)
+      expect(best.score, query).toBeLessThan(1)
+    },
+  )
 })

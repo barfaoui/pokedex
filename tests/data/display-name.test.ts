@@ -39,7 +39,9 @@ describe('displayName', () => {
     for (const name of names) {
       const shown = displayName(name)
       expect(shown, name).toMatch(/^[A-Z]/)
-      if (!officialHyphens.has(shown)) expect(shown, name).not.toContain('-')
+      if (!officialHyphens.has(shown)) {
+        expect(shown, name).not.toContain('-')
+      }
     }
   })
 })

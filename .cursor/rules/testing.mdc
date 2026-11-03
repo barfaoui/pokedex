@@ -11,15 +11,15 @@ alwaysApply: false
 | Folder | Runner | What |
 | --- | --- | --- |
 | `tests/data/` | Vitest (`*.test.ts`) | Checks on the dataset |
-| `tests/search/` | Vitest (`*.test.ts`) | Parsing, matching, the typo rule, scoring, concept tagging |
-| `tests/queries.test.ts` | Vitest (`npm run test:queries`) | The PRD's test queries (section 7), end to end through the search core |
+| `tests/search/` | Vitest (`*.test.ts`) | Internal rules: parsing, matching, the typo rule, concept tagging |
+| `tests/queries.test.ts` | Vitest (`npm run test:queries`) | The PRD's test queries (section 7) and the M6 score rules on them, end to end through the search core |
 | `tests/e2e/` | Playwright (`*.spec.ts`) | One scenario per Must story, on the built app |
 
 ## Rules
 
 - **Red first.** A new test must fail for the right reason before the code is written.
 - **Never weaken, skip or delete a test to make it pass.** If a test seems wrong, say so and explain why.
-- `tests/queries.test.ts` mirrors PRD section 7 exactly. A new query goes in the PRD table and in the test, together.
+- `tests/queries.test.ts` mirrors PRD section 7 exactly. A new query goes in the PRD table and in the test, together. Rules that hold for every result (M6: scores between 0 and 1, sorted best first) are checked on those same queries in the same file.
 - Test behaviour, not implementation: assert on what `search()` returns, not on internal helpers, unless the helper is a documented rule (e.g. the 30% typo rule).
 - Include the traps from data discovery: "sleep" must never return Insomnia, Vital Spirit or Rest; "drain" and "trainer" must never return rain results.
 - In end-to-end tests, find elements by role and accessible name (`getByRole`), not by CSS class.

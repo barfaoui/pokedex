@@ -82,29 +82,33 @@ describe('buildIndex', () => {
   })
 
   describe('links', () => {
-    it('links each Pokémon to its moves and abilities, both ways', () => {
+    it("fills each move's and ability's Pokémon list from the Pokémon side", () => {
       for (const p of dataset.pokemon) {
         const pokemon = get(index.pokemon, p.name)
-        for (const m of pokemon.moves)
+        for (const m of pokemon.moves) {
           expect(get(index.moves, m).learnedBy, `${m} ← ${p.name}`).toContain(
             p.name,
           )
-        for (const a of pokemon.abilities)
+        }
+        for (const a of pokemon.abilities) {
           expect(get(index.abilities, a).pokemon, `${a} ← ${p.name}`).toContain(
             p.name,
           )
+        }
       }
     })
 
     it("matches the dataset's own reverse lists", () => {
-      for (const m of dataset.moves)
+      for (const m of dataset.moves) {
         expect(new Set(get(index.moves, m.name).learnedBy), m.name).toEqual(
           new Set(m.learned_by_pokemon),
         )
-      for (const a of dataset.abilities)
+      }
+      for (const a of dataset.abilities) {
         expect(new Set(get(index.abilities, a.name).pokemon), a.name).toEqual(
           new Set(a.pokemon),
         )
+      }
     })
 
     it('links Sing to the 6 Pokémon that learn it', () => {
@@ -125,14 +129,14 @@ describe('buildIndex', () => {
     it('groups the 151 Pokémon into 78 families', () => {
       const chainIds = new Set(
         dataset.pokemon.map(
-          (p) => get(index.pokemon, p.name).evolution.chainId,
+          (p) => get(index.pokemon, p.name).evolution?.chainId,
         ),
       )
       expect(chainIds.size).toBe(78)
     })
 
     it('orders members by Pokédex number', () => {
-      expect(get(index.pokemon, 'ivysaur').evolution.members).toEqual([
+      expect(get(index.pokemon, 'ivysaur').evolution?.members).toEqual([
         'bulbasaur',
         'ivysaur',
         'venusaur',
@@ -141,12 +145,19 @@ describe('buildIndex', () => {
 
     it("gives every member of Eevee's family the same branching family", () => {
       const eevee = get(index.pokemon, 'eevee').evolution
-      expect(eevee.members).toEqual(['eevee', 'vaporeon', 'jolteon', 'flareon'])
+      expect(eevee?.members).toEqual([
+        'eevee',
+        'vaporeon',
+        'jolteon',
+        'flareon',
+      ])
       expect(get(index.pokemon, 'jolteon').evolution).toEqual(eevee)
     })
 
     it('gives a Pokémon that does not evolve a family of one', () => {
-      expect(get(index.pokemon, 'tauros').evolution.members).toEqual(['tauros'])
+      expect(get(index.pokemon, 'tauros').evolution?.members).toEqual([
+        'tauros',
+      ])
     })
   })
 
