@@ -18,11 +18,10 @@ export function search(
   pokedex: PokedexIndex = index,
 ): SearchResult[] {
   const parsed = parseQuery(query)
-  const items = searchableItems(pokedex)
   const results = parsed.parts.length
-    ? matchingResults(parsed, items)
+    ? matchingResults(parsed, pokedex)
     : parsed.sort
-      ? sortWordResults(parsed.sort, items)
+      ? sortWordResults(parsed.sort, pokedex)
       : []
   return results
     .map((result) => withSortMatches(result, parsed.sort))
@@ -49,22 +48,25 @@ function searchableItems(pokedex: PokedexIndex): SearchableItem[] {
 /** Scores every item and keeps those above 0; with a sort word, only Pokémon (the only items with the attribute). */
 function matchingResults(
   parsed: ParsedQuery,
-  items: SearchableItem[],
+  pokedex: PokedexIndex,
 ): SearchResult[] {
-  return items
+  return searchableItems(pokedex)
     .filter((searchable) => !parsed.sort || searchable.kind === 'pokemon')
-    .map((searchable) => ({ ...searchable, ...scoreItem(parsed, searchable) }))
+    .map((searchable) => ({
+      ...searchable,
+      ...scoreItem(parsed, searchable, pokedex),
+    }))
     .filter((result) => result.score > 0)
 }
 
 /** A lone sort word: its name matches first, then every other Pokémon, each listed once. */
-function sortWordResults(sort: Sort, items: SearchableItem[]): SearchResult[] {
+function sortWordResults(sort: Sort, pokedex: PokedexIndex): SearchResult[] {
   const nameMatches = matchingResults(
     { parts: [{ kind: 'word', text: sort.word }] },
-    items,
+    pokedex,
   )
   const found = new Set(nameMatches.map((result) => result.item))
-  const listed = items
+  const listed = searchableItems(pokedex)
     .filter(
       (searchable) =>
         searchable.kind === 'pokemon' && !found.has(searchable.item),

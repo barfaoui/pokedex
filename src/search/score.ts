@@ -1,3 +1,5 @@
+import type { PokedexIndex } from '../data/types/model'
+import { matchConcept } from './match-concept'
 import { nameScore } from './match-name'
 import { statValue } from './stat-value'
 import type { ParsedQuery, QueryPart, StatPart, WordPart } from './types/query'
@@ -16,8 +18,9 @@ const NO_MATCH: Scored = { score: 0, matched: [] }
 export function scoreItem(
   query: ParsedQuery,
   searchable: SearchableItem,
+  pokedex: PokedexIndex,
 ): Scored {
-  const parts = query.parts.map((part) => scorePart(part, searchable))
+  const parts = query.parts.map((part) => scorePart(part, searchable, pokedex))
   const average = {
     score: parts.reduce((sum, part) => sum + part.score, 0) / parts.length,
     matched: parts.flatMap((part) => part.matched),
@@ -26,10 +29,14 @@ export function scoreItem(
   return phrase.score > average.score ? phrase : average
 }
 
-function scorePart(part: QueryPart, searchable: SearchableItem): Scored {
+function scorePart(
+  part: QueryPart,
+  searchable: SearchableItem,
+  pokedex: PokedexIndex,
+): Scored {
   return part.kind === 'stat'
     ? scoreStat(part, searchable)
-    : scoreWord(part, searchable)
+    : scoreWord(part, searchable, pokedex)
 }
 
 /** Multi-word names ("mr mime") are also matched against the whole query. */
@@ -41,9 +48,17 @@ function scorePhrase(parts: QueryPart[], searchable: SearchableItem): Scored {
   return scoreName(words.map((word) => word.text).join(' '), searchable)
 }
 
-/** A word can mean a name, a type or a descriptor; the best of the three counts. */
-function scoreWord(part: WordPart, searchable: SearchableItem): Scored {
+/**
+ * A word can mean a concept, a name, a type or a descriptor; the best counts.
+ * The concept comes first, so on a tie the effect is shown.
+ */
+function scoreWord(
+  part: WordPart,
+  searchable: SearchableItem,
+  pokedex: PokedexIndex,
+): Scored {
   return [
+    part.concept ? matchConcept(part.concept, searchable, pokedex) : NO_MATCH,
     scoreName(part.text, searchable),
     scoreType(part, searchable),
     scoreDescriptor(part, searchable),

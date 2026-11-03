@@ -11,7 +11,7 @@ function pokemon(name: string): SearchableItem {
 }
 
 function score(query: string, searchable: SearchableItem) {
-  return scoreItem(parseQuery(query), searchable)
+  return scoreItem(parseQuery(query), searchable, index)
 }
 
 describe('scoreItem', () => {

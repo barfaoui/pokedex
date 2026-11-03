@@ -22,6 +22,7 @@ export interface Scored {
 export interface Match {
   field: MatchField
   value: string | number
+  detail?: string
 }
 
 export const MATCH_FIELDS = [
@@ -33,6 +34,7 @@ export const MATCH_FIELDS = [
   'shape',
   'habitat',
   'description',
+  'effect',
   'height',
   'weight',
   'total',

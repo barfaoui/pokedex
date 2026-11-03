@@ -43,16 +43,11 @@ export interface ConceptTag {
 
 export type GeneratedTag = Omit<ConceptTag, 'concept' | 'direction'>
 
-/** The generated output, grouped for review: concept → direction → tags. */
-export type GeneratedConcepts = Record<
-  ConceptId,
-  Record<Direction, GeneratedTag[]>
->
+export type Concepts = Record<ConceptId, Record<Direction, GeneratedTag[]>>
 
-export interface ConceptCorrection {
-  concept: ConceptId
-  kind: 'move' | 'ability'
-  name: string
-  direction: Direction
-  reason: string
-}
+export type Correction = Pick<GeneratedTag, 'kind' | 'name'>
+
+/** Same grouping as Concepts; a correction sits under its corrected direction. */
+export type Corrections = Partial<
+  Record<ConceptId, Partial<Record<Direction, Correction[]>>>
+>

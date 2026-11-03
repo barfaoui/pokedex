@@ -5,6 +5,7 @@ import type {
   Shape,
   StatName,
 } from '../../data/types/model'
+import type { ConceptId } from '../concepts/types.ts'
 
 export interface ParsedQuery {
   parts: QueryPart[]
@@ -18,6 +19,7 @@ export interface WordPart {
   text: string
   type?: { value: PokemonType; score: number }
   descriptor?: Descriptor
+  concept?: ConceptId
 }
 
 export type Descriptor =
