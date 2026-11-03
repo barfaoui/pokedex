@@ -100,11 +100,11 @@ Each story has an example query and a "done when" acceptance criterion.
 
 ### Should
 
-**S1. AI fallback for hard queries**
-> As any user, when the built-in search isn't confident about my query, I want a smarter search to try, so that I still get an answer to an unusual phrasing.
+**S1. Semantic search for unusual phrasing**
+> As any user, when the manual search isn't confident about my query, I want the app to search by meaning, so that I still get an answer when I phrase things in an unexpected way.
 
-- Done when: if no result reaches the confidence threshold, the query goes to a language model, which may only return items that exist in the dataset. If the model finds nothing relevant either, M7 applies.
-- The app is complete without it: with no API key configured, this step is skipped.
+- Done when: if no result reaches the confidence threshold, the query is compared by meaning with the move effects, ability effects and descriptions, using a small model that runs in the browser. Results still come only from the dataset, and if nothing reaches the threshold, M7 applies.
+- No server, API key or paid service: the model ships with the app and works offline.
 
 **S2. Compare two Pokémon**
 > As a player choosing between two candidates, I want to see them side by side, so that I can decide quickly.
@@ -154,7 +154,7 @@ the stories above.
 | --- | --- | --- | --- |
 | 1 | Users search in English | Matching, test set | English only; accents don't matter ("é" = "e") |
 | 2 | The dataset is fixed and used as provided: first-generation Pokémon and moves, with modern abilities and types | What can and can't be answered | No external data at runtime; gaps are stated, not filled |
-| 3 | Reviewers may not have an AI API key | The AI fallback can't be required | The app is complete without it (S1) |
+| 3 | Reviewers run the app on an ordinary laptop or phone, possibly offline | The semantic search model must be small and local | A small model that ships with the app and runs in the browser (S1) |
 
 ## 7. Success metrics
 
@@ -176,7 +176,7 @@ Each query below is an automated test:
 - **Not a battle tool:** no damage calculation or optimisation.
 - **No accounts:** favourites and teams live in the browser (cleared with browser data, not shared across devices).
 - **English only.** Accents don't matter ("é" matches "e").
-- **AI fallback needs an API key;** without one, it's skipped.
+- **Semantic search** uses a small model that prepares itself in the background on the first visit, so a search by meaning in the first few seconds takes a moment longer.
 
 ## 9. 🤖 How I used AI for this document
 
@@ -187,7 +187,7 @@ I used Claude (chat) as a thinking partner. The decisions in this document are m
 - **Where I disagreed.**
   - **How results are displayed.** The AI proposed showing, on each result, a sentence explaining *why* it matched, a list of which parts of the query it met or missed, and a separate section for close matches. I disagreed: users care about *what* matched (the speed, the move), not how the engine reasoned. My design shows the matched attribute on the result, in a single list ranked by a match score, with exact matches highlighted.
   - It suggested replacing favourites with a team builder. I kept favourites and made teams a separate story.
-- **Ideas that came from me:** comparing two Pokémon, the match score with highlighted exact matches, the no-false-positive rule, the AI fallback below a confidence threshold, favourites, and evolution families. The final scope and priorities were my call.
+- **Ideas that came from me:** comparing two Pokémon, the match score with highlighted exact matches, the no-false-positive rule, semantic search with a small in-browser model when the manual search isn't confident, favourites, and evolution families. The final scope and priorities were my call.
 
 ---
 
