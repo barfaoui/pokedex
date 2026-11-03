@@ -25,7 +25,7 @@ export function scoreItem(
     score: parts.reduce((sum, part) => sum + part.score, 0) / parts.length,
     matched: parts.flatMap((part) => part.matched),
   }
-  const phrase = scorePhrase(query.parts, searchable)
+  const phrase = scorePhrase(query.normalizedQuery, searchable)
   return phrase.score > average.score ? phrase : average
 }
 
@@ -39,13 +39,17 @@ function scorePart(
     : scoreWord(part, searchable, pokedex)
 }
 
-/** Multi-word names ("mr mime") are also matched against the whole query. */
-function scorePhrase(parts: QueryPart[], searchable: SearchableItem): Scored {
-  const words = parts.filter((part) => part.kind === 'word')
-  if (words.length < 2 || words.length !== parts.length) {
-    return NO_MATCH
-  }
-  return scoreName(words.map((word) => word.text).join(' '), searchable)
+/**
+ * Multi-word names ("mr mime", "double team") are also matched against the
+ * whole query as typed, filler words included.
+ */
+function scorePhrase(
+  normalizedQuery: string,
+  searchable: SearchableItem,
+): Scored {
+  return normalizedQuery.includes(' ')
+    ? scoreName(normalizedQuery, searchable)
+    : NO_MATCH
 }
 
 /**
@@ -59,7 +63,8 @@ function scoreWord(
 ): Scored {
   return [
     part.concept ? matchConcept(part.concept, searchable, pokedex) : NO_MATCH,
-    scoreName(part.text, searchable),
+    // A concept word ("rain") only matches names from the start: never "Mega Drain".
+    scoreName(part.text, searchable, { anywhere: !part.concept }),
     scoreType(part, searchable),
     scoreDescriptor(part, searchable),
   ].reduce((best, candidate) =>
@@ -79,8 +84,12 @@ function scoreStat(part: StatPart, searchable: SearchableItem): Scored {
     : NO_MATCH
 }
 
-function scoreName(text: string, searchable: SearchableItem): Scored {
-  const score = nameScore(text, searchable.item.searchName)
+function scoreName(
+  text: string,
+  searchable: SearchableItem,
+  options?: { anywhere?: boolean },
+): Scored {
+  const score = nameScore(text, searchable.item.searchName, options)
   return score > 0
     ? { score, matched: [{ field: 'name', value: searchable.item.name }] }
     : NO_MATCH

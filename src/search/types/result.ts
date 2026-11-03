@@ -4,6 +4,7 @@ import {
   type Move,
   type Pokemon,
 } from '../../data/types/model'
+import type { Direction } from '../concepts/types.ts'
 
 export type SearchableItem =
   | { kind: 'pokemon'; item: Pokemon }
@@ -23,6 +24,7 @@ export interface Match {
   field: MatchField
   value: string | number
   detail?: string
+  direction?: Direction
 }
 
 export const MATCH_FIELDS = [

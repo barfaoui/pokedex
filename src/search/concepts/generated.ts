@@ -43,6 +43,8 @@ export const GENERATED_TAGS: Concepts = {
         source: 'short_effect',
       },
     ],
+    starts: [],
+    benefits: [],
     affected: [
       {
         kind: 'move',
@@ -99,64 +101,6 @@ export const GENERATED_TAGS: Concepts = {
         name: 'early-bird',
         evidence: 'Makes sleep pass twice as quickly.',
         source: 'short_effect',
-      },
-    ],
-    mentions: [
-      {
-        kind: 'move',
-        name: 'razor-wind',
-        evidence: 'This move cannot be selected by Sleep Talk.',
-        source: 'effect',
-      },
-      {
-        kind: 'move',
-        name: 'fly',
-        evidence: 'This move cannot be selected by Sleep Talk.',
-        source: 'effect',
-      },
-      {
-        kind: 'move',
-        name: 'solar-beam',
-        evidence: 'This move cannot be selected by Sleep Talk.',
-        source: 'effect',
-      },
-      {
-        kind: 'move',
-        name: 'dig',
-        evidence: 'This move cannot be selected by Sleep Talk.',
-        source: 'effect',
-      },
-      {
-        kind: 'move',
-        name: 'bide',
-        evidence: 'This move cannot be selected by Sleep Talk.',
-        source: 'effect',
-      },
-      {
-        kind: 'move',
-        name: 'metronome',
-        evidence:
-          'Assist, meta, protection, and reflection moves are also not eligible; specifically, Assist, Chatter, Copycat, Counter, Covet, Destiny Bond, Detect, Endure, Feint, Focus Punch, Follow Me, Helping Hand, Me First, Metronome, Mimic, Mirror Coat, Mirror Move, Protect, Quick Guard, Sketch, Sleep Talk, Snatch, Struggle, Switcheroo, Thief, Trick, and Wide Guard will not be selected by this move.',
-        source: 'effect',
-      },
-      {
-        kind: 'move',
-        name: 'mirror-move',
-        evidence:
-          'The full list of ignored moves is: Acid Armor, Acupressure, After You, Agility, Ally Switch, Amnesia, Aqua Ring, Aromatherapy, Aromatic Mist, Assist, Autotomize, Barrier, Baton Pass, Belch, Belly Drum, Bide, Bulk Up, Calm Mind, Camouflage, Celebrate, Charge, Coil, Conversion, Conversion 2, Copycat, Cosmic Power, Cotton Guard, Counter, Crafty Shield, Curse, Defend Order, Defense Curl, Destiny Bond, Detect, Doom Desire, Double Team, Dragon Dance, Electric Terrain, Endure, Final Gambit, Flower Shield, Focus Energy, Focus Punch, Follow Me, Future Sight, Geomancy, Grassy Terrain, Gravity, Growth, Grudge, Guard Split, Hail, Happy Hour, Harden, Haze, Heal Bell, Heal Order, Heal Pulse, Healing Wish, Helping Hand, Hold Hands, Hone Claws, Howl, Imprison, Ingrain, Ion Deluge, Iron Defense, King’s Shield, Light Screen, Lucky Chant, Lunar Dance, Magic Coat, Magnet Rise, Magnetic Flux, Mat Block, Me First, Meditate, Metronome, Milk Drink, Mimic, Minimize, Mirror Coat, Mirror Move, Mist, Misty Terrain, Moonlight, Morning Sun, Mud Sport, Nasty Plot, Nature Power, Perish Song, Power Split, Power Trick, Protect, Psych Up, Quick Guard, Quiver Dance, Rage Powder, Rain Dance, Recover, Recycle, Reflect, Reflect Type, Refresh, Rest, Rock Polish, Role Play, Roost, Rototiller, Safeguard, Sandstorm, Shadow Blast, Shadow Bolt, Shadow Half, Shadow Rush, Shadow Shed, Shadow Sky, Shadow Storm, Shadow Wave, Sharpen, Shell Smash, Shift Gear, Sketch, Slack Off, Sleep Talk, Snatch, Soft-Boiled, Spikes, Spiky Shield, Spit Up, Splash, Stealth Rock, Sticky Web, Stockpile, Struggle, Substitute, Sunny Day, Swallow, Swords Dance, Synthesis, Tail Glow, Tailwind, Teleport, Toxic Spikes, Transform, Water Sport, Wide Guard, Wish, Withdraw and Work Up.',
-        source: 'effect',
-      },
-      {
-        kind: 'move',
-        name: 'skull-bash',
-        evidence: 'This move cannot be selected by Sleep Talk.',
-        source: 'effect',
-      },
-      {
-        kind: 'move',
-        name: 'sky-attack',
-        evidence: 'This move cannot be selected by Sleep Talk.',
-        source: 'effect',
       },
     ],
   },
@@ -244,6 +188,8 @@ export const GENERATED_TAGS: Concepts = {
         source: 'short_effect',
       },
     ],
+    starts: [],
+    benefits: [],
     affected: [],
     prevents: [
       {
@@ -274,29 +220,6 @@ export const GENERATED_TAGS: Concepts = {
         name: 'quick-feet',
         evidence:
           'This Pokémon is not affected by the usual Speed cut from paralysis.',
-        source: 'effect',
-      },
-    ],
-    mentions: [
-      {
-        kind: 'ability',
-        name: 'shield-dust',
-        evidence:
-          "For example, Thunder Shock's paralysis is an extra effect, but Thunder Wave's is not, nor are Knock Off's item removal and Air Cutter's increased critical hit rate.",
-        source: 'effect',
-      },
-      {
-        kind: 'ability',
-        name: 'mold-breaker',
-        evidence:
-          "For example, this Pokémon's moves can paralyze a Pokémon with Limber, but Limber will activate and heal the paralysis immediately thereafter, and this Pokémon's Spikes are not affected by this ability after they have been placed.",
-        source: 'effect',
-      },
-      {
-        kind: 'ability',
-        name: 'sheer-force',
-        evidence:
-          "For example, Thunder Shock's paralysis is an extra effect, but Thunder Wave's is not, nor are Knock Off's item removal and Air Cutter's increased critical hit rate.",
         source: 'effect',
       },
     ],
@@ -373,6 +296,8 @@ export const GENERATED_TAGS: Concepts = {
         source: 'short_effect',
       },
     ],
+    starts: [],
+    benefits: [],
     affected: [],
     prevents: [
       {
@@ -413,7 +338,6 @@ export const GENERATED_TAGS: Concepts = {
         source: 'effect',
       },
     ],
-    mentions: [],
   },
   burn: {
     inflicts: [
@@ -461,6 +385,8 @@ export const GENERATED_TAGS: Concepts = {
         source: 'short_effect',
       },
     ],
+    starts: [],
+    benefits: [],
     affected: [],
     prevents: [
       {
@@ -484,22 +410,6 @@ export const GENERATED_TAGS: Concepts = {
         name: 'guts',
         evidence:
           'Whenever this Pokémon is asleep, burned, paralyzed, or poisoned, it has 1.5× its Attack.',
-        source: 'effect',
-      },
-    ],
-    mentions: [
-      {
-        kind: 'ability',
-        name: 'serene-grace',
-        evidence:
-          "For example, Flamethrower's chance of burning the target is doubled, but Protect's chance of success and Air Cutter's increased critical hit rate are unaffected.",
-        source: 'effect',
-      },
-      {
-        kind: 'ability',
-        name: 'magic-guard',
-        evidence:
-          "For example, this Pokémon takes no damage from from weather, recoil, status ailments, or Spikes, but it still suffers from the Attack cut when burned, and a Life Orb will still power up this Pokémon's moves without damaging it.",
         source: 'effect',
       },
     ],
@@ -531,6 +441,8 @@ export const GENERATED_TAGS: Concepts = {
         source: 'short_effect',
       },
     ],
+    starts: [],
+    benefits: [],
     affected: [
       {
         kind: 'ability',
@@ -542,7 +454,6 @@ export const GENERATED_TAGS: Concepts = {
     prevents: [],
     self: [],
     unclear: [],
-    mentions: [],
   },
   confusion: {
     inflicts: [
@@ -577,6 +488,8 @@ export const GENERATED_TAGS: Concepts = {
         source: 'short_effect',
       },
     ],
+    starts: [],
+    benefits: [],
     affected: [
       {
         kind: 'ability',
@@ -630,7 +543,6 @@ export const GENERATED_TAGS: Concepts = {
         source: 'effect',
       },
     ],
-    mentions: [],
   },
   flinch: {
     inflicts: [
@@ -696,6 +608,8 @@ export const GENERATED_TAGS: Concepts = {
         source: 'short_effect',
       },
     ],
+    starts: [],
+    benefits: [],
     affected: [
       {
         kind: 'ability',
@@ -722,39 +636,11 @@ export const GENERATED_TAGS: Concepts = {
         source: 'effect',
       },
     ],
-    mentions: [
-      {
-        kind: 'ability',
-        name: 'shield-dust',
-        evidence:
-          'An extra effect is a move\'s chance, listed as an "effect chance", to inflict a status ailment, cause a stat change, or make the target flinch in addition to the move\'s main effect.',
-        source: 'effect',
-      },
-      {
-        kind: 'ability',
-        name: 'serene-grace',
-        evidence:
-          "An effect chance is a move's chance to inflict a status ailment, cause a stat change, or make the target flinch in addition to the move's main effect.",
-        source: 'effect',
-      },
-      {
-        kind: 'ability',
-        name: 'sheer-force',
-        evidence:
-          "An effect chance is a move's chance to inflict a status ailment, cause a stat change, or make the target flinch in addition to the move's main effect.",
-        source: 'effect',
-      },
-    ],
   },
   rain: {
     inflicts: [],
-    affected: [
-      {
-        kind: 'move',
-        name: 'solar-beam',
-        evidence: 'During Hail, Rain Dance, or Sandstorm, power is halved.',
-        source: 'effect',
-      },
+    starts: [],
+    benefits: [
       {
         kind: 'move',
         name: 'thunder',
@@ -787,6 +673,14 @@ export const GENERATED_TAGS: Concepts = {
         source: 'short_effect',
       },
     ],
+    affected: [
+      {
+        kind: 'move',
+        name: 'solar-beam',
+        evidence: 'During Hail, Rain Dance, or Sandstorm, power is halved.',
+        source: 'effect',
+      },
+    ],
     prevents: [],
     self: [],
     unclear: [
@@ -798,18 +692,10 @@ export const GENERATED_TAGS: Concepts = {
         source: 'effect',
       },
     ],
-    mentions: [
-      {
-        kind: 'move',
-        name: 'mirror-move',
-        evidence:
-          'The full list of ignored moves is: Acid Armor, Acupressure, After You, Agility, Ally Switch, Amnesia, Aqua Ring, Aromatherapy, Aromatic Mist, Assist, Autotomize, Barrier, Baton Pass, Belch, Belly Drum, Bide, Bulk Up, Calm Mind, Camouflage, Celebrate, Charge, Coil, Conversion, Conversion 2, Copycat, Cosmic Power, Cotton Guard, Counter, Crafty Shield, Curse, Defend Order, Defense Curl, Destiny Bond, Detect, Doom Desire, Double Team, Dragon Dance, Electric Terrain, Endure, Final Gambit, Flower Shield, Focus Energy, Focus Punch, Follow Me, Future Sight, Geomancy, Grassy Terrain, Gravity, Growth, Grudge, Guard Split, Hail, Happy Hour, Harden, Haze, Heal Bell, Heal Order, Heal Pulse, Healing Wish, Helping Hand, Hold Hands, Hone Claws, Howl, Imprison, Ingrain, Ion Deluge, Iron Defense, King’s Shield, Light Screen, Lucky Chant, Lunar Dance, Magic Coat, Magnet Rise, Magnetic Flux, Mat Block, Me First, Meditate, Metronome, Milk Drink, Mimic, Minimize, Mirror Coat, Mirror Move, Mist, Misty Terrain, Moonlight, Morning Sun, Mud Sport, Nasty Plot, Nature Power, Perish Song, Power Split, Power Trick, Protect, Psych Up, Quick Guard, Quiver Dance, Rage Powder, Rain Dance, Recover, Recycle, Reflect, Reflect Type, Refresh, Rest, Rock Polish, Role Play, Roost, Rototiller, Safeguard, Sandstorm, Shadow Blast, Shadow Bolt, Shadow Half, Shadow Rush, Shadow Shed, Shadow Sky, Shadow Storm, Shadow Wave, Sharpen, Shell Smash, Shift Gear, Sketch, Slack Off, Sleep Talk, Snatch, Soft-Boiled, Spikes, Spiky Shield, Spit Up, Splash, Stealth Rock, Sticky Web, Stockpile, Struggle, Substitute, Sunny Day, Swallow, Swords Dance, Synthesis, Tail Glow, Tailwind, Teleport, Toxic Spikes, Transform, Water Sport, Wide Guard, Wish, Withdraw and Work Up.',
-        source: 'effect',
-      },
-    ],
   },
   sun: {
-    inflicts: [
+    inflicts: [],
+    starts: [
       {
         kind: 'ability',
         name: 'drought',
@@ -818,7 +704,7 @@ export const GENERATED_TAGS: Concepts = {
         source: 'short_effect',
       },
     ],
-    affected: [
+    benefits: [
       {
         kind: 'move',
         name: 'growth',
@@ -832,22 +718,9 @@ export const GENERATED_TAGS: Concepts = {
         source: 'effect',
       },
       {
-        kind: 'move',
-        name: 'thunder',
-        evidence: 'During Sunny Day, this move has 50% accuracy.',
-        source: 'effect',
-      },
-      {
         kind: 'ability',
         name: 'chlorophyll',
         evidence: 'Doubles Speed during strong sunlight.',
-        source: 'short_effect',
-      },
-      {
-        kind: 'ability',
-        name: 'dry-skin',
-        evidence:
-          'Causes 1/8 max HP in damage each turn during strong sunlight, but heals for 1/8 max HP during rain.',
         source: 'short_effect',
       },
       {
@@ -872,22 +745,29 @@ export const GENERATED_TAGS: Concepts = {
         source: 'effect',
       },
     ],
+    affected: [
+      {
+        kind: 'move',
+        name: 'thunder',
+        evidence: 'During Sunny Day, this move has 50% accuracy.',
+        source: 'effect',
+      },
+      {
+        kind: 'ability',
+        name: 'dry-skin',
+        evidence:
+          'Causes 1/8 max HP in damage each turn during strong sunlight, but heals for 1/8 max HP during rain.',
+        source: 'short_effect',
+      },
+    ],
     prevents: [],
     self: [],
     unclear: [],
-    mentions: [
-      {
-        kind: 'move',
-        name: 'mirror-move',
-        evidence:
-          'The full list of ignored moves is: Acid Armor, Acupressure, After You, Agility, Ally Switch, Amnesia, Aqua Ring, Aromatherapy, Aromatic Mist, Assist, Autotomize, Barrier, Baton Pass, Belch, Belly Drum, Bide, Bulk Up, Calm Mind, Camouflage, Celebrate, Charge, Coil, Conversion, Conversion 2, Copycat, Cosmic Power, Cotton Guard, Counter, Crafty Shield, Curse, Defend Order, Defense Curl, Destiny Bond, Detect, Doom Desire, Double Team, Dragon Dance, Electric Terrain, Endure, Final Gambit, Flower Shield, Focus Energy, Focus Punch, Follow Me, Future Sight, Geomancy, Grassy Terrain, Gravity, Growth, Grudge, Guard Split, Hail, Happy Hour, Harden, Haze, Heal Bell, Heal Order, Heal Pulse, Healing Wish, Helping Hand, Hold Hands, Hone Claws, Howl, Imprison, Ingrain, Ion Deluge, Iron Defense, King’s Shield, Light Screen, Lucky Chant, Lunar Dance, Magic Coat, Magnet Rise, Magnetic Flux, Mat Block, Me First, Meditate, Metronome, Milk Drink, Mimic, Minimize, Mirror Coat, Mirror Move, Mist, Misty Terrain, Moonlight, Morning Sun, Mud Sport, Nasty Plot, Nature Power, Perish Song, Power Split, Power Trick, Protect, Psych Up, Quick Guard, Quiver Dance, Rage Powder, Rain Dance, Recover, Recycle, Reflect, Reflect Type, Refresh, Rest, Rock Polish, Role Play, Roost, Rototiller, Safeguard, Sandstorm, Shadow Blast, Shadow Bolt, Shadow Half, Shadow Rush, Shadow Shed, Shadow Sky, Shadow Storm, Shadow Wave, Sharpen, Shell Smash, Shift Gear, Sketch, Slack Off, Sleep Talk, Snatch, Soft-Boiled, Spikes, Spiky Shield, Spit Up, Splash, Stealth Rock, Sticky Web, Stockpile, Struggle, Substitute, Sunny Day, Swallow, Swords Dance, Synthesis, Tail Glow, Tailwind, Teleport, Toxic Spikes, Transform, Water Sport, Wide Guard, Wish, Withdraw and Work Up.',
-        source: 'effect',
-      },
-    ],
   },
   sandstorm: {
     inflicts: [],
-    affected: [
+    starts: [],
+    benefits: [
       {
         kind: 'ability',
         name: 'sand-veil',
@@ -908,6 +788,7 @@ export const GENERATED_TAGS: Concepts = {
         source: 'short_effect',
       },
     ],
+    affected: [],
     prevents: [],
     self: [],
     unclear: [
@@ -925,29 +806,15 @@ export const GENERATED_TAGS: Concepts = {
         source: 'effect',
       },
     ],
-    mentions: [
-      {
-        kind: 'move',
-        name: 'mirror-move',
-        evidence:
-          'The full list of ignored moves is: Acid Armor, Acupressure, After You, Agility, Ally Switch, Amnesia, Aqua Ring, Aromatherapy, Aromatic Mist, Assist, Autotomize, Barrier, Baton Pass, Belch, Belly Drum, Bide, Bulk Up, Calm Mind, Camouflage, Celebrate, Charge, Coil, Conversion, Conversion 2, Copycat, Cosmic Power, Cotton Guard, Counter, Crafty Shield, Curse, Defend Order, Defense Curl, Destiny Bond, Detect, Doom Desire, Double Team, Dragon Dance, Electric Terrain, Endure, Final Gambit, Flower Shield, Focus Energy, Focus Punch, Follow Me, Future Sight, Geomancy, Grassy Terrain, Gravity, Growth, Grudge, Guard Split, Hail, Happy Hour, Harden, Haze, Heal Bell, Heal Order, Heal Pulse, Healing Wish, Helping Hand, Hold Hands, Hone Claws, Howl, Imprison, Ingrain, Ion Deluge, Iron Defense, King’s Shield, Light Screen, Lucky Chant, Lunar Dance, Magic Coat, Magnet Rise, Magnetic Flux, Mat Block, Me First, Meditate, Metronome, Milk Drink, Mimic, Minimize, Mirror Coat, Mirror Move, Mist, Misty Terrain, Moonlight, Morning Sun, Mud Sport, Nasty Plot, Nature Power, Perish Song, Power Split, Power Trick, Protect, Psych Up, Quick Guard, Quiver Dance, Rage Powder, Rain Dance, Recover, Recycle, Reflect, Reflect Type, Refresh, Rest, Rock Polish, Role Play, Roost, Rototiller, Safeguard, Sandstorm, Shadow Blast, Shadow Bolt, Shadow Half, Shadow Rush, Shadow Shed, Shadow Sky, Shadow Storm, Shadow Wave, Sharpen, Shell Smash, Shift Gear, Sketch, Slack Off, Sleep Talk, Snatch, Soft-Boiled, Spikes, Spiky Shield, Spit Up, Splash, Stealth Rock, Sticky Web, Stockpile, Struggle, Substitute, Sunny Day, Swallow, Swords Dance, Synthesis, Tail Glow, Tailwind, Teleport, Toxic Spikes, Transform, Water Sport, Wide Guard, Wish, Withdraw and Work Up.',
-        source: 'effect',
-      },
-    ],
   },
   hail: {
     inflicts: [],
-    affected: [
+    starts: [],
+    benefits: [
       {
         kind: 'move',
         name: 'blizzard',
         evidence: 'During Hail, this move has 100% accuracy.',
-        source: 'effect',
-      },
-      {
-        kind: 'move',
-        name: 'solar-beam',
-        evidence: 'During Hail, Rain Dance, or Sandstorm, power is halved.',
         source: 'effect',
       },
       {
@@ -963,6 +830,14 @@ export const GENERATED_TAGS: Concepts = {
         source: 'short_effect',
       },
     ],
+    affected: [
+      {
+        kind: 'move',
+        name: 'solar-beam',
+        evidence: 'During Hail, Rain Dance, or Sandstorm, power is halved.',
+        source: 'effect',
+      },
+    ],
     prevents: [],
     self: [],
     unclear: [
@@ -971,15 +846,6 @@ export const GENERATED_TAGS: Concepts = {
         name: 'fly',
         evidence:
           'The damage from Hail and Sandstorm still applies during the immune turn.',
-        source: 'effect',
-      },
-    ],
-    mentions: [
-      {
-        kind: 'move',
-        name: 'mirror-move',
-        evidence:
-          'The full list of ignored moves is: Acid Armor, Acupressure, After You, Agility, Ally Switch, Amnesia, Aqua Ring, Aromatherapy, Aromatic Mist, Assist, Autotomize, Barrier, Baton Pass, Belch, Belly Drum, Bide, Bulk Up, Calm Mind, Camouflage, Celebrate, Charge, Coil, Conversion, Conversion 2, Copycat, Cosmic Power, Cotton Guard, Counter, Crafty Shield, Curse, Defend Order, Defense Curl, Destiny Bond, Detect, Doom Desire, Double Team, Dragon Dance, Electric Terrain, Endure, Final Gambit, Flower Shield, Focus Energy, Focus Punch, Follow Me, Future Sight, Geomancy, Grassy Terrain, Gravity, Growth, Grudge, Guard Split, Hail, Happy Hour, Harden, Haze, Heal Bell, Heal Order, Heal Pulse, Healing Wish, Helping Hand, Hold Hands, Hone Claws, Howl, Imprison, Ingrain, Ion Deluge, Iron Defense, King’s Shield, Light Screen, Lucky Chant, Lunar Dance, Magic Coat, Magnet Rise, Magnetic Flux, Mat Block, Me First, Meditate, Metronome, Milk Drink, Mimic, Minimize, Mirror Coat, Mirror Move, Mist, Misty Terrain, Moonlight, Morning Sun, Mud Sport, Nasty Plot, Nature Power, Perish Song, Power Split, Power Trick, Protect, Psych Up, Quick Guard, Quiver Dance, Rage Powder, Rain Dance, Recover, Recycle, Reflect, Reflect Type, Refresh, Rest, Rock Polish, Role Play, Roost, Rototiller, Safeguard, Sandstorm, Shadow Blast, Shadow Bolt, Shadow Half, Shadow Rush, Shadow Shed, Shadow Sky, Shadow Storm, Shadow Wave, Sharpen, Shell Smash, Shift Gear, Sketch, Slack Off, Sleep Talk, Snatch, Soft-Boiled, Spikes, Spiky Shield, Spit Up, Splash, Stealth Rock, Sticky Web, Stockpile, Struggle, Substitute, Sunny Day, Swallow, Swords Dance, Synthesis, Tail Glow, Tailwind, Teleport, Toxic Spikes, Transform, Water Sport, Wide Guard, Wish, Withdraw and Work Up.',
         source: 'effect',
       },
     ],

@@ -132,6 +132,35 @@ describe('PRD test queries', () => {
     })
   })
 
+  describe('"sun team"', () => {
+    const results = search('sun team')
+    const names = results.map((r) => r.item.name)
+
+    it('returns Drought, Chlorophyll, Solar Power, Growth, Solar Beam and Thunder', () => {
+      for (const name of [
+        'drought',
+        'chlorophyll',
+        'solar-power',
+        'growth',
+        'solar-beam',
+        'thunder',
+      ]) {
+        expect(names, name).toContain(name)
+      }
+    })
+
+    it('shows Thunder as affected by sun', () => {
+      const thunder = results.find((r) => r.item.name === 'thunder')
+      expect(thunder?.matched).toContainEqual(
+        expect.objectContaining({ direction: 'affected' }),
+      )
+    })
+
+    it('does not return Mirror Move', () => {
+      expect(names).not.toContain('mirror-move')
+    })
+  })
+
   it.each(['drain', 'trainer'])('"%s" → no rain results', (query) => {
     const names = search(query).map((r) => r.item.name)
     for (const rain of [...RAIN_ABILITIES, ...RAIN_MOVES]) {

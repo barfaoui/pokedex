@@ -27,9 +27,8 @@ jobs:
       - run: npm run typecheck
       - run: npm test
 
-      - name: PRD test queries (non-blocking until they all pass)
+      - name: PRD test queries
         run: npm run test:queries
-        continue-on-error: true
 
       - name: Install Playwright's Chrome
         run: npx playwright install --with-deps chromium

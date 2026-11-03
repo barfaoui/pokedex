@@ -2,7 +2,12 @@ import { editDistance, typoLimit } from './typo'
 
 const MIN_ANYWHERE_LENGTH = 3
 
-export function nameScore(part: string, name: string): number {
+/** `anywhere: false` only matches from the start of the name, so "rain" never matches "Mega Drain". */
+export function nameScore(
+  part: string,
+  name: string,
+  { anywhere = true } = {},
+): number {
   if (part === name) {
     return 1
   }
@@ -10,7 +15,7 @@ export function nameScore(part: string, name: string): number {
   if (name.startsWith(part)) {
     return 0.7 + 0.3 * cover
   }
-  if (part.length >= MIN_ANYWHERE_LENGTH && name.includes(part)) {
+  if (anywhere && part.length >= MIN_ANYWHERE_LENGTH && name.includes(part)) {
     return 0.5 + 0.3 * cover
   }
   return typoScore(part, name)

@@ -53,7 +53,7 @@ export const DESCRIPTORS = new Map<string, Descriptor>([
 ])
 
 export const CONCEPT_WORDS = new Map<string, ConceptId>(
-  CONCEPTS.filter((concept) => concept.group === 'status').flatMap((concept) =>
+  CONCEPTS.flatMap((concept) =>
     concept.words.map((word) => [word, concept.id] as const),
   ),
 )
@@ -92,4 +92,7 @@ export const FILLER_WORDS = new Set([
   'want',
   'i',
   'something',
+  // "team" doesn't filter: grouping results stays in the UI.
+  'team',
+  'teams',
 ])

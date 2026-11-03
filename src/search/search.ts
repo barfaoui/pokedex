@@ -62,7 +62,7 @@ function matchingResults(
 /** A lone sort word: its name matches first, then every other Pokémon, each listed once. */
 function sortWordResults(sort: Sort, pokedex: PokedexIndex): SearchResult[] {
   const nameMatches = matchingResults(
-    { parts: [{ kind: 'word', text: sort.word }] },
+    { parts: [{ kind: 'word', text: sort.word }], normalizedQuery: sort.word },
     pokedex,
   )
   const found = new Set(nameMatches.map((result) => result.item))
