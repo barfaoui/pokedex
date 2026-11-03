@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { dataset } from '../src/data/dataset'
 import { search } from '../src/search/search'
-import type { ResultKind, SearchResult } from '../src/search/types'
+import type { ResultKind, SearchResult } from '../src/search/types/result'
 
 function namesOf(results: SearchResult[], kind: ResultKind): string[] {
   return results.filter((r) => r.kind === kind).map((r) => r.item.name)
