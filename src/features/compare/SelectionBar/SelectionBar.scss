@@ -1,0 +1,60 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+@use 'styles/typography' as Typography;
+
+@mixin bar-button {
+  @include bevel-raised;
+  @include focus-ring;
+
+  min-height: $touch-target;
+  border: none;
+  background: $surface;
+  color: $ink;
+  cursor: pointer;
+
+  &:active {
+    @include bevel-pressed;
+  }
+}
+
+.selection-bar {
+  display: flex;
+  align-items: center;
+  gap: $space-1;
+
+  &__count {
+    @include visually-hidden;
+  }
+
+  &__compare {
+    @include bar-button;
+    @include Typography.small-display;
+
+    padding: $space-2 $space-3;
+
+    &:disabled {
+      color: $placeholder;
+      cursor: not-allowed;
+    }
+  }
+
+  &__cancel {
+    @include bar-button;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: $touch-target;
+    padding: 0;
+  }
+
+  &__cancel-icon {
+    display: block;
+    width: $icon-size;
+    height: $icon-size;
+  }
+
+  &__cancel-pixel {
+    fill: currentColor;
+  }
+}

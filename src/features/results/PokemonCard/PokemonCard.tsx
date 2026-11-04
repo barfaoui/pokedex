@@ -4,7 +4,11 @@ import type { Scored } from '@/search/types/result'
 import { FavouriteButton } from '@/features/favourites/FavouriteButton/FavouriteButton'
 import { MatchList } from '@/features/results/MatchList/MatchList'
 import { PokemonImage } from '@/features/pokemon/PokemonImage/PokemonImage'
-import { ResultCard } from '@/features/results/ResultCard/ResultCard'
+import { SelectBox } from '@/features/compare/SelectBox/SelectBox'
+import {
+  ResultCard,
+  type CardSelection,
+} from '@/features/results/ResultCard/ResultCard'
 import { TypeBadge } from '@/features/pokemon/TypeBadge/TypeBadge'
 import './PokemonCard.scss'
 
@@ -13,6 +17,7 @@ interface PokemonCardProps {
   isFavourite: boolean
   onToggleFavourite: (name: string) => void
   onOpen: () => void
+  selection?: CardSelection
 }
 
 export function PokemonCard({
@@ -20,6 +25,7 @@ export function PokemonCard({
   isFavourite,
   onToggleFavourite,
   onOpen,
+  selection,
 }: PokemonCardProps) {
   const nameId = useId()
   const pokemon = result.item
@@ -35,18 +41,25 @@ export function PokemonCard({
       name={pokemon.displayName}
       score={result.score}
       onOpen={onOpen}
+      selection={selection}
     >
       <PokemonImage src={pokemon.artwork} name={pokemon.displayName} />
       <h3 className="pokemon-card__name" id={nameId}>
         {pokemon.displayName}
       </h3>
-      <div className="pokemon-card__favourite">
-        <FavouriteButton
-          pokemonName={pokemon.displayName}
-          isFavourite={isFavourite}
-          onToggle={() => onToggleFavourite(pokemon.name)}
-        />
-      </div>
+      {selection ? (
+        <div className="pokemon-card__tick">
+          <SelectBox selected={selection.selected} />
+        </div>
+      ) : (
+        <div className="pokemon-card__favourite">
+          <FavouriteButton
+            pokemonName={pokemon.displayName}
+            isFavourite={isFavourite}
+            onToggle={() => onToggleFavourite(pokemon.name)}
+          />
+        </div>
+      )}
       <p className="pokemon-card__types">
         {pokemon.types.map((type) => (
           <TypeBadge

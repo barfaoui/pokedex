@@ -1,11 +1,17 @@
 import type { ReactNode } from 'react'
 import './ResultCard.scss'
 
+export interface CardSelection {
+  selected: boolean
+  onToggle: () => void
+}
+
 interface ResultCardProps {
   nameId: string
   name: string
   score: number
   onOpen: () => void
+  selection?: CardSelection
   children: ReactNode
 }
 
@@ -15,6 +21,7 @@ export function ResultCard({
   name,
   score,
   onOpen,
+  selection,
   children,
 }: ResultCardProps) {
   const isExact = score === 1
@@ -24,14 +31,26 @@ export function ResultCard({
       className="result-card"
       aria-labelledby={nameId}
       data-exact={isExact}
+      data-selected={selection?.selected ?? false}
     >
       {isExact && <span className="result-card__exact">Exact match</span>}
-      <button
-        className="result-card__open"
-        type="button"
-        aria-label={`Open ${name}`}
-        onClick={onOpen}
-      />
+      {selection ? (
+        <button
+          className="result-card__open"
+          type="button"
+          role="checkbox"
+          aria-checked={selection.selected}
+          aria-label={`Select ${name}`}
+          onClick={selection.onToggle}
+        />
+      ) : (
+        <button
+          className="result-card__open"
+          type="button"
+          aria-label={`Open ${name}`}
+          onClick={onOpen}
+        />
+      )}
       {children}
     </article>
   )

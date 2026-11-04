@@ -30,6 +30,10 @@ $gold: pixel-border-layers($ink, $pixel, $pixel-lift, $glow);
     animation: result-card-sparkle $duration-sparkle step-end 1;
   }
 
+  &[data-selected='true'] {
+    background: $mint;
+  }
+
   &__exact {
     @include visually-hidden;
   }

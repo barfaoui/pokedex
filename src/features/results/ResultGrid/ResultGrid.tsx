@@ -19,9 +19,16 @@ interface ResultGridProps {
   tab: ResultTab
   results: SearchResult[]
   onOpen: (item: OpenItem) => void
+  selection?: { selected: string[]; onToggle: (name: string) => void }
 }
 
-export function ResultGrid({ query, tab, results, onOpen }: ResultGridProps) {
+export function ResultGrid({
+  query,
+  tab,
+  results,
+  onOpen,
+  selection,
+}: ResultGridProps) {
   const { favourites, toggle } = useFavourites()
 
   if (!results.length) {
@@ -53,6 +60,12 @@ export function ResultGrid({ query, tab, results, onOpen }: ResultGridProps) {
                 isFavourite={favourites.includes(result.item.name)}
                 onToggleFavourite={toggle}
                 onOpen={open}
+                selection={
+                  selection && {
+                    selected: selection.selected.includes(result.item.name),
+                    onToggle: () => selection.onToggle(result.item.name),
+                  }
+                }
               />
             )}
             {result.kind === 'move' && (

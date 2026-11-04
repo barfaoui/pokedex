@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react'
 import { PixelArt } from '@/shared/PixelArt/PixelArt'
 import './AppHeader.scss'
 
@@ -22,7 +23,11 @@ const BALL_PIXELS = {
   W: 'app-header__ball-light',
 }
 
-export function AppHeader() {
+interface AppHeaderProps {
+  children?: ReactNode
+}
+
+export function AppHeader({ children }: AppHeaderProps) {
   return (
     <header className="app-header">
       <p className="app-header__brand">
@@ -33,6 +38,7 @@ export function AppHeader() {
         />
         Okido Institute
       </p>
+      {children}
     </header>
   )
 }

@@ -1,14 +1,11 @@
 import { displayName } from '@/data/display-name'
 import type { StatName } from '@/data/types/model'
+import { STAT_SCALE } from '@/features/results/stat-scale'
 import type { Match } from '@/search/types/result'
 
 export type MatchLine =
   | { kind: 'stat'; label: string; value: number; max: number }
   | { kind: 'text'; label: string; detail?: string }
-
-// Highest possible base stat and base total, so bars compare across Pokémon.
-export const STAT_MAX = 255
-const TOTAL_MAX = 720
 
 export const STAT_LABELS: Record<StatName, string> = {
   hp: 'HP',
@@ -42,14 +39,14 @@ export function describeMatch(match: Match): MatchLine | undefined {
         kind: 'stat',
         label: STAT_LABELS[field],
         value: Number(value),
-        max: STAT_MAX,
+        max: STAT_SCALE[field],
       }
     case 'total':
       return {
         kind: 'stat',
         label: 'total',
         value: Number(value),
-        max: TOTAL_MAX,
+        max: STAT_SCALE.total,
       }
     case 'height':
       return { kind: 'text', label: `height ${value} m` }

@@ -33,7 +33,11 @@ export function AbilityCard({ result, showKind, onOpen }: AbilityCardProps) {
       ) : (
         <MatchList matches={result.matched} trimmed={false} />
       )}
-      <p className="ability-card__count">{ability.pokemon.length} Pokémon</p>
+      <p className="ability-card__count">
+        {ability.pokemon.length === 1
+          ? '1 Pokémon'
+          : `${ability.pokemon.length} Pokémons`}
+      </p>
     </ResultCard>
   )
 }

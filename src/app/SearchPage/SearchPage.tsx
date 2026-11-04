@@ -1,4 +1,5 @@
 import { resultsInTab, type ResultTab } from '@/features/results/result-tabs'
+import type { Selection } from '@/features/compare/useSelection'
 import { search } from '@/search/search'
 import { ExampleQueries } from '@/features/home/ExampleQueries/ExampleQueries'
 import { NoResults } from '@/features/home/NoResults/NoResults'
@@ -10,6 +11,7 @@ import './SearchPage.scss'
 interface SearchPageProps {
   query: string
   tab: ResultTab
+  selection: Selection
   onQueryChange: (query: string) => void
   onTabChange: (tab: ResultTab) => void
 }
@@ -19,6 +21,7 @@ type PageState = 'home' | 'results' | 'no-results'
 export function SearchPage({
   query,
   tab,
+  selection,
   onQueryChange,
   onTabChange,
 }: SearchPageProps) {
@@ -47,6 +50,7 @@ export function SearchPage({
           query={query}
           results={results}
           tab={tab}
+          selection={selection}
           onTabChange={onTabChange}
         />
       )}

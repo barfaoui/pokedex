@@ -1,0 +1,23 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+.compare-controls {
+  &[data-placement='header'] {
+    display: none;
+
+    @include desktop {
+      display: block;
+    }
+  }
+
+  &[data-placement='floating'] {
+    position: fixed;
+    right: $space-4;
+    bottom: $space-4;
+    z-index: 2;
+
+    @include desktop {
+      display: none;
+    }
+  }
+}
