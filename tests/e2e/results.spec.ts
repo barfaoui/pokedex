@@ -51,7 +51,7 @@ test('a tab narrows the results to its kind', async ({ page }) => {
 
   const panel = page.getByRole('tabpanel')
   await expect(card(page, 'Sleep Powder')).toBeVisible()
-  await expect(panel.getByText(/Pokémon learn it/).first()).toBeVisible()
+  await expect(panel.getByText(/\d+ Pokémons learn it/).first()).toBeVisible()
   await expect(card(page, 'Bulbasaur')).toHaveCount(0)
 })
 
@@ -82,7 +82,19 @@ test('a move card shows its kind and type, an ability card its Pokémon', async 
   await searchFor(page, 'sun team')
   const drought = card(page, 'Drought')
   await expect(drought.getByText('ability', { exact: true })).toBeVisible()
-  await expect(drought.getByText(/\d+ Pokémon/)).toBeVisible()
+  await expect(drought.getByText(/\d+ Pokémons/)).toBeVisible()
+})
+
+test('a count of one Pokémon reads in the singular', async ({ page }) => {
+  await searchFor(page, 'lovely kiss')
+  await expect(
+    card(page, 'Lovely Kiss').getByText('1 Pokémon learns it'),
+  ).toBeVisible()
+
+  await searchFor(page, 'volt absorb')
+  await expect(
+    card(page, 'Volt Absorb').getByText('1 Pokémon', { exact: true }),
+  ).toBeVisible()
 })
 
 test('the kind is only written on the All tab', async ({ page }) => {

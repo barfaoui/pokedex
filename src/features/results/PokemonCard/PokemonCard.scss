@@ -10,6 +10,13 @@
     z-index: 1;
   }
 
+  &__tick {
+    position: absolute;
+    top: $space-2;
+    right: $space-2;
+    pointer-events: none;
+  }
+
   &__name {
     @include card-name;
   }

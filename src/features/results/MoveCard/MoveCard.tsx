@@ -48,7 +48,9 @@ export function MoveCard({ result, showKind, onOpen }: MoveCardProps) {
         <MatchList matches={result.matched} trimmed={false} />
       )}
       <p className="move-card__count">
-        {learners} Pokémon {learners === 1 ? 'learns' : 'learn'} it
+        {learners === 1
+          ? '1 Pokémon learns it'
+          : `${learners} Pokémons learn it`}
       </p>
     </ResultCard>
   )

@@ -1,0 +1,27 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+.select-box {
+  @include bevel-pressed;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: $select-box-size;
+  height: $select-box-size;
+  background: $surface;
+
+  &[data-selected='true'] {
+    background: $accent;
+  }
+
+  &__tick {
+    display: block;
+    width: $icon-size;
+    height: $icon-size;
+  }
+
+  &__tick-pixel {
+    fill: $white;
+  }
+}

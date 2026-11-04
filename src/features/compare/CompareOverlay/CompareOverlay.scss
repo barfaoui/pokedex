@@ -1,0 +1,62 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+@use 'styles/typography' as Typography;
+
+.compare-overlay {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+
+  &__title {
+    @include Typography.title-display;
+  }
+
+  &__columns {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $space-3;
+
+    @include desktop {
+      gap: $space-6;
+    }
+  }
+
+  &__pokemon {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+  }
+
+  &__picture {
+    @include pixel-border($ink, $bevel-edge);
+
+    max-width: $compare-picture-width;
+    background: $paper;
+  }
+
+  &__name {
+    @include card-name;
+  }
+
+  &__types {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-1;
+  }
+
+  &__abilities {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__shared {
+    margin-left: $space-2;
+    padding: 0 $space-1;
+    background: $mint;
+  }
+
+  &__summary {
+    padding: $space-1 $space-2;
+    background: $mint;
+  }
+}

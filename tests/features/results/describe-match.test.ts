@@ -11,7 +11,7 @@ describe('describeMatch', () => {
       kind: 'stat',
       label: 'speed',
       value: 150,
-      max: 255,
+      max: 150,
     })
   })
 
@@ -29,7 +29,7 @@ describe('describeMatch', () => {
       kind: 'stat',
       label: 'total',
       value: 680,
-      max: 720,
+      max: 680,
     })
   })
 

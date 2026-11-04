@@ -1,4 +1,5 @@
 import { useId, useState } from 'react'
+import type { Selection } from '@/features/compare/useSelection'
 import { DetailOverlay } from '@/features/detail/DetailOverlay/DetailOverlay'
 import type { OpenItem } from '@/features/detail/open-item'
 import {
@@ -15,6 +16,7 @@ interface ResultsViewProps {
   query: string
   results: SearchResult[]
   tab: ResultTab
+  selection: Selection
   onTabChange: (tab: ResultTab) => void
 }
 
@@ -22,11 +24,13 @@ export function ResultsView({
   query,
   results,
   tab,
+  selection,
   onTabChange,
 }: ResultsViewProps) {
   const idPrefix = useId()
   const [openStack, setOpenStack] = useState<OpenItem[]>([])
   const openItem = openStack.at(-1)
+  const selecting = selection.active && tab === 'pokemon'
   const tabId = (resultTab: ResultTab) => `${idPrefix}-tab-${resultTab}`
   const panelId = `${idPrefix}-panel`
 
@@ -51,6 +55,11 @@ export function ResultsView({
           tab={tab}
           results={resultsInTab(results, tab)}
           onOpen={(item) => setOpenStack([item])}
+          selection={
+            selecting
+              ? { selected: selection.selected, onToggle: selection.toggle }
+              : undefined
+          }
         />
       </div>
       {openItem && (

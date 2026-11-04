@@ -1,0 +1,36 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+.compare-stats {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+
+  &__row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: $space-3;
+  }
+
+  &__value {
+    font-variant-numeric: tabular-nums;
+
+    &[data-side='right'] {
+      text-align: right;
+    }
+
+    &[data-standing='higher'] {
+      color: $accent;
+    }
+  }
+
+  &__label {
+    color: $accent;
+    text-align: center;
+  }
+
+  &__standing {
+    @include visually-hidden;
+  }
+}

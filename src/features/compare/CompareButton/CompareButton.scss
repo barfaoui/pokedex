@@ -1,0 +1,29 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+@use 'styles/typography' as Typography;
+
+.compare-button {
+  @include bevel-raised;
+  @include focus-ring;
+  @include Typography.small-display;
+
+  min-height: $touch-target;
+  padding: $space-2 $space-3;
+  border: none;
+  background: $surface;
+  color: $ink;
+  cursor: pointer;
+
+  &:active {
+    @include bevel-pressed;
+  }
+
+  &[aria-disabled='true'] {
+    color: $placeholder;
+    cursor: not-allowed;
+  }
+
+  &__hint {
+    @include visually-hidden;
+  }
+}

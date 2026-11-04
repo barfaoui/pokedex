@@ -1,5 +1,6 @@
 import { STAT_NAMES, type StatName } from '@/data/types/model'
-import { STAT_LABELS, STAT_MAX } from '@/features/results/describe-match'
+import { STAT_LABELS } from '@/features/results/describe-match'
+import { STAT_SCALE } from '@/features/results/stat-scale'
 import { StatBar } from '@/shared/StatBar/StatBar'
 import './StatList.scss'
 
@@ -14,7 +15,7 @@ export function StatList({ stats }: StatListProps) {
         <li className="stat-list__stat" key={stat}>
           <span className="stat-list__label">{STAT_LABELS[stat]}</span>
           <span className="stat-list__value">{stats[stat]}</span>
-          <StatBar value={stats[stat]} max={STAT_MAX} />
+          <StatBar value={stats[stat]} max={STAT_SCALE[stat]} />
         </li>
       ))}
     </ul>
