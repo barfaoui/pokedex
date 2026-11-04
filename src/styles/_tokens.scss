@@ -11,6 +11,8 @@ $warm-3: #ae2012;
 
 $surface: #f6eed3;
 $shadow: #b9a46c;
+$backdrop: rgba($ink, 0.6);
+$titlebar: $paper;
 $placeholder: #6b6b6b;
 
 $white: #ffffff;
@@ -30,6 +32,7 @@ $space-7: 3rem;
 
 $pixel: 0.25rem;
 $pixel-lift: $pixel * 2;
+$bevel-edge: $pixel * 0.5;
 
 $font-display: 'Press Start 2P', monospace;
 $font-body: 'VT323', monospace;
@@ -58,9 +61,16 @@ $content-width-wide: 75rem;
 $tabs-width: 12rem;
 $card-min-width: 10rem;
 $stat-bar-height: $pixel * 2;
+$stat-label-width: 6.5rem;
+$stat-value-width: 2rem;
 $match-line-clamp: 3;
 $avatar-large: 8rem;
 $avatar-small: 3rem;
+$overlay-width: 56rem;
+$detail-picture-width: 16rem;
+$evolution-picture-size: 5rem;
+$titlebar-button-size: 1.75rem;
+$scrollbar-size: 1rem;
 
 $breakpoint-desktop: 48rem;
 

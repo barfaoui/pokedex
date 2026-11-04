@@ -123,14 +123,28 @@ function groupEvolutions(pokemon: RawPokemon[]): Map<number, Evolution> {
   return new Map(
     [...membersByChain].map(([chainId, members]) => [
       chainId,
-      { chainId, members },
+      { chainId, members, stages: evolutionStages(members) },
     ]),
   )
 }
 
+// The dataset has no "evolves from": its families are ordered by Pokédex number, and
+// Eevee is the only one in the 151 that branches (data discovery, section 2).
+const BRANCHING_FAMILIES = new Set(['eevee'])
+
+function evolutionStages(members: string[]): string[][] {
+  const [first, ...rest] = members
+  if (BRANCHING_FAMILIES.has(first) && rest.length) {
+    return [[first], rest]
+  }
+  return members.map((member) => [member])
+}
+
 // The dataset's flavour text keeps print hyphenation: "scav\u00ad enges".
 function cleanDescription(description: string): string {
-  return description.replace(/\u00ad\s*/g, '')
+  return description
+    .replace(/\u00ad\s*/g, '')
+    .replaceAll('POK\u00e9MON', 'Pok\u00e9mon')
 }
 
 function known<T extends string>(

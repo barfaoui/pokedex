@@ -7,10 +7,10 @@ export type MatchLine =
   | { kind: 'text'; label: string; detail?: string }
 
 // Highest possible base stat and base total, so bars compare across Pokémon.
-const STAT_MAX = 255
+export const STAT_MAX = 255
 const TOTAL_MAX = 720
 
-const STAT_LABELS: Record<StatName, string> = {
+export const STAT_LABELS: Record<StatName, string> = {
   hp: 'HP',
   attack: 'attack',
   defense: 'defense',

@@ -10,16 +10,22 @@ import './MoveCard.scss'
 interface MoveCardProps {
   result: { item: Move } & Scored
   showKind: boolean
+  onOpen: () => void
 }
 
-export function MoveCard({ result, showKind }: MoveCardProps) {
+export function MoveCard({ result, showKind, onOpen }: MoveCardProps) {
   const nameId = useId()
   const move = result.item
   const learners = move.learnedBy.length
   const showsEffect = !describeMatches(result.matched, 1).lines.length
 
   return (
-    <ResultCard nameId={nameId} score={result.score}>
+    <ResultCard
+      nameId={nameId}
+      name={move.displayName}
+      score={result.score}
+      onOpen={onOpen}
+    >
       <h3 className="move-card__name" id={nameId}>
         {move.displayName}
       </h3>

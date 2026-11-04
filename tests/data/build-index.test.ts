@@ -80,6 +80,17 @@ describe('buildIndex', () => {
     expect(get(index.pokemon, 'rattata').description).toContain('scavenges')
   })
 
+  it('writes the all-caps POKéMON of the descriptions as Pokémon', () => {
+    for (const p of dataset.pokemon) {
+      expect(get(index.pokemon, p.name).description, p.name).not.toContain(
+        'POKéMON',
+      )
+    }
+    expect(get(index.pokemon, 'bulbasaur').description).toContain(
+      'with this Pokémon',
+    )
+  })
+
   it('keeps missing move values as null', () => {
     expect(get(index.moves, 'growl').power).toBeNull()
     expect(get(index.moves, 'swift').accuracy).toBeNull()
@@ -164,6 +175,36 @@ describe('buildIndex', () => {
     it('gives a Pokémon that does not evolve a family of one', () => {
       expect(get(index.pokemon, 'tauros').evolution?.members).toEqual([
         'tauros',
+      ])
+    })
+
+    it('puts each member of a straight family in its own stage, in order', () => {
+      expect(get(index.pokemon, 'ivysaur').evolution?.stages).toEqual([
+        ['bulbasaur'],
+        ['ivysaur'],
+        ['venusaur'],
+      ])
+      expect(get(index.pokemon, 'tauros').evolution?.stages).toEqual([
+        ['tauros'],
+      ])
+    })
+
+    it("puts Eevee's three evolutions in one branching stage", () => {
+      expect(get(index.pokemon, 'jolteon').evolution?.stages).toEqual([
+        ['eevee'],
+        ['vaporeon', 'jolteon', 'flareon'],
+      ])
+    })
+
+    it('Eevee is the only family that branches', () => {
+      const branching = [...index.pokemon.values()].filter((pokemon) =>
+        pokemon.evolution?.stages.some((stage) => stage.length > 1),
+      )
+      expect(branching.map((pokemon) => pokemon.name)).toEqual([
+        'eevee',
+        'vaporeon',
+        'jolteon',
+        'flareon',
       ])
     })
   })

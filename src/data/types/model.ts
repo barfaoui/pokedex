@@ -117,6 +117,8 @@ export interface Pokemon {
 export interface Evolution {
   chainId: number
   members: string[]
+  /** In order; a stage with several members is a branch (Eevee's evolutions). */
+  stages: string[][]
 }
 
 export interface Move {

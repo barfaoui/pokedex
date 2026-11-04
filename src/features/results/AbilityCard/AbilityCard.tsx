@@ -9,15 +9,21 @@ import './AbilityCard.scss'
 interface AbilityCardProps {
   result: { item: Ability } & Scored
   showKind: boolean
+  onOpen: () => void
 }
 
-export function AbilityCard({ result, showKind }: AbilityCardProps) {
+export function AbilityCard({ result, showKind, onOpen }: AbilityCardProps) {
   const nameId = useId()
   const ability = result.item
   const showsEffect = !describeMatches(result.matched, 1).lines.length
 
   return (
-    <ResultCard nameId={nameId} score={result.score}>
+    <ResultCard
+      nameId={nameId}
+      name={ability.displayName}
+      score={result.score}
+      onOpen={onOpen}
+    >
       <h3 className="ability-card__name" id={nameId}>
         {ability.displayName}
       </h3>

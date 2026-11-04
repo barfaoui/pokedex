@@ -60,6 +60,47 @@
   }
 }
 
+@function bevel-layers($top-left, $bottom-right) {
+  $edge: $bevel-edge;
+  @return (
+    inset (-$edge) (-$edge) 0 0 $bottom-right,
+    inset $edge $edge 0 0 $top-left,
+    inset (-$edge * 2) (-$edge * 2) 0 0 $shadow,
+    inset ($edge * 2) ($edge * 2) 0 0 $surface
+  );
+}
+
+@mixin bevel-raised {
+  box-shadow: bevel-layers($white, $ink);
+}
+
+@mixin bevel-pressed {
+  box-shadow: bevel-layers($ink, $white);
+}
+
+@mixin pixel-scrollbar {
+  &::-webkit-scrollbar {
+    width: $scrollbar-size;
+    height: $scrollbar-size;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: repeating-conic-gradient($paper 0 25%, $surface 0 50%);
+    background-size: ($bevel-edge * 2) ($bevel-edge * 2);
+  }
+
+  &::-webkit-scrollbar-thumb {
+    @include bevel-raised;
+
+    background: $surface;
+  }
+
+  // Chrome ignores the ::-webkit-scrollbar styles as soon as scrollbar-color is set
+  @supports not selector(::-webkit-scrollbar) {
+    scrollbar-color: $accent $paper;
+  }
+}
+
 @mixin pixel-drop-shadow($lift: $pixel-lift) {
   box-shadow: 0 $lift 0 0 $shadow;
 }

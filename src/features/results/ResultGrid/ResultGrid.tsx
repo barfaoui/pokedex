@@ -1,5 +1,6 @@
 import type { ResultTab } from '@/features/results/result-tabs'
 import type { SearchResult } from '@/search/types/result'
+import type { OpenItem } from '@/features/detail/open-item'
 import { useFavourites } from '@/features/favourites/useFavourites'
 import { AbilityCard } from '@/features/results/AbilityCard/AbilityCard'
 import { MoveCard } from '@/features/results/MoveCard/MoveCard'
@@ -17,9 +18,10 @@ interface ResultGridProps {
   query: string
   tab: ResultTab
   results: SearchResult[]
+  onOpen: (item: OpenItem) => void
 }
 
-export function ResultGrid({ query, tab, results }: ResultGridProps) {
+export function ResultGrid({ query, tab, results, onOpen }: ResultGridProps) {
   const { favourites, toggle } = useFavourites()
 
   if (!results.length) {
@@ -32,26 +34,44 @@ export function ResultGrid({ query, tab, results }: ResultGridProps) {
 
   return (
     <ul className="result-grid">
-      {results.map((result) => (
-        <li
-          className="result-grid__item"
-          key={`${result.kind}-${result.item.name}`}
-        >
-          {result.kind === 'pokemon' && (
-            <PokemonCard
-              result={result}
-              isFavourite={favourites.includes(result.item.name)}
-              onToggleFavourite={toggle}
-            />
-          )}
-          {result.kind === 'move' && (
-            <MoveCard result={result} showKind={tab === 'all'} />
-          )}
-          {result.kind === 'ability' && (
-            <AbilityCard result={result} showKind={tab === 'all'} />
-          )}
-        </li>
-      ))}
+      {results.map((result) => {
+        const open = () =>
+          onOpen({
+            kind: result.kind,
+            name: result.item.name,
+            matched: result.matched,
+            score: result.score,
+          })
+        return (
+          <li
+            className="result-grid__item"
+            key={`${result.kind}-${result.item.name}`}
+          >
+            {result.kind === 'pokemon' && (
+              <PokemonCard
+                result={result}
+                isFavourite={favourites.includes(result.item.name)}
+                onToggleFavourite={toggle}
+                onOpen={open}
+              />
+            )}
+            {result.kind === 'move' && (
+              <MoveCard
+                result={result}
+                showKind={tab === 'all'}
+                onOpen={open}
+              />
+            )}
+            {result.kind === 'ability' && (
+              <AbilityCard
+                result={result}
+                showKind={tab === 'all'}
+                onOpen={open}
+              />
+            )}
+          </li>
+        )
+      })}
     </ul>
   )
 }
