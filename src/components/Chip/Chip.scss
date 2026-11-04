@@ -5,12 +5,12 @@
 .chip {
   @include pixel-border($accent, $pixel * 0.5);
   @include focus-ring;
+  @include Typography.small-display;
 
   min-height: $touch-target;
   padding: $space-1 $space-3;
   background: $surface;
   color: $accent;
-  @include Typography.small-display;
   cursor: pointer;
   transition: background-color $duration-fast;
 

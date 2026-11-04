@@ -9,12 +9,13 @@
   &__input {
     @include pixel-border($ink, $pixel, $pixel-lift);
     @include focus-ring;
+    @include Typography.input-body;
+
     display: block;
     width: calc(100% - #{$pixel * 2 + $pixel-lift});
     min-height: $search-bar-height;
     padding: $space-2 ($touch-target + $space-2) $space-2 $space-4;
     background: $surface;
-    @include Typography.input-body;
     appearance: none;
 
     &::placeholder {
@@ -29,6 +30,7 @@
 
   &__clear-button {
     @include focus-ring;
+
     position: absolute;
     top: $pixel + ($search-bar-height - $touch-target) * 0.5;
     right: $pixel + $pixel-lift + $space-1;

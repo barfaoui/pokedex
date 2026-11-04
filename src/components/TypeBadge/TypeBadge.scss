@@ -4,9 +4,10 @@
 @use '../../styles/mixins' as *;
 
 .type-badge {
+  @include Typography.body;
+
   display: inline-block;
   padding: 0 $space-2;
-  @include Typography.body;
 
   @each $type, $background in $type-colors {
     &[data-type='#{$type}'] {

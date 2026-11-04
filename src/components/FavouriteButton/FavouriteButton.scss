@@ -9,6 +9,7 @@
 
 .favourite-button {
   @include focus-ring;
+
   display: flex;
   align-items: center;
   justify-content: center;

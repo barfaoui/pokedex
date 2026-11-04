@@ -38,8 +38,9 @@
     max-width: 34rem;
 
     @include desktop {
-      max-width: 40rem;
       @include Typography.title-large-display;
+
+      max-width: 40rem;
     }
   }
 

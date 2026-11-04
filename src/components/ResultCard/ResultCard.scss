@@ -21,10 +21,12 @@ $gold: pixel-border-layers($ink, $pixel, $pixel-lift, $glow);
 
 .result-card {
   @include card;
+
   flex: 1;
 
   &[data-exact='true'] {
     @include card($glow);
+
     animation: result-card-sparkle $duration-sparkle step-end 1;
   }
 

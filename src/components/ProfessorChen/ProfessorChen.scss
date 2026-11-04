@@ -3,6 +3,7 @@
 
 .professor-chen {
   @include pixel-border($ink, $pixel, $pixel-lift);
+
   flex-shrink: 0;
   overflow: hidden;
   background: $mint;

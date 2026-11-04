@@ -34,13 +34,13 @@
   $shadow-color: $shadow
 ) {
   border: none;
-  // The border is drawn outside the box: the margin keeps it off neighbours
   margin: $size ($size + $lift) ($size + $lift) $size;
   box-shadow: pixel-border-layers($color, $size, $lift, $shadow-color);
 }
 
 @mixin card($shadow-color: $shadow) {
   @include pixel-border($ink, $pixel, $pixel-lift, $shadow-color);
+
   position: relative;
   display: flex;
   flex-direction: column;
@@ -50,9 +50,9 @@
   background: $surface;
 }
 
-// Bulbasaur must fit a phone-width card
 @mixin card-name {
   @include Typography.small-display;
+
   overflow-wrap: anywhere;
 
   @include desktop {

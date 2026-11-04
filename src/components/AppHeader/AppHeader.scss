@@ -3,12 +3,13 @@
 @use '../../styles/mixins' as *;
 
 .app-header {
+  @include pixel-drop-shadow;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
   min-height: $touch-target + $space-4;
   padding: $space-3 $space-4;
-  @include pixel-drop-shadow;
   position: relative;
   z-index: 1;
   border-bottom: $pixel solid $ink;
@@ -18,10 +19,11 @@
   }
 
   &__brand {
+    @include Typography.label-display;
+
     display: flex;
     align-items: center;
     gap: $space-3;
-    @include Typography.label-display;
 
     @include desktop {
       @include Typography.title-display;
