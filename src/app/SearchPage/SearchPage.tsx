@@ -20,7 +20,6 @@ interface SearchPageProps {
   onTabChange: (tab: ResultTab) => void
 }
 
-// 'waiting': only search by meaning can still answer, and it's busy (its model loading, or the query)
 type PageState = 'home' | 'results' | 'waiting' | 'no-results'
 
 export function SearchPage({
@@ -37,14 +36,15 @@ export function SearchPage({
     !isHome && needsSemantic(manualResults),
   )
   const results = withSemanticResults(manualResults, semantic.results)
-  const isSearchingByMeaning =
-    semantic.status === 'loading-model' || semantic.status === 'searching'
+  const isWaiting =
+    semantic.status === 'loading-model' ||
+    (semantic.status === 'searching' && !results.length)
   const state: PageState = isHome
     ? 'home'
-    : results.length
-      ? 'results'
-      : isSearchingByMeaning
-        ? 'waiting'
+    : isWaiting
+      ? 'waiting'
+      : results.length
+        ? 'results'
         : 'no-results'
 
   return (
@@ -59,7 +59,7 @@ export function SearchPage({
         <SearchBar query={query} onQueryChange={onQueryChange} />
         {isHome && <ExampleQueries onPick={onQueryChange} />}
       </div>
-      {semantic.status === 'loading-model' && <LabFilesWaiting />}
+      {state === 'waiting' && <LabFilesWaiting />}
       {semantic.status === 'failed' && <SemanticUnavailable />}
       {state === 'results' && (
         <ResultsView
