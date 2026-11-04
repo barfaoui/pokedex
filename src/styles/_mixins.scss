@@ -1,0 +1,62 @@
+@use 'sass:list';
+@use 'tokens' as *;
+
+// A border with stepped corners
+@mixin pixel-border($color: $ink, $size: $pixel, $lift: 0) {
+  $layers: (
+    0 (-$size) 0 0 $color,
+    0 $size 0 0 $color,
+    (-$size) 0 0 0 $color,
+    $size 0 0 0 $color
+  );
+  @if $lift > 0 {
+    // Add a hard drop shadow with the same stepped corners, so the element looks raised.
+    $layers: list.join(
+      $layers,
+      (($lift + $size) $lift 0 0 $shadow, $lift ($lift + $size) 0 0 $shadow),
+      $separator: comma
+    );
+  }
+  border: none;
+  // Keep the border from overlapping neighbours
+  margin: $size ($size + $lift) ($size + $lift) $size;
+  box-shadow: $layers;
+}
+
+// A hard shadow under a full-width bar
+@mixin pixel-drop-shadow($lift: $pixel-lift) {
+  box-shadow: 0 $lift 0 0 $shadow;
+}
+
+// A square pixel focus ring, drawn outside the pixel border.
+@mixin focus-ring {
+  &:focus-visible {
+    outline: $pixel solid $accent;
+    outline-offset: $pixel * 2;
+  }
+}
+
+@mixin desktop {
+  @media (min-width: $breakpoint-desktop) {
+    @content;
+  }
+}
+
+@mixin reduced-motion {
+  @media (prefers-reduced-motion: reduce) {
+    @content;
+  }
+}
+
+// Hidden on screen, still read by screen readers.
+@mixin visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}

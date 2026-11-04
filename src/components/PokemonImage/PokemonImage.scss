@@ -1,0 +1,20 @@
+@use '../../styles/tokens' as *;
+
+@mixin image-box {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1;
+}
+
+.pokemon-image {
+  @include image-box;
+
+  object-fit: contain;
+  image-rendering: pixelated;
+
+  &__placeholder {
+    @include image-box;
+    
+    padding: 20%;
+  }
+}

@@ -1,0 +1,72 @@
+// Palette roles
+$paper: #e9d8a6;
+$ink: #001219;
+$accent: #005f73;
+$accent-light: #0a9396;
+$mint: #94d2bd;
+$glow: #ee9b00;
+$danger: #9b2226;
+$warm-1: #ca6702;
+$warm-2: #bb3e03;
+$warm-3: #ae2012;
+
+// Surfaces drawn on paper
+$surface: #f6eed3;
+// Hard drop shadow of raised elements
+$shadow: #b9a46c;
+// Placeholders (missing image): decorative, paired with the Pokémon's name
+$placeholder: #6b6b6b;
+
+// Illustration colours
+$white: #ffffff;
+$chen-hair: #8d8d8d;
+$chen-skin: #f2c08f;
+$chen-coat: $white;
+$chen-shirt: $accent;
+
+// Spacing scale, in rem so it follows the user's font size
+$space-1: 0.25rem;
+$space-2: 0.5rem;
+$space-3: 0.75rem;
+$space-4: 1rem;
+$space-5: 1.5rem;
+$space-6: 2rem;
+$space-7: 3rem;
+
+// One pixel of the pixel look
+$pixel: 0.25rem;
+// How far raised elements cast their shadow
+$pixel-lift: $pixel * 2;
+
+// Fonts
+$font-display: 'Press Start 2P', monospace;
+$font-body: 'VT323', monospace;
+
+// Press Start 2P (short text only)
+$font-size-label: 0.75rem;
+$font-size-label-small: 0.625rem;
+$font-size-title: 1rem;
+$font-size-title-large: 1.25rem;
+// VT323 renders small: body text never below 1.125rem
+$font-size-body: 1.125rem;
+$font-size-input: 1.75rem;
+$line-height-display: 1.6;
+$line-height-body: 1.2;
+
+// Sizes
+$touch-target: 2.75rem;
+$search-bar-height: 3.5rem;
+$icon-size: 1rem;
+// 12 pixel art pixels, each 2 or 3 screen pixels
+$logo-size: 1.5rem;
+$logo-size-desktop: 2.25rem;
+$content-width: 46rem;
+$avatar-large: 8rem;
+$avatar-small: 3rem;
+
+// The one desktop breakpoint (mobile first)
+$breakpoint-desktop: 48rem;
+
+// Motion
+$duration-fast: 100ms;
+$duration-base: 150ms;

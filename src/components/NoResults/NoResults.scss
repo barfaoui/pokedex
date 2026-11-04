@@ -1,0 +1,24 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/mixins' as *;
+
+.no-results {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-3;
+  margin-top: $space-7;
+  text-align: center;
+
+  &__message {
+    max-width: 30rem;
+    overflow-wrap: anywhere;
+
+    @include desktop {
+      font-size: $font-size-title;
+    }
+  }
+
+  &__hint {
+    margin: 0;
+  }
+}

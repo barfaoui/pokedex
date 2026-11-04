@@ -1,3 +1,5 @@
+@use 'styles/tokens' as *;
+
 *,
 *::before,
 *::after {
@@ -6,5 +8,43 @@
 
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  min-height: 100vh;
+  background: $paper;
+  color: $ink;
+  font-family: $font-body;
+  font-size: $font-size-body;
+  line-height: $line-height-body;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-family: $font-display;
+  font-weight: 400;
+  line-height: $line-height-display;
+}
+
+h1 {
+  font-size: $font-size-title;
+}
+
+h2,
+h3 {
+  font-size: $font-size-label;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
 }
