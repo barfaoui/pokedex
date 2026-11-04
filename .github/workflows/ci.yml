@@ -31,6 +31,9 @@ jobs:
       - name: PRD test queries
         run: npm run test:queries
 
+      - name: Semantic search with the real model
+        run: npm run test:semantic
+
       - name: Install Playwright's Chrome
         run: npx playwright install --with-deps chromium
 

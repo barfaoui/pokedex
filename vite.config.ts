@@ -25,7 +25,7 @@ export default defineConfig({
         test: {
           name: 'unit',
           include: ['tests/**/*.test.ts'],
-          exclude: ['tests/queries.test.ts'],
+          exclude: ['tests/queries.test.ts', 'tests/semantic.test.ts'],
         },
       },
       {
@@ -33,6 +33,15 @@ export default defineConfig({
         test: {
           name: 'queries',
           include: ['tests/queries.test.ts'],
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: 'semantic',
+          include: ['tests/semantic.test.ts'],
+          testTimeout: 60_000,
+          hookTimeout: 120_000,
         },
       },
     ],

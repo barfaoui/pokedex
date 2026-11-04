@@ -46,9 +46,10 @@ test('a query with no results says so and suggests the example queries', async (
   page,
 }) => {
   await page.getByRole('searchbox', { name: 'Search' }).fill('spaghetti')
+  // "Nothing" is only certain once search by meaning has answered: its model loads first
   await expect(
     page.getByText('Prof. Chen found nothing for “spaghetti”.'),
-  ).toBeVisible()
+  ).toBeVisible({ timeout: 30_000 })
   for (const query of EXAMPLE_QUERIES) {
     await expect(
       page.getByRole('button', { name: query, exact: true }),

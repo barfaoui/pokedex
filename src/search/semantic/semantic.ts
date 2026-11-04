@@ -1,0 +1,120 @@
+import { index } from '@/data/dataset'
+import type { PokedexIndex } from '@/data/types/model'
+import type { EmbeddedText } from '@/search/semantic/model'
+import type { SearchResult } from '@/search/types/result'
+
+// Set with the real model (tests/semantic.test.ts): the sleep moves for "make the enemy doze off"
+// reach a cosine of about 0.51, while "spaghetti" and other noise stay at 0.30 or below.
+const COSINE_FLOOR = 0.3
+const COSINE_CEILING = 0.7
+/** Meaning alone is never an exact match: no glow for semantic results. */
+const TOP_SCORE = 0.95
+/** 0–1, after rescaling: cosine 0.40. */
+export const SEMANTIC_THRESHOLD = 0.24
+/** Descriptions rank below the moves and abilities that do what was asked. */
+const DESCRIPTION_WEIGHT = 0.85
+const MAX_RESULTS = 12
+
+export function rescale(cosine: number): number {
+  const ratio = (cosine - COSINE_FLOOR) / (COSINE_CEILING - COSINE_FLOOR)
+  return Math.min(Math.max(ratio, 0), 1) * TOP_SCORE
+}
+
+/** `vectors`: one normalised embedding per text, in the order of `texts`. */
+export function semanticResults(
+  query: Float32Array,
+  texts: EmbeddedText[],
+  vectors: Float32Array,
+  pokedex: PokedexIndex = index,
+): SearchResult[] {
+  const best = new Map<string, { text: EmbeddedText; score: number }>()
+  texts.forEach((text, row) => {
+    const weight = text.source === 'description' ? DESCRIPTION_WEIGHT : 1
+    const score = rescale(similarity(query, vectors, row)) * weight
+    const key = `${text.kind}:${text.name}`
+    if (score > (best.get(key)?.score ?? -1)) {
+      best.set(key, { text, score })
+    }
+  })
+
+  return [...best.values()]
+    .filter(({ score }) => score >= SEMANTIC_THRESHOLD)
+    .flatMap(({ text, score }) => toResult(text, score, pokedex))
+    .sort((a, b) => b.score - a.score)
+    .slice(0, MAX_RESULTS)
+}
+
+export function withSemanticResults(
+  manual: SearchResult[],
+  semantic: SearchResult[],
+): SearchResult[] {
+  if (!semantic.length) {
+    return manual
+  }
+  const best = new Map<string, SearchResult>()
+  for (const result of [...manual, ...semantic]) {
+    const key = `${result.kind}:${result.item.name}`
+    if (result.score > (best.get(key)?.score ?? -1)) {
+      best.set(key, result)
+    }
+  }
+  return [...best.values()].sort((a, b) => b.score - a.score)
+}
+
+// The vectors are normalised, so the dot product is the cosine.
+function similarity(query: Float32Array, vectors: Float32Array, row: number) {
+  const start = row * query.length
+  let sum = 0
+  for (let dimension = 0; dimension < query.length; dimension++) {
+    sum += query[dimension] * vectors[start + dimension]
+  }
+  return sum
+}
+
+function toResult(
+  text: EmbeddedText,
+  score: number,
+  pokedex: PokedexIndex,
+): SearchResult[] {
+  switch (text.kind) {
+    case 'pokemon': {
+      const item = pokedex.pokemon.get(text.name)
+      return item
+        ? [
+            {
+              kind: 'pokemon',
+              item,
+              score,
+              matched: [{ field: 'description', value: item.description }],
+            },
+          ]
+        : []
+    }
+    case 'move': {
+      const item = pokedex.moves.get(text.name)
+      return item
+        ? [
+            {
+              kind: 'move',
+              item,
+              score,
+              matched: [{ field: 'effect', value: item.shortEffect }],
+            },
+          ]
+        : []
+    }
+    case 'ability': {
+      const item = pokedex.abilities.get(text.name)
+      return item
+        ? [
+            {
+              kind: 'ability',
+              item,
+              score,
+              matched: [{ field: 'effect', value: item.shortEffect }],
+            },
+          ]
+        : []
+    }
+  }
+}
