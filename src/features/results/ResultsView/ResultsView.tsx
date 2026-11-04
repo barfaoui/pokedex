@@ -1,5 +1,4 @@
 import { useId, useState } from 'react'
-import type { Selection } from '@/features/compare/useSelection'
 import { DetailOverlay } from '@/features/detail/DetailOverlay/DetailOverlay'
 import type { OpenItem } from '@/features/detail/open-item'
 import {
@@ -8,7 +7,10 @@ import {
   type ResultTab,
 } from '@/features/results/result-tabs'
 import type { SearchResult } from '@/search/types/result'
-import { ResultGrid } from '@/features/results/ResultGrid/ResultGrid'
+import {
+  ResultGrid,
+  type CardSelection,
+} from '@/features/results/ResultGrid/ResultGrid'
 import { ResultTabs } from '@/features/results/ResultTabs/ResultTabs'
 import './ResultsView.scss'
 
@@ -16,7 +18,8 @@ interface ResultsViewProps {
   query: string
   results: SearchResult[]
   tab: ResultTab
-  selection: Selection
+  /** In selection mode, the ticked Pokémon and what a tick does. */
+  cardSelection?: CardSelection
   onTabChange: (tab: ResultTab) => void
 }
 
@@ -24,13 +27,12 @@ export function ResultsView({
   query,
   results,
   tab,
-  selection,
+  cardSelection,
   onTabChange,
 }: ResultsViewProps) {
   const idPrefix = useId()
   const [openStack, setOpenStack] = useState<OpenItem[]>([])
   const openItem = openStack.at(-1)
-  const selecting = selection.active && tab === 'pokemon'
   const tabId = (resultTab: ResultTab) => `${idPrefix}-tab-${resultTab}`
   const panelId = `${idPrefix}-panel`
 
@@ -55,11 +57,7 @@ export function ResultsView({
           tab={tab}
           results={resultsInTab(results, tab)}
           onOpen={(item) => setOpenStack([item])}
-          selection={
-            selecting
-              ? { selected: selection.selected, onToggle: selection.toggle }
-              : undefined
-          }
+          selection={tab === 'pokemon' ? cardSelection : undefined}
         />
       </div>
       {openItem && (

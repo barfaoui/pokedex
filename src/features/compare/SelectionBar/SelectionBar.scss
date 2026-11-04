@@ -26,7 +26,7 @@
     @include visually-hidden;
   }
 
-  &__compare {
+  &__action {
     @include bar-button;
     @include Typography.small-display;
 

@@ -1,12 +1,18 @@
 @use 'styles/tokens' as *;
 @use 'styles/mixins' as *;
 
-.compare-controls {
+.selection-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: $space-2;
+
   &[data-placement='header'] {
     display: none;
 
     @include desktop {
-      display: block;
+      display: flex;
     }
   }
 

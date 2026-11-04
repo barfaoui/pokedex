@@ -1,0 +1,36 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+@use 'styles/typography' as Typography;
+
+.pokedex-overlay {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+
+  &__pockets {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $space-3;
+    padding: $space-3;
+    border: $pixel solid $album-cover;
+    background: $paper;
+
+    @include desktop {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+
+  &__pocket {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: $album-pocket-height;
+    border: $bevel-edge dashed $placeholder;
+    color: $placeholder;
+  }
+}

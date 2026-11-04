@@ -1,5 +1,6 @@
 @use 'styles/tokens' as *;
 @use 'styles/mixins' as *;
+@use 'styles/typography' as Typography;
 
 @mixin titlebar-button {
   @include bevel-raised;
@@ -92,6 +93,16 @@
 
   &__back {
     @include titlebar-button;
+  }
+
+  &__title {
+    @include Typography.small-display;
+
+    padding: 0 $space-2;
+
+    @include desktop {
+      @include Typography.label-display;
+    }
   }
 
   &__close {

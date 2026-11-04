@@ -1,21 +1,28 @@
 import { useCallback, useEffect, useState } from 'react'
 import { toggleSelection } from '@/features/compare/selection'
 
+/** Compare picks two Pokémon; team ticks add to the saved team. */
+export type SelectionMode = 'compare' | 'team'
+
 export interface Selection {
-  active: boolean
+  mode: SelectionMode | null
+  /** The two Pokémon picked to compare, oldest first. */
   selected: string[]
-  start: () => void
+  start: (mode: SelectionMode) => void
   cancel: () => void
   toggle: (name: string) => void
 }
 
 export function useSelection(): Selection {
-  const [active, setActive] = useState(false)
+  const [mode, setMode] = useState<SelectionMode | null>(null)
   const [selected, setSelected] = useState<string[]>([])
 
-  const start = useCallback(() => setActive(true), [])
+  const start = useCallback((nextMode: SelectionMode) => {
+    setMode(nextMode)
+    setSelected([])
+  }, [])
   const cancel = useCallback(() => {
-    setActive(false)
+    setMode(null)
     setSelected([])
   }, [])
   const toggle = useCallback(
@@ -25,7 +32,7 @@ export function useSelection(): Selection {
 
   // Escape already handled (an open window closing, the search bar clearing) leaves selection mode alone.
   useEffect(() => {
-    if (!active) {
+    if (!mode) {
       return
     }
     const onKeyDown = (event: KeyboardEvent) => {
@@ -39,7 +46,7 @@ export function useSelection(): Selection {
     }
     document.addEventListener('keydown', onKeyDown)
     return () => document.removeEventListener('keydown', onKeyDown)
-  }, [active, cancel])
+  }, [mode, cancel])
 
-  return { active, selected, start, cancel, toggle }
+  return { mode, selected, start, cancel, toggle }
 }

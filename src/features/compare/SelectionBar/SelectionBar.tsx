@@ -15,31 +15,37 @@ const CROSS = [
 const CROSS_PIXELS = { '#': 'selection-bar__cancel-pixel' }
 
 interface SelectionBarProps {
-  count: number
-  onCompare: () => void
+  /** The button that carries the count: "Compare 2 (1)", "My team (3 / 6)". */
+  actionLabel: string
+  actionEnabled: boolean
+  /** Read out when the count changes. */
+  announcement: string
+  onAction: () => void
   onCancel: () => void
 }
 
 export function SelectionBar({
-  count,
-  onCompare,
+  actionLabel,
+  actionEnabled,
+  announcement,
+  onAction,
   onCancel,
 }: SelectionBarProps) {
   return (
     <section className="selection-bar" aria-label="Selection">
       {/* A button's new label isn't announced: this says the count out loud when it changes */}
       <p className="selection-bar__count" aria-live="polite">
-        {count} selected
+        {announcement}
       </p>
       <button
-        className="selection-bar__compare"
+        className="selection-bar__action"
         type="button"
-        disabled={count !== 2}
-        onClick={onCompare}
+        disabled={!actionEnabled}
+        onClick={onAction}
       >
-        Compare 2 ({count})
+        {actionLabel}
       </button>
-      {/* It replaces Compare 2, which had focus: focus moves here instead of being lost */}
+      {/* It replaces the button that started selection mode, which had focus: focus moves here */}
       <button
         className="selection-bar__cancel"
         type="button"
