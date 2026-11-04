@@ -1,0 +1,41 @@
+@use 'styles/tokens' as *;
+@use 'styles/typography' as Typography;
+
+.move-detail {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  &__name {
+    @include Typography.title-display;
+
+    overflow-wrap: anywhere;
+  }
+
+  &__kind {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-2;
+    color: $accent;
+  }
+
+  &__full-effect {
+    color: $accent;
+  }
+
+  &__facts {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: $space-1 $space-3;
+    margin: 0;
+  }
+
+  &__fact-name {
+    color: $accent;
+  }
+
+  &__fact {
+    margin: 0;
+  }
+}

@@ -1,0 +1,66 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+.evolution {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+  padding-top: $space-4;
+  border-top: $bevel-edge solid $shadow;
+
+  &__stages {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-3;
+  }
+
+  &__stage {
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+
+    // Empty alternative text: screen readers hear the list, not the arrows
+    & + &::before {
+      content: '→' / '';
+    }
+  }
+
+  &__branch {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-2;
+  }
+
+  &__form {
+    @include focus-ring;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $space-1;
+    padding: $space-1;
+    border: none;
+    background: transparent;
+    color: $accent;
+    cursor: pointer;
+
+    &[aria-current='true'] {
+      color: $ink;
+      cursor: default;
+    }
+  }
+
+  &__picture {
+    display: block;
+    width: $evolution-picture-size;
+  }
+
+  &__name {
+    text-decoration: underline;
+  }
+
+  &__form[aria-current='true'] &__name {
+    text-decoration: none;
+  }
+}

@@ -1,0 +1,13 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+.pokemon-link {
+  @include focus-ring;
+
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: $accent;
+  text-decoration: underline;
+  cursor: pointer;
+}

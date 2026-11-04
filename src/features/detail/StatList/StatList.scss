@@ -1,0 +1,23 @@
+@use 'styles/tokens' as *;
+
+.stat-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+
+  &__stat {
+    display: grid;
+    grid-template-columns: $stat-label-width $stat-value-width minmax(0, 1fr);
+    align-items: center;
+    gap: $space-3;
+  }
+
+  &__label {
+    color: $accent;
+  }
+
+  &__value {
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+  }
+}
