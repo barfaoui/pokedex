@@ -22,6 +22,11 @@ jobs:
           cache: npm
 
       - run: npm ci
+        env:
+          # On Linux, onnxruntime-node (from Transformers.js) downloads its CUDA binaries from
+          # NuGet on install, and that download times out. The model runs on the CPU, whose
+          # binaries ship with the package.
+          ONNXRUNTIME_NODE_INSTALL: skip
       - run: npm run lint
       - run: npm run lint:styles
       - run: npm run format:check
