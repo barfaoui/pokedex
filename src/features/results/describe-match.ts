@@ -69,6 +69,16 @@ export function describeMatch(match: Match): MatchLine | undefined {
       )
     case 'description':
       return withDetail('Description', match.detail ?? String(value))
+    case 'evolutionOf':
+      return {
+        kind: 'text',
+        label: `Evolution of ${displayName(String(value))}`,
+      }
+    case 'evolvesInto':
+      return {
+        kind: 'text',
+        label: `Evolves into ${displayName(String(value))}`,
+      }
   }
 }
 

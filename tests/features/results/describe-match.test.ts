@@ -90,6 +90,16 @@ describe('describeMatch', () => {
     })
   })
 
+  test('an evolution family member names the Pokémon that matched', () => {
+    expect(describeMatch({ field: 'evolutionOf', value: 'pikachu' })).toEqual({
+      kind: 'text',
+      label: 'Evolution of Pikachu',
+    })
+    expect(describeMatch({ field: 'evolvesInto', value: 'charizard' })).toEqual(
+      { kind: 'text', label: 'Evolves into Charizard' },
+    )
+  })
+
   test('name and type are already on the card, so they add no line', () => {
     expect(describeMatch({ field: 'name', value: 'pikachu' })).toBeUndefined()
     expect(describeMatch({ field: 'type', value: 'electric' })).toBeUndefined()

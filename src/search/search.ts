@@ -1,5 +1,6 @@
 import { index } from '../data/dataset'
 import type { PokedexIndex } from '../data/types/model'
+import { withEvolutionFamilies } from './evolution'
 import { parseQuery } from './parse'
 import { scoreItem } from './score'
 import { compareResults, sortMatches } from './sort'
@@ -61,7 +62,7 @@ function matchingResults(
   parsed: ParsedQuery,
   pokedex: PokedexIndex,
 ): SearchResult[] {
-  return searchableItems(pokedex)
+  const results = searchableItems(pokedex)
     .filter((searchable) => !parsed.sort || searchable.kind === 'pokemon')
     .map((searchable) => ({
       ...searchable,
@@ -73,6 +74,7 @@ function matchingResults(
         : result,
     )
     .filter((result) => result.score > 0)
+  return withEvolutionFamilies(results, pokedex)
 }
 
 /** A lone sort word: its name matches first, then every other Pokémon, each listed once. */
