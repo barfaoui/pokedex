@@ -44,7 +44,7 @@
     }
   }
 
-  &[data-state='results'] {
+  &:not([data-state='home']) {
     max-width: $content-width-wide;
   }
 
