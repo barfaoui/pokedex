@@ -9,6 +9,13 @@ import type { SearchableItem, SearchResult } from './types/result'
 // Pokémon listed by a lone sort word without matching it: below any name match, never an exact match.
 const LISTED_SCORE = 0.1
 
+// Set with the PRD queries: "pikachoo" (0.71) is the weakest answer that must count as confident.
+const CONFIDENT_SCORE = 0.7
+
+export function needsSemantic(results: SearchResult[]): boolean {
+  return !results.some((result) => result.score >= CONFIDENT_SCORE)
+}
+
 /**
  * Searches Pokémon, moves and abilities. Results scoring 0 are hidden; the
  * rest are sorted by score, then by the query's sort word if it has one.

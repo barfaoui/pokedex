@@ -1,0 +1,76 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+@use 'styles/typography' as Typography;
+
+@keyframes lab-files-waiting-frame {
+  0%,
+  33.33% {
+    visibility: visible;
+  }
+
+  33.34%,
+  100% {
+    visibility: hidden;
+  }
+}
+
+.lab-files-waiting {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $space-3;
+  margin-top: $space-6;
+  text-align: center;
+
+  &__drawer {
+    display: grid;
+    width: $lab-files-size;
+    height: $lab-files-size;
+  }
+
+  &__frame {
+    grid-area: 1 / 1;
+    visibility: hidden;
+    animation: lab-files-waiting-frame $duration-lab-files steps(1) infinite;
+
+    &[data-frame='0'] {
+      visibility: visible;
+    }
+
+    @for $frame from 1 through 2 {
+      &[data-frame='#{$frame}'] {
+        animation-delay: calc($duration-lab-files * #{$frame} / 3);
+      }
+    }
+
+    @include reduced-motion {
+      animation: none;
+    }
+  }
+
+  &__art {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__message {
+    @include Typography.small-display;
+  }
+
+  &__outline {
+    fill: $ink;
+  }
+
+  &__cabinet {
+    fill: $warm-1;
+  }
+
+  &__handle {
+    fill: $ink;
+  }
+
+  &__paper {
+    fill: $white;
+  }
+}

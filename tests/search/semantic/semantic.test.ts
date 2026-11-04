@@ -1,0 +1,126 @@
+import { describe, expect, test } from 'vitest'
+import { needsSemantic, search } from '@/search/search'
+import {
+  SEMANTIC_THRESHOLD,
+  rescale,
+  semanticResults,
+  withSemanticResults,
+} from '@/search/semantic/semantic'
+import type { EmbeddedText } from '@/search/semantic/model'
+
+// A stand-in model: 3-number "embeddings" written by hand, so the ranking rules can be tested
+// without loading the real one. Each text points mostly along one axis.
+const TEXTS: EmbeddedText[] = [
+  { kind: 'move', name: 'sing', source: 'short' },
+  { kind: 'move', name: 'sing', source: 'full' },
+  { kind: 'move', name: 'growl', source: 'short' },
+  { kind: 'ability', name: 'insomnia', source: 'short' },
+  { kind: 'pokemon', name: 'drowzee', source: 'description' },
+  { kind: 'move', name: 'not-in-the-dataset', source: 'short' },
+]
+
+function unit(...values: number[]): number[] {
+  const length = Math.hypot(...values)
+  return values.map((value) => value / length)
+}
+
+const VECTORS = new Float32Array([
+  ...unit(1, 0.2, 0), // sing, short
+  ...unit(1, 0.05, 0), // sing, full: closer to "sleep"
+  ...unit(0, 1, 0), // growl
+  ...unit(0.1, 0, 1), // insomnia
+  ...unit(1, 0.05, 0), // drowzee: as close as Sing's full effect
+  ...unit(1, 0, 0), // an item the dataset doesn't have
+])
+
+const SLEEPY_QUERY = new Float32Array(unit(1, 0, 0))
+
+describe('rescale', () => {
+  test('maps similarity to 0–1, clamped, never quite an exact match', () => {
+    expect(rescale(-0.2)).toBe(0)
+    expect(rescale(0)).toBe(0)
+    expect(rescale(1)).toBeLessThan(1)
+    expect(rescale(0.6)).toBeGreaterThan(rescale(0.5))
+  })
+})
+
+describe('semanticResults', () => {
+  const results = semanticResults(SLEEPY_QUERY, TEXTS, VECTORS)
+
+  test('keeps the better of the short and the full effect, one result per item', () => {
+    const sing = results.filter((result) => result.item.name === 'sing')
+    expect(sing).toHaveLength(1)
+    expect(sing[0].score).toBeCloseTo(rescale(unit(1, 0.05, 0)[0]))
+  })
+
+  test('a description ranks below a move that is just as close', () => {
+    const names = results.map((result) => result.item.name)
+    expect(names.indexOf('sing')).toBeLessThan(names.indexOf('drowzee'))
+  })
+
+  test('shows the short effect or the description as what matched', () => {
+    const sing = results.find((result) => result.item.name === 'sing')
+    expect(sing?.matched).toEqual([
+      { field: 'effect', value: 'Puts the target to sleep.' },
+    ])
+    const drowzee = results.find((result) => result.item.name === 'drowzee')
+    expect(drowzee?.matched[0].field).toBe('description')
+  })
+
+  test('below the threshold is nothing', () => {
+    const names = results.map((result) => result.item.name)
+    expect(names).not.toContain('growl')
+    expect(names).not.toContain('insomnia')
+    for (const { score } of results) {
+      expect(score).toBeGreaterThanOrEqual(SEMANTIC_THRESHOLD)
+    }
+  })
+
+  test('only items from the dataset', () => {
+    expect(results.map((result) => result.item.name)).not.toContain(
+      'not-in-the-dataset',
+    )
+  })
+
+  test('an unrelated query gives nothing', () => {
+    const unrelated = new Float32Array(unit(0, 0, -1))
+    expect(semanticResults(unrelated, TEXTS, VECTORS)).toEqual([])
+  })
+})
+
+describe('withSemanticResults', () => {
+  test('adds the semantic results, each item once with its better score', () => {
+    const manual = search('sing')
+    const semantic = semanticResults(SLEEPY_QUERY, TEXTS, VECTORS)
+    const merged = withSemanticResults(manual, semantic)
+    const sing = merged.filter(
+      (result) => result.kind === 'move' && result.item.name === 'sing',
+    )
+    expect(sing).toHaveLength(1)
+    expect(sing[0].score).toBe(1)
+    expect(merged.map((result) => result.item.name)).toContain('drowzee')
+    const scores = merged.map((result) => result.score)
+    expect(scores).toEqual([...scores].sort((a, b) => b - a))
+  })
+
+  test('with nothing from meaning, the manual results stay as they are', () => {
+    const manual = search('sun team')
+    expect(withSemanticResults(manual, [])).toBe(manual)
+  })
+})
+
+describe('needsSemantic', () => {
+  test.each(['bulba', 'pikachoo', 'rain team', 'put my opponent to sleep'])(
+    '"%s": manual search is confident',
+    (query) => {
+      expect(needsSemantic(search(query))).toBe(false)
+    },
+  )
+
+  test.each(['spaghetti', 'make the enemy doze off'])(
+    '"%s": manual search is not confident',
+    (query) => {
+      expect(needsSemantic(search(query))).toBe(true)
+    },
+  )
+})

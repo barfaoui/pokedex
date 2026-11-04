@@ -1,0 +1,8 @@
+@use 'styles/tokens' as *;
+
+.semantic-unavailable {
+  margin-top: $space-4;
+  padding: $space-2 $space-3;
+  border: $bevel-edge dashed $accent;
+  color: $ink;
+}
