@@ -9,6 +9,8 @@ const PIXEL_ART_SIZE = 64
 interface PokemonImageProps {
   src: string
   name: string
+  /** Next to the Pokémon's written name: hidden from screen readers so it isn't read twice. */
+  decorative?: boolean
 }
 
 interface Pixelated {
@@ -16,7 +18,11 @@ interface Pixelated {
   dataUrl: string | null
 }
 
-export function PokemonImage({ src, name }: PokemonImageProps) {
+export function PokemonImage({
+  src,
+  name,
+  decorative = false,
+}: PokemonImageProps) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null)
   const [pixelated, setPixelated] = useState<Pixelated | null>(null)
   const cached = pixelatedPokemonsCache.get(src)
@@ -31,8 +37,9 @@ export function PokemonImage({ src, name }: PokemonImageProps) {
     return (
       <div
         className="pokemon-image__placeholder"
-        role="img"
-        aria-label={`${name} (image unavailable)`}
+        role={decorative ? undefined : 'img'}
+        aria-label={decorative ? undefined : `${name} (image unavailable)`}
+        aria-hidden={decorative || undefined}
       >
         <BrokenImageIcon />
       </div>
@@ -57,7 +64,7 @@ export function PokemonImage({ src, name }: PokemonImageProps) {
     <img
       className="pokemon-image"
       src={current?.dataUrl ?? src}
-      alt={name}
+      alt={decorative ? '' : name}
       crossOrigin="anonymous"
       loading="lazy"
       data-ready={current !== null}

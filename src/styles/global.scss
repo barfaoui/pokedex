@@ -45,6 +45,10 @@ ol {
   list-style: none;
 }
 
+body:has(dialog[open]) {
+  overflow: hidden;
+}
+
 button,
 input {
   font: inherit;
@@ -54,7 +58,8 @@ input {
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
-  *::after {
+  *::after,
+  ::backdrop {
     transition-duration: 0s !important;
     animation-duration: 0s !important;
   }

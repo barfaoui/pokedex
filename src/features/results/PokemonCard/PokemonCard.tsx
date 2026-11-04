@@ -12,12 +12,14 @@ interface PokemonCardProps {
   result: { item: Pokemon } & Scored
   isFavourite: boolean
   onToggleFavourite: (name: string) => void
+  onOpen: () => void
 }
 
 export function PokemonCard({
   result,
   isFavourite,
   onToggleFavourite,
+  onOpen,
 }: PokemonCardProps) {
   const nameId = useId()
   const pokemon = result.item
@@ -28,7 +30,12 @@ export function PokemonCard({
   )
 
   return (
-    <ResultCard nameId={nameId} score={result.score}>
+    <ResultCard
+      nameId={nameId}
+      name={pokemon.displayName}
+      score={result.score}
+      onOpen={onOpen}
+    >
       <PokemonImage src={pokemon.artwork} name={pokemon.displayName} />
       <h3 className="pokemon-card__name" id={nameId}>
         {pokemon.displayName}

@@ -1,0 +1,29 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+// Inline, so "Show all" follows the last move on the same line
+.move-list {
+  &__moves {
+    display: inline;
+  }
+
+  &__move,
+  &__show-all {
+    @include pixel-border($ink, $bevel-edge);
+
+    display: inline-block;
+    margin: 0 ($space-2 + $bevel-edge) ($space-2 + $bevel-edge) $bevel-edge;
+    padding: 0 $space-2;
+    background: $paper;
+  }
+
+  &__show-all {
+    @include focus-ring;
+
+    border: none;
+    background: $surface;
+    color: $accent;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+}

@@ -1,4 +1,6 @@
-import { useId } from 'react'
+import { useId, useState } from 'react'
+import { DetailOverlay } from '@/features/detail/DetailOverlay/DetailOverlay'
+import type { OpenItem } from '@/features/detail/open-item'
 import {
   resultsInTab,
   tabCounts,
@@ -23,6 +25,8 @@ export function ResultsView({
   onTabChange,
 }: ResultsViewProps) {
   const idPrefix = useId()
+  const [openStack, setOpenStack] = useState<OpenItem[]>([])
+  const openItem = openStack.at(-1)
   const tabId = (resultTab: ResultTab) => `${idPrefix}-tab-${resultTab}`
   const panelId = `${idPrefix}-panel`
 
@@ -46,8 +50,22 @@ export function ResultsView({
           query={query}
           tab={tab}
           results={resultsInTab(results, tab)}
+          onOpen={(item) => setOpenStack([item])}
         />
       </div>
+      {openItem && (
+        <DetailOverlay
+          item={openItem}
+          query={query}
+          onOpen={(item) => setOpenStack((stack) => [...stack, item])}
+          onBack={
+            openStack.length > 1
+              ? () => setOpenStack((stack) => stack.slice(0, -1))
+              : undefined
+          }
+          onClose={() => setOpenStack([])}
+        />
+      )}
     </div>
   )
 }

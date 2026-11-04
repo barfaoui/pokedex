@@ -1,0 +1,11 @@
+@use 'styles/tokens' as *;
+
+.matched-on {
+  padding: $space-1 $space-2;
+  border: $bevel-edge dashed $accent;
+  color: $ink;
+
+  &__label {
+    color: $accent;
+  }
+}

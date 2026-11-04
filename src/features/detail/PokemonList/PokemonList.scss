@@ -1,0 +1,13 @@
+@use 'styles/tokens' as *;
+
+.pokemon-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+
+  &__names {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-1 $space-3;
+  }
+}

@@ -33,4 +33,15 @@ $gold: pixel-border-layers($ink, $pixel, $pixel-lift, $glow);
   &__exact {
     @include visually-hidden;
   }
+
+  &__open {
+    @include focus-ring;
+
+    position: absolute;
+    inset: 0;
+    padding: 0;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+  }
 }

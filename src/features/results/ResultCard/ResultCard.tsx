@@ -3,11 +3,20 @@ import './ResultCard.scss'
 
 interface ResultCardProps {
   nameId: string
+  name: string
   score: number
+  onOpen: () => void
   children: ReactNode
 }
 
-export function ResultCard({ nameId, score, children }: ResultCardProps) {
+// The open button covers the whole card; other buttons sit above it.
+export function ResultCard({
+  nameId,
+  name,
+  score,
+  onOpen,
+  children,
+}: ResultCardProps) {
   const isExact = score === 1
 
   return (
@@ -17,6 +26,12 @@ export function ResultCard({ nameId, score, children }: ResultCardProps) {
       data-exact={isExact}
     >
       {isExact && <span className="result-card__exact">Exact match</span>}
+      <button
+        className="result-card__open"
+        type="button"
+        aria-label={`Open ${name}`}
+        onClick={onOpen}
+      />
       {children}
     </article>
   )

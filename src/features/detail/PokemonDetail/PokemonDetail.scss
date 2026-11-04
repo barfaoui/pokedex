@@ -1,0 +1,85 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+@use 'styles/typography' as Typography;
+
+.pokemon-detail {
+  display: flex;
+  flex-direction: column;
+  gap: $space-4;
+
+  @include desktop {
+    display: grid;
+    grid-template-columns: $detail-picture-width minmax(0, 1fr);
+    align-items: start;
+    gap: $space-5 $space-6;
+  }
+
+  &__picture-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: $space-3;
+
+    @include desktop {
+      align-items: flex-start;
+    }
+  }
+
+  &__picture {
+    @include pixel-border($ink, $bevel-edge);
+
+    width: 100%;
+    max-width: $detail-picture-width;
+    background: $paper;
+  }
+
+  &__identity {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-2;
+  }
+
+  &__number,
+  &__genus {
+    color: $accent;
+  }
+
+  &__info {
+    display: flex;
+    flex-direction: column;
+    gap: $space-3;
+    min-width: 0;
+  }
+
+  &__title {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+  }
+
+  &__name {
+    @include Typography.title-display;
+
+    overflow-wrap: anywhere;
+  }
+
+  &__facts {
+    display: grid;
+    grid-template-columns: max-content minmax(0, 1fr);
+    gap: $space-1 $space-3;
+    margin: 0;
+  }
+
+  &__fact-name {
+    color: $accent;
+  }
+
+  &__fact {
+    margin: 0;
+  }
+
+  &__evolution {
+    grid-column: 1 / -1;
+  }
+}

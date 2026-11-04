@@ -2,10 +2,12 @@
 @use 'styles/mixins' as *;
 
 .pokemon-card {
+  // Above the card's open button
   &__favourite {
     position: absolute;
     top: 0;
     right: 0;
+    z-index: 1;
   }
 
   &__name {
