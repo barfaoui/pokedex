@@ -1,5 +1,5 @@
 import { resultsInTab, type ResultTab } from '@/features/results/result-tabs'
-import type { Selection } from '@/features/compare/useSelection'
+import type { CardSelection } from '@/features/results/ResultGrid/ResultGrid'
 import { search } from '@/search/search'
 import { ExampleQueries } from '@/features/home/ExampleQueries/ExampleQueries'
 import { NoResults } from '@/features/home/NoResults/NoResults'
@@ -11,7 +11,7 @@ import './SearchPage.scss'
 interface SearchPageProps {
   query: string
   tab: ResultTab
-  selection: Selection
+  cardSelection?: CardSelection
   onQueryChange: (query: string) => void
   onTabChange: (tab: ResultTab) => void
 }
@@ -21,7 +21,7 @@ type PageState = 'home' | 'results' | 'no-results'
 export function SearchPage({
   query,
   tab,
-  selection,
+  cardSelection,
   onQueryChange,
   onTabChange,
 }: SearchPageProps) {
@@ -50,7 +50,7 @@ export function SearchPage({
           query={query}
           results={results}
           tab={tab}
-          selection={selection}
+          cardSelection={cardSelection}
           onTabChange={onTabChange}
         />
       )}

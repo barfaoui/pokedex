@@ -14,12 +14,17 @@ const EMPTY_TAB_NAMES: Record<ResultTab, string> = {
   moves: 'moves',
 }
 
+export interface CardSelection {
+  selected: string[]
+  onToggle: (name: string) => void
+}
+
 interface ResultGridProps {
   query: string
   tab: ResultTab
   results: SearchResult[]
   onOpen: (item: OpenItem) => void
-  selection?: { selected: string[]; onToggle: (name: string) => void }
+  selection?: CardSelection
 }
 
 export function ResultGrid({

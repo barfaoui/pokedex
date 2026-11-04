@@ -1,0 +1,66 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+@use 'styles/typography' as Typography;
+
+.team-overlay {
+  display: flex;
+  flex-direction: column;
+  gap: $space-3;
+
+  @include desktop {
+    gap: $space-4;
+  }
+
+  &__slots {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: $space-2;
+
+    @include desktop {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: $space-3;
+    }
+  }
+
+  &__slot {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: $team-empty-height-phone;
+    border: $bevel-edge dashed $placeholder;
+    color: $placeholder;
+
+    @include desktop {
+      min-height: $album-pocket-height;
+    }
+  }
+
+  &__footer {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  &__progress {
+    @include Typography.small-display;
+
+    display: flex;
+    align-items: center;
+    align-self: flex-end;
+    gap: $space-2;
+  }
+
+  &__sparkle {
+    display: block;
+    width: $icon-size;
+    height: $icon-size;
+  }
+
+  &__sparkle-pixel {
+    fill: $glow;
+  }
+}
