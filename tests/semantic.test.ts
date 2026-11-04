@@ -11,7 +11,7 @@ import {
   MODEL_ID,
   type EmbeddedText,
 } from '@/search/semantic/model'
-import { semanticResults } from '@/search/semantic/semantic'
+import { semanticResults, withQueryDirection } from '@/search/semantic/semantic'
 
 env.allowRemoteModels = false
 env.localModelPath = fileURLToPath(
@@ -47,7 +47,10 @@ beforeAll(async () => {
 })
 
 async function searchByMeaning(query: string) {
-  return semanticResults(await embed(query), texts, vectors)
+  return withQueryDirection(
+    semanticResults(await embed(query), texts, vectors),
+    query,
+  )
 }
 
 describe('semantic search with the real model', () => {
@@ -79,6 +82,16 @@ describe('semantic search with the real model', () => {
       expect(await searchByMeaning(query)).toEqual([])
     },
   )
+
+  test('"make it fall asleep" drops what puts itself to sleep or prevents it', async () => {
+    const names = (await searchByMeaning('make it fall asleep')).map(
+      (result) => result.item.name,
+    )
+    expect(names).toContain('sleep-powder')
+    for (const name of ['rest', 'insomnia', 'vital-spirit']) {
+      expect(names).not.toContain(name)
+    }
+  })
 
   test('"put my opponent to sleep" never reaches semantic search', () => {
     expect(needsSemantic(search('put my opponent to sleep'))).toBe(false)

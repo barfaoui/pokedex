@@ -4,9 +4,12 @@ import {
   SEMANTIC_THRESHOLD,
   rescale,
   semanticResults,
+  withQueryDirection,
   withSemanticResults,
 } from '@/search/semantic/semantic'
 import type { EmbeddedText } from '@/search/semantic/model'
+import { index } from '@/data/dataset'
+import type { SearchResult } from '@/search/types/result'
 
 // A stand-in model: 3-number "embeddings" written by hand, so the ranking rules can be tested
 // without loading the real one. Each text points mostly along one axis.
@@ -123,4 +126,51 @@ describe('needsSemantic', () => {
       expect(needsSemantic(search(query))).toBe(true)
     },
   )
+})
+
+describe('withQueryDirection', () => {
+  // What the model returns for a sleepy query: the right moves, but also what puts itself to
+  // sleep (Rest) or prevents it (Insomnia, Vital Spirit).
+  const SLEEPY_RESULTS: SearchResult[] = [
+    ...['sleep-powder', 'hypnosis', 'rest'].map((name) => ({
+      kind: 'move' as const,
+      item: index.moves.get(name)!,
+      score: 0.6,
+      matched: [],
+    })),
+    ...['insomnia', 'vital-spirit'].map((name) => ({
+      kind: 'ability' as const,
+      item: index.abilities.get(name)!,
+      score: 0.5,
+      matched: [],
+    })),
+    {
+      kind: 'pokemon',
+      item: index.pokemon.get('drowzee')!,
+      score: 0.4,
+      matched: [],
+    },
+  ]
+
+  function names(results: SearchResult[]) {
+    return results.map((result) => result.item.name)
+  }
+
+  test('"make it fall asleep" keeps Sleep Powder and Hypnosis, drops Rest, Insomnia and Vital Spirit', () => {
+    expect(
+      names(withQueryDirection(SLEEPY_RESULTS, 'make it fall asleep')),
+    ).toEqual(['sleep-powder', 'hypnosis', 'drowzee'])
+  })
+
+  test('a query with no direction keeps every result', () => {
+    expect(withQueryDirection(SLEEPY_RESULTS, 'heal the user')).toEqual(
+      SLEEPY_RESULTS,
+    )
+  })
+
+  test('a negation leaves the direction unclear: "prevent sleep" keeps Insomnia', () => {
+    expect(withQueryDirection(SLEEPY_RESULTS, 'prevent sleep')).toEqual(
+      SLEEPY_RESULTS,
+    )
+  })
 })

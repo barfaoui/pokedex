@@ -17,6 +17,8 @@ export type Expectation =
       exhaustive?: ResultKind | 'all'
       /** Item names that must never appear, as a result or as what matched. */
       forbidden?: string[]
+      /** The kind named by the query ("pokemon that…"), which must come first. */
+      kindFirst?: ResultKind
     }
 
 export interface EvalQuery {
@@ -177,6 +179,40 @@ const probeTuning: EvalQuery[] = [
     query: 'heal in the rain',
     group: 'probe-tuning',
     expect: { type: 'includes', keys: ['ability:rain-dish'] },
+  },
+  {
+    query: 'pokemon that burns',
+    group: 'probe-tuning',
+    expect: {
+      type: 'includes',
+      keys: [
+        'pokemon:charmander',
+        'pokemon:vulpix',
+        'pokemon:growlithe',
+        'pokemon:ponyta',
+        'pokemon:magmar',
+      ],
+      kindFirst: 'pokemon',
+    },
+    seen: 'used to design the kind words',
+  },
+  {
+    query: 'pokemon that paralyzes the enemy',
+    group: 'probe-tuning',
+    expect: {
+      type: 'includes',
+      keys: [
+        'pokemon:pikachu',
+        'pokemon:raichu',
+        'pokemon:electabuzz',
+        'pokemon:magnemite',
+        'pokemon:voltorb',
+        'pokemon:jolteon',
+        'pokemon:zapdos',
+      ],
+      kindFirst: 'pokemon',
+    },
+    seen: 'used to design the kind words',
   },
   { query: 'pizza', group: 'probe-tuning', expect: { type: 'nothing' } },
   { query: 'hello', group: 'probe-tuning', expect: { type: 'nothing' } },

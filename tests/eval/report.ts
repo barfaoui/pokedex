@@ -6,7 +6,7 @@ import {
   SEMANTIC_THRESHOLD,
 } from '@/search/semantic/semantic'
 import type { Expectation, Group } from './queries'
-import type { EvalRun, ItemCosine, Outcome } from './run'
+import { ORDER_TOP, type EvalRun, type ItemCosine, type Outcome } from './run'
 
 export interface Context {
   date: Date
@@ -74,11 +74,11 @@ export function formatReport(run: EvalRun, context: Context): string {
       '',
       intro,
       '',
-      '| Query | Expected | Found | First expected at (All tab · own tab) | Answered by | Result |',
-      '| --- | --- | --- | --- | --- | --- |',
+      '| Query | Expected | Found | First expected at (All tab · own tab) | Answered by | Result | Order |',
+      '| --- | --- | --- | --- | --- | --- | --- |',
       ...rows.map(
         (o) =>
-          `| ${o.query.query}${o.query.seen ? ' †' : ''} | ${describe(o.query.expect)} | ${found(o)} | ${firstRank(o)} | ${o.layer} | ${o.check.passed ? 'pass' : 'FAIL'} |`,
+          `| ${o.query.query}${o.query.seen ? ' †' : ''} | ${describe(o.query.expect)} | ${found(o)} | ${firstRank(o)} | ${o.layer} | ${o.check.passed ? 'pass' : 'FAIL'} | ${orderCell(o)} |`,
       ),
       '',
     )
@@ -87,6 +87,23 @@ export function formatReport(run: EvalRun, context: Context): string {
       push(...seen.map((o) => `† ${o.query.query}: ${o.query.seen}`), '')
     }
   }
+
+  push(
+    '## Order',
+    '',
+    `Kept apart from the result: the first expected result is in the top ${ORDER_TOP} of the All tab, and the kind a query names comes first.`,
+    '',
+  )
+  const misordered = outcomes.filter((o) => o.check.orderPassed === false)
+  push(
+    ...(misordered.length
+      ? misordered.map(
+          (o) =>
+            `- **${o.query.query}** (${groupTitle(o.query.group)}): ${o.check.orderNotes.join('; ')}`,
+        )
+      : ['None out of order.']),
+    '',
+  )
 
   push('## False negatives and false positives', '')
   push(
@@ -171,8 +188,8 @@ export function formatReport(run: EvalRun, context: Context): string {
   push(
     '## Totals',
     '',
-    '| Group | Queries passed | Expected results found | Median rank of first expected (All tab · own tab) | Should-find-nothing queries that found something | False positives |',
-    '| --- | --- | --- | --- | --- | --- |',
+    '| Group | Queries passed | Expected results found | Median rank of first expected (All tab · own tab) | Should-find-nothing queries that found something | False positives | Order right |',
+    '| --- | --- | --- | --- | --- | --- | --- |',
     ...GROUPS.map(({ group, title }) =>
       totalRow(
         title,
@@ -352,19 +369,25 @@ function latencyRow(
   return `| ${label} | ${ms(median(runs.map((run) => run.ms)))} | ${ms(slowest.ms)} ("${slowest.query}") | ${runs.length} over ${queries} queries |`
 }
 
+function orderCell(o: Outcome): string {
+  const { orderPassed } = o.check
+  return orderPassed === null ? '—' : orderPassed ? 'ok' : 'WRONG'
+}
+
 function totalRow(label: string, rows: Outcome[]): string {
   const passed = rows.filter((o) => o.check.passed).length
   const expected = rows.reduce((sum, o) => sum + o.check.expectedCount, 0)
   const missing = rows.reduce((sum, o) => sum + o.check.missing.length, 0)
   const ranks = rows.flatMap((o) => o.check.firstRank ?? [])
   const tabRanks = rows.flatMap((o) => o.check.firstRankInTab?.rank ?? [])
+  const ordered = rows.filter((o) => o.check.orderPassed !== null)
   const nothing = rows.filter((o) => o.query.expect.type === 'nothing')
   const noisy = nothing.filter((o) => o.results.length).length
   const falsePositives = rows.reduce(
     (sum, o) => sum + o.check.falsePositives.length,
     0,
   )
-  return `| ${label} | ${passed}/${rows.length} | ${expected - missing}/${expected}${expected ? ` (${percent((expected - missing) / expected)})` : ''} | ${ranks.length ? `${median(ranks)} · ${median(tabRanks)}` : '—'} | ${noisy}/${nothing.length} | ${falsePositives} |`
+  return `| ${label} | ${passed}/${rows.length} | ${expected - missing}/${expected}${expected ? ` (${percent((expected - missing) / expected)})` : ''} | ${ranks.length ? `${median(ranks)} · ${median(tabRanks)}` : '—'} | ${noisy}/${nothing.length} | ${falsePositives} | ${ordered.filter((o) => o.check.orderPassed).length}/${ordered.length} |`
 }
 
 function floorCosine(weight: number): number {

@@ -12,6 +12,7 @@ import {
   DESCRIPTION_WEIGHT,
   rescale,
   semanticResults,
+  withQueryDirection,
   withSemanticResults,
 } from '@/search/semantic/semantic'
 import type { ResultKind, SearchResult } from '@/search/types/result'
@@ -37,6 +38,10 @@ export interface Check {
   missing: Key[]
   falsePositives: string[]
   notes: string[]
+  /** Order, kept apart from `passed`: the first expected result is in the top 3 of the All
+   * tab, and the kind the query names comes first. null when nothing is expected. */
+  orderPassed: boolean | null
+  orderNotes: string[]
 }
 
 export interface ItemCosine {
@@ -120,7 +125,12 @@ export async function runEval(queries: EvalQuery[]): Promise<EvalRun> {
       const manual = search(query.query)
       const triggered = needsSemantic(manual)
       const vector = await embed(query.query)
-      const semantic = triggered ? semanticResults(vector, texts, vectors) : []
+      const semantic = triggered
+        ? withQueryDirection(
+            semanticResults(vector, texts, vectors),
+            query.query,
+          )
+        : []
       const results = withSemanticResults(manual, semantic)
       const semanticSet = new Set(semantic)
       const fromSemantic = results.map((result) => semanticSet.has(result))
@@ -133,7 +143,10 @@ export async function runEval(queries: EvalQuery[]): Promise<EvalRun> {
           const runVector = await embed(query.query)
           withSemanticResults(
             manual,
-            semanticResults(runVector, texts, vectors),
+            withQueryDirection(
+              semanticResults(runVector, texts, vectors),
+              query.query,
+            ),
           )
           semanticMs.push(performance.now() - runStart)
         }
@@ -271,6 +284,7 @@ function check(
 
   return {
     passed: !missing.length && !falsePositives.length && !notes.length,
+    ...order(expect, results, firstRank),
     firstRank,
     firstRankInTab,
     expectedCount: expected.length,
@@ -315,4 +329,27 @@ function cosines(
     top: ranked[0],
     expected: expected.flatMap((key) => byKey.get(key) ?? []),
   }
+}
+
+export const ORDER_TOP = 3
+
+function order(
+  expect: Expectation,
+  results: SearchResult[],
+  firstRank: number | null,
+): Pick<Check, 'orderPassed' | 'orderNotes'> {
+  if (!expectedKeys(expect).length) {
+    return { orderPassed: null, orderNotes: [] }
+  }
+  const orderNotes: string[] = []
+  if (firstRank === null || firstRank > ORDER_TOP) {
+    orderNotes.push(
+      `first expected ${firstRank === null ? 'not found' : `at ${firstRank}`}, not in the top ${ORDER_TOP}`,
+    )
+  }
+  const kindFirst = expect.type === 'includes' ? expect.kindFirst : undefined
+  if (kindFirst && results[0]?.kind !== kindFirst) {
+    orderNotes.push(`${results[0]?.kind ?? 'nothing'} first, not ${kindFirst}`)
+  }
+  return { orderPassed: !orderNotes.length, orderNotes }
 }

@@ -1,5 +1,5 @@
 import type { EmbeddedText } from '@/search/semantic/model'
-import { semanticResults } from '@/search/semantic/semantic'
+import { semanticResults, withQueryDirection } from '@/search/semantic/semantic'
 import type { SearchResult } from '@/search/types/result'
 import type {
   WorkerMessage,
@@ -101,7 +101,7 @@ function createClient(): SemanticClient {
         worker.postMessage({ id, query } satisfies WorkerRequest)
       })
       const [texts, vectors] = await embeddings
-      return semanticResults(vector, texts, vectors)
+      return withQueryDirection(semanticResults(vector, texts, vectors), query)
     },
   }
 }

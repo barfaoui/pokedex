@@ -1,7 +1,12 @@
 import { index } from '@/data/dataset'
 import type { PokedexIndex } from '@/data/types/model'
+import { tagOf } from '@/search/concepts/dictionary'
+import type { ConceptId } from '@/search/concepts/types'
+import { isWantedDirection } from '@/search/match/concept'
+import { parseQuery } from '@/search/parse'
 import type { EmbeddedText } from '@/search/semantic/model'
 import type { SearchResult } from '@/search/types/result'
+import { NEGATION_WORDS } from '@/search/vocabulary'
 
 // Set with the real model (tests/semantic.test.ts): the sleep moves for "make the enemy doze off"
 // reach a cosine of about 0.51, while "spaghetti" and other noise stay at 0.30 or below.
@@ -42,6 +47,41 @@ export function semanticResults(
     .flatMap(({ text, score }) => toResult(text, score, pokedex))
     .sort((a, b) => b.score - a.score)
     .slice(0, MAX_RESULTS)
+}
+
+/**
+ * Drops the moves and abilities the concept dictionary relates to the query's concept the other
+ * way round: for "make it fall asleep", Rest (puts itself to sleep) and Insomnia (prevents it).
+ * The model reads them as close in meaning; the dictionary knows their direction. A query with
+ * no concept, or with a negation ("prevent sleep"), keeps every result.
+ */
+export function withQueryDirection(
+  results: SearchResult[],
+  query: string,
+): SearchResult[] {
+  const parsed = parseQuery(query)
+  const concepts = parsed.parts.flatMap((part): ConceptId[] =>
+    part.kind === 'word' && part.concept ? [part.concept] : [],
+  )
+  const negated = parsed.normalizedQuery
+    .split(' ')
+    .some((word) => NEGATION_WORDS.has(word))
+  if (!concepts.length || negated) {
+    return results
+  }
+  return results.filter((result) => {
+    if (result.kind === 'pokemon') {
+      return true
+    }
+    const tagged = concepts.flatMap((concept) => {
+      const tag = tagOf(concept, result.kind, result.item.name)
+      return tag ? [{ concept, tag }] : []
+    })
+    return (
+      !tagged.length ||
+      tagged.some(({ concept, tag }) => isWantedDirection(concept, tag))
+    )
+  })
 }
 
 export function withSemanticResults(

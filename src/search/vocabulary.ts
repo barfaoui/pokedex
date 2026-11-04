@@ -76,6 +76,28 @@ export const KIND_WORDS = new Map<string, ResultKind>([
 // "Something that can paralyze" asks for an ability, unless a kind is named ("pokemon that can…").
 export const ABILITY_HINT = 'can'
 
+export const NEGATION_WORDS = new Set([
+  'prevent',
+  'prevents',
+  'stop',
+  'stops',
+  'avoid',
+  'avoids',
+  'immune',
+  'immunity',
+  'cure',
+  'cures',
+  'block',
+  'blocks',
+  'protect',
+  'protects',
+  'resist',
+  'resists',
+  'not',
+  'no',
+  'without',
+])
+
 // Dropped from a query unless it is made only of them ("put my opponent to sleep").
 export const FILLER_WORDS = new Set([
   'a',
