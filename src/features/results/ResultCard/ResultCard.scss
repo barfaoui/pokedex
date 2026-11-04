@@ -1,0 +1,36 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+$sand: pixel-border-layers($ink, $pixel, $pixel-lift, $shadow);
+$gold: pixel-border-layers($ink, $pixel, $pixel-lift, $glow);
+
+@keyframes result-card-sparkle {
+  0%,
+  30%,
+  60% {
+    box-shadow: $sand;
+  }
+
+  15%,
+  45%,
+  75%,
+  100% {
+    box-shadow: $gold;
+  }
+}
+
+.result-card {
+  @include card;
+
+  flex: 1;
+
+  &[data-exact='true'] {
+    @include card($glow);
+
+    animation: result-card-sparkle $duration-sparkle step-end 1;
+  }
+
+  &__exact {
+    @include visually-hidden;
+  }
+}

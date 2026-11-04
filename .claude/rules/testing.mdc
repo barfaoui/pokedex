@@ -13,6 +13,7 @@ alwaysApply: false
 | `tests/data/` | Vitest (`*.test.ts`) | Checks on the dataset |
 | `tests/text/` | Vitest (`*.test.ts`) | Text normalising, shared by data and search |
 | `tests/search/` | Vitest (`*.test.ts`) | Internal rules: parsing, matching (`match/`), the typo rule, concept tagging (`concepts/`) |
+| `tests/app/`, `tests/features/` | Vitest (`*.test.ts`) | The UI logic that runs without a browser (URL state, tabs, match lines, favourites), mirroring `src/` |
 | `tests/queries.test.ts` | Vitest (`npm run test:queries`) | The PRD's test queries (section 7) and the M6 score rules on them, end to end through the search core |
 | `tests/e2e/` | Playwright (`*.spec.ts`) | One scenario per Must story, on the built app |
 

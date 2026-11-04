@@ -1,0 +1,55 @@
+@use 'styles/tokens' as *;
+@use 'styles/typography' as Typography;
+@use 'styles/mixins' as *;
+
+.app-header {
+  @include pixel-drop-shadow;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: $touch-target + $space-4;
+  padding: $space-3 $space-4;
+  position: relative;
+  z-index: 1;
+  border-bottom: $pixel solid $ink;
+
+  @include desktop {
+    padding: $space-4 $space-6;
+  }
+
+  &__brand {
+    @include Typography.label-display;
+
+    display: flex;
+    align-items: center;
+    gap: $space-3;
+
+    @include desktop {
+      @include Typography.title-display;
+    }
+  }
+
+  &__logo {
+    flex-shrink: 0;
+    width: $logo-size;
+    height: $logo-size;
+
+    @include desktop {
+      width: $logo-size-desktop;
+      height: $logo-size-desktop;
+    }
+  }
+
+  &__ball-outline {
+    fill: $ink;
+  }
+
+  &__ball-top {
+    fill: $warm-3;
+  }
+
+  &__ball-light {
+    fill: $white;
+  }
+}

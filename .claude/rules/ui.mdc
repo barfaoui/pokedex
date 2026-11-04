@@ -14,7 +14,7 @@ Follow `docs/04-design-spec.md` for layout, states, interactions, motion and acc
 - **Modular components:** small, with one job each (e.g. `SearchBar`, `ResultTabs`, `ResultCard`, `DetailOverlay`). A component that grows a second job gets split.
 - Components only display: search logic stays in `src/search/`, and components call it, never reimplement it.
 - Follow the standard React conventions: hooks only at the top level, stable `key`s from the data (never the array index), controlled inputs, derived values computed instead of stored in state, effects only to sync with something outside React.
-- Each component sits next to its stylesheet: `ResultCard/ResultCard.tsx` + `ResultCard/ResultCard.scss`.
+- Each component sits next to its stylesheet in its own folder, inside its feature: `features/results/ResultCard/ResultCard.tsx` + `ResultCard.scss`. Generic pieces go in `shared/`, the shell in `app/`.
 
 ## Styling
 
@@ -42,7 +42,7 @@ Follow `docs/04-design-spec.md` for layout, states, interactions, motion and acc
 - **`@include`s first:** mixins without a block come before the declarations, then a blank line (`@include desktop { … }` stays after them). Checked by `npm run lint:styles`, fixed by `npx stylelint "src/**/*.scss" --fix`.
 - **No tag selectors**, except for app-wide base styles (fonts and sizes for `body`, `h1`–`h3`, a reset). Everything else is selected by its class.
 - **Mixins whenever a style pattern repeats** (pixel borders, the exact-match glow, card layout, focus ring, breakpoints, screen-reader-only text), defined once in a shared partial.
-- **Text styles come from `styles/_typography.scss`:** `@use '…/styles/typography' as Typography;` then `@include Typography.small-display;` (or `title-large-display`, `title-display`, `label-display`, `tiny-display`, `body`, `input-body`). Never set `font-family`, `font-size` or `line-height` by hand in a component.
+- **Text styles come from `styles/_typography.scss`:** `@use 'styles/typography' as Typography;` then `@include Typography.small-display;` (or `title-large-display`, `title-display`, `label-display`, `tiny-display`, `body`, `input-body`). Never set `font-family`, `font-size` or `line-height` by hand in a component.
 - **Variables for every design value:** colours (palette roles and type colours), spacing in `rem`, font sizes, breakpoints, durations. No magic numbers repeated across files.
 - Mobile first: base styles for phones, one breakpoint for desktop.
 - **Comments in stylesheets say why, never what.** No comment that describes what a rule does or where a mixin is used; only a reason, a constraint or a number the code can't explain (`// 4.8:1 on $surface`, `// VT323 renders small: body text never below 1.125rem`). When in doubt, leave it out.
