@@ -1,0 +1,49 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/mixins' as *;
+
+.professor-chen {
+  @include pixel-border($ink, $pixel, $pixel-lift);
+  flex-shrink: 0;
+  overflow: hidden;
+  background: $mint;
+
+  &[data-size='large'] {
+    width: $avatar-large;
+    height: $avatar-large;
+  }
+
+  &[data-size='small'] {
+    width: $avatar-small;
+    height: $avatar-small;
+  }
+
+  &__art {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+
+  &__hair {
+    fill: $chen-hair;
+  }
+
+  &__skin {
+    fill: $chen-skin;
+  }
+
+  &__eye {
+    fill: $ink;
+  }
+
+  &__mouth {
+    fill: $warm-2;
+  }
+
+  &__coat {
+    fill: $chen-coat;
+  }
+
+  &__shirt {
+    fill: $chen-shirt;
+  }
+}

@@ -1,0 +1,17 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/mixins' as *;
+
+.ability-card {
+  &__name {
+    @include card-name;
+  }
+
+  &__kind {
+    color: $accent;
+  }
+
+  &__count {
+    margin-top: auto;
+    color: $count-text;
+  }
+}

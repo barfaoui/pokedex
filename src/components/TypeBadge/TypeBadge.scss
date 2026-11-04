@@ -1,0 +1,29 @@
+@use 'sass:list';
+@use '../../styles/tokens' as *;
+@use '../../styles/typography' as Typography;
+@use '../../styles/mixins' as *;
+
+.type-badge {
+  display: inline-block;
+  padding: 0 $space-2;
+  @include Typography.body;
+
+  @each $type, $background in $type-colors {
+    &[data-type='#{$type}'] {
+      background: $background;
+      @if list.index($type-light-text, $type) {
+        color: $paper;
+      } @else {
+        color: $ink;
+      }
+    }
+  }
+
+  &[data-matched='true'] {
+    box-shadow: inset 0 0 0 ($pixel * 0.5) $ink;
+  }
+
+  &__matchedOn {
+    @include visually-hidden;
+  }
+}

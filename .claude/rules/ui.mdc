@@ -21,10 +21,30 @@ Follow `docs/04-design-spec.md` for layout, states, interactions, motion and acc
 - **No inline styles or embedded styling** (`style={{…}}`, CSS-in-JS): all styling lives in `.scss` files.
 - **One class per element.** Class names say what the element *is*, in BEM form where it helps: `result-card`, `result-card__name`, `result-card__match`.
 - **Variants without a second class:** prefer state attributes, which also serve accessibility (`[aria-selected="true"]`, `[aria-pressed="true"]`, `[data-exact="true"]`). If a real variant is needed, write it as its own full class (`result-card--compact`) that includes the shared styles through a mixin.
+- **Nest BEM under its block:** a block's elements, modifiers and states are written inside the block's rule with `&` (`&__name`, `&--compact`, `&[aria-selected='true']`), so each block is one rule tree. One block per stylesheet; nest an element's own states and media queries inside it, but never an element inside another element.
+
+  ```scss
+  .result-card {
+    padding: $space-3;
+
+    &[data-exact='true'] { … }
+
+    &__name {
+      font-family: $font-display;
+
+      @include desktop { … }
+    }
+
+    &__match { … }
+  }
+  ```
+  
 - **No tag selectors**, except for app-wide base styles (fonts and sizes for `body`, `h1`–`h3`, a reset). Everything else is selected by its class.
 - **Mixins whenever a style pattern repeats** (pixel borders, the exact-match glow, card layout, focus ring, breakpoints, screen-reader-only text), defined once in a shared partial.
+- **Text styles come from `styles/_typography.scss`:** `@use '…/styles/typography' as Typography;` then `@include Typography.small-display;` (or `title-large-display`, `title-display`, `label-display`, `tiny-display`, `body`, `input-body`). Never set `font-family`, `font-size` or `line-height` by hand in a component.
 - **Variables for every design value:** colours (palette roles and type colours), spacing in `rem`, font sizes, breakpoints, durations. No magic numbers repeated across files.
 - Mobile first: base styles for phones, one breakpoint for desktop.
+- **Comments in stylesheets say why, never what.** No comment that describes what a rule does or where a mixin is used; only a reason, a constraint or a number the code can't explain (`// 4.8:1 on $surface`, `// VT323 renders small: body text never below 1.125rem`). When in doubt, leave it out.
 
 ## Accessibility
 

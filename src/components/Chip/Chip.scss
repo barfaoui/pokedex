@@ -1,0 +1,25 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/typography' as Typography;
+@use '../../styles/mixins' as *;
+
+.chip {
+  @include pixel-border($accent, $pixel * 0.5);
+  @include focus-ring;
+
+  min-height: $touch-target;
+  padding: $space-1 $space-3;
+  background: $surface;
+  color: $accent;
+  @include Typography.small-display;
+  cursor: pointer;
+  transition: background-color $duration-fast;
+
+  &:hover {
+    background: $mint;
+    color: $white;
+  }
+
+  @include desktop {
+    min-height: auto;
+  }
+}

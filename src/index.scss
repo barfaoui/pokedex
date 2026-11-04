@@ -1,3 +1,6 @@
+@use 'styles/tokens' as *;
+@use 'styles/typography' as Typography;
+
 *,
 *::before,
 *::after {
@@ -6,5 +9,52 @@
 
 body {
   margin: 0;
-  font-family: system-ui, sans-serif;
+  min-height: 100vh;
+  background: $paper;
+  color: $ink;
+  @include Typography.body;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+  font-weight: 400;
+}
+
+h1 {
+  @include Typography.title-display;
+}
+
+h2,
+h3 {
+  @include Typography.label-display;
+}
+
+// Spacing comes from gap, never from default margins
+p,
+ul,
+ol {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0s !important;
+    animation-duration: 0s !important;
+  }
 }

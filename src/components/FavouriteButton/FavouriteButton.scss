@@ -1,0 +1,41 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/mixins' as *;
+
+@keyframes favourite-button-pop {
+  50% {
+    transform: scale(1.3);
+  }
+}
+
+.favourite-button {
+  @include focus-ring;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: $touch-target;
+  height: $touch-target;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: $ink;
+  cursor: pointer;
+
+  &:hover {
+    color: $heart;
+  }
+
+  &[aria-pressed='true'] {
+    color: $heart;
+    animation: favourite-button-pop $duration-pop steps(2) 1;
+  }
+
+  &__heart {
+    display: block;
+    width: $heart-size;
+    height: $heart-size;
+  }
+
+  &__pixel {
+    fill: currentColor;
+  }
+}

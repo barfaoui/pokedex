@@ -1,0 +1,60 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/typography' as Typography;
+@use '../../styles/mixins' as *;
+
+.search-bar {
+  position: relative;
+  width: 100%;
+
+  &__input {
+    @include pixel-border($ink, $pixel, $pixel-lift);
+    @include focus-ring;
+    display: block;
+    width: calc(100% - #{$pixel * 2 + $pixel-lift});
+    min-height: $search-bar-height;
+    padding: $space-2 ($touch-target + $space-2) $space-2 $space-4;
+    background: $surface;
+    @include Typography.input-body;
+    appearance: none;
+
+    &::placeholder {
+      color: $accent;
+      opacity: 1;
+    }
+
+    &::-webkit-search-cancel-button {
+      appearance: none;
+    }
+  }
+
+  &__clear-button {
+    @include focus-ring;
+    position: absolute;
+    top: $pixel + ($search-bar-height - $touch-target) * 0.5;
+    right: $pixel + $pixel-lift + $space-1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: $touch-target;
+    height: $touch-target;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: $ink;
+    cursor: pointer;
+
+    &:hover {
+      color: $accent;
+    }
+  }
+
+  &__clear-icon {
+    display: block;
+    width: $icon-size;
+    height: $icon-size;
+  }
+
+  &__clear-pixel {
+    fill: currentColor;
+  }
+}
