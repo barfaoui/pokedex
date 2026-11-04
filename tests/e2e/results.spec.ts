@@ -137,6 +137,24 @@ test('a missing image shows a placeholder and keeps the name and types', async (
   await expect(pikachu.getByText('Electric')).toBeVisible()
 })
 
+test('a pixel-art image seen once comes back without downloading it again', async ({
+  page,
+}) => {
+  await searchFor(page, 'pikachu')
+  const image = card(page, 'Pikachu').getByRole('img', {
+    name: 'Pikachu',
+    exact: true,
+  })
+  await expect(image).toHaveAttribute('data-ready', 'true')
+
+  await page.route('**/official-artwork/**', (route) => route.abort())
+  await searchFor(page, '')
+  await searchFor(page, 'pikachu')
+
+  await expect(image).toHaveAttribute('data-ready', 'true')
+  await expect(image).toHaveAttribute('src', /^data:image\/png/)
+})
+
 test('the heart adds a Pokémon to the Pokédex and remembers it', async ({
   page,
 }) => {
