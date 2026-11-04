@@ -15,6 +15,8 @@ export interface ParsedQuery {
   normalizedQuery: string
   /** The kinds of result the query names ("pokemon that…"), ranked first. */
   kinds?: ResultKind[]
+  /** The words after each "not" / "no", one list per segment; set whenever a negation is typed. */
+  excluded?: string[][]
 }
 
 export type QueryPart = WordPart | StatPart

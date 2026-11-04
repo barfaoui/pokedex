@@ -3,7 +3,14 @@ import type { CardSelection } from '@/features/results/ResultGrid/ResultGrid'
 import { LabFilesWaiting } from '@/features/semantic/LabFilesWaiting/LabFilesWaiting'
 import { SemanticUnavailable } from '@/features/semantic/SemanticUnavailable/SemanticUnavailable'
 import { useSemanticSearch } from '@/features/semantic/useSemanticSearch'
-import { needsSemantic, search } from '@/search/search'
+import { ExclusionNote } from '@/features/results/ExclusionNote/ExclusionNote'
+import { NO_EXCLUSIONS, withoutExcluded } from '@/search/exclusion'
+import {
+  needsSemantic,
+  queryExclusions,
+  search,
+  semanticQueryOf,
+} from '@/search/search'
 import { withSemanticResults } from '@/search/semantic/semantic'
 import { ExampleQueries } from '@/features/home/ExampleQueries/ExampleQueries'
 import { NoResults } from '@/features/home/NoResults/NoResults'
@@ -31,11 +38,18 @@ export function SearchPage({
 }: SearchPageProps) {
   const isHome = query.trim() === ''
   const manualResults = isHome ? [] : search(query)
+  // Excluded words never reach the model, and "not" alone never triggers it.
+  const semanticQuery = semanticQueryOf(query)
   const semantic = useSemanticSearch(
-    query,
-    !isHome && needsSemantic(manualResults),
+    semanticQuery,
+    !isHome && semanticQuery !== '' && needsSemantic(manualResults),
   )
-  const results = withSemanticResults(manualResults, semantic.results)
+  const exclusions = isHome ? NO_EXCLUSIONS : queryExclusions(query)
+  // A semantic result mustn't bring back what the query excludes.
+  const results = withoutExcluded(
+    withSemanticResults(manualResults, semantic.results),
+    exclusions.rules,
+  )
   const isWaiting =
     semantic.status === 'loading-model' ||
     (semantic.status === 'searching' && !results.length)
@@ -61,6 +75,7 @@ export function SearchPage({
       </div>
       {state === 'waiting' && <LabFilesWaiting />}
       {semantic.status === 'failed' && <SemanticUnavailable />}
+      {state !== 'waiting' && <ExclusionNote exclusions={exclusions} />}
       {state === 'results' && (
         <ResultsView
           query={query}

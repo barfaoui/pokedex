@@ -16,7 +16,7 @@ export const STAT_LABELS: Record<StatName, string> = {
   speed: 'speed',
 }
 
-const DESCRIPTOR_LABELS = {
+export const DESCRIPTOR_LABELS = {
   color: 'colour',
   habitat: 'habitat',
   shape: 'shape',

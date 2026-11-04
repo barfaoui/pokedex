@@ -9,6 +9,8 @@ import {
   DESCRIPTORS,
   FILLER_WORDS,
   KIND_WORDS,
+  NEGATING_WORDS,
+  SEGMENT_END_WORD,
   SORT_WORDS,
   STAT_WORDS,
 } from './vocabulary'
@@ -24,15 +26,22 @@ interface Read<T> {
  * Only the first sort word sorts; later ones are kept as words.
  */
 export function parseQuery(query: string): ParsedQuery {
-  const typed = normalize(spellOutOperators(query)).split(' ').filter(Boolean)
+  const { searched, excluded } = splitExclusions(
+    normalize(spellOutOperators(query)).split(' ').filter(Boolean),
+  )
+  // With a negation, filler and kind words alone ("pokemon not electric") have nothing to
+  // search: a lone negation, listing the named kind.
+  const lone = !!excluded && !searched.some(isSearched)
+  const typed = lone ? [] : searched
   const asked = typed.filter((word) => !KIND_WORDS.has(word))
   const words = withoutFiller(asked.length ? asked : typed)
-  const kinds = kindsOf(typed)
+  const kinds = kindsOf(searched)
   const parsed: ParsedQuery = {
     parts: [],
     normalizedQuery: typed.join(' '),
     // A lone kind word ("pokemon") is searched as a word, it has nothing to rank.
-    ...(kinds.length && words.some(isSearched) && { kinds }),
+    ...(kinds.length && (lone || words.some(isSearched)) && { kinds }),
+    ...(excluded && { excluded }),
   }
   let i = 0
   while (i < words.length) {
@@ -47,6 +56,35 @@ export function parseQuery(query: string): ParsedQuery {
     i += part.length
   }
   return parsed
+}
+
+/**
+ * Everything after "not" or "no", up to "and" or the end, is excluded; the rest is searched.
+ * A kind word always names the kind: "not electric pokemon" excludes Electric, not Pokémon.
+ * `excluded` holds each segment's words, filler dropped; it is set whenever a negation is typed.
+ */
+export function splitExclusions(typed: string[]): {
+  searched: string[]
+  excluded?: string[][]
+} {
+  const searched: string[] = []
+  let excluded: string[][] | undefined
+  let segment: string[] | undefined
+  for (const word of typed) {
+    if (NEGATING_WORDS.has(word)) {
+      segment = []
+      excluded = [...(excluded ?? []), segment]
+    } else if (word === SEGMENT_END_WORD) {
+      segment = undefined
+    } else if (segment && !KIND_WORDS.has(word)) {
+      if (!FILLER_WORDS.has(word)) {
+        segment.push(word)
+      }
+    } else {
+      searched.push(word)
+    }
+  }
+  return { searched, ...(excluded && { excluded }) }
 }
 
 function kindsOf(typed: string[]): ResultKind[] {
@@ -127,7 +165,7 @@ function readWord(words: string[], start: number): Read<WordPart> {
 }
 
 /** Tries two-word phrases first, so "special attack" wins over "special". */
-function readPhrase<T>(
+export function readPhrase<T>(
   phrases: Map<string, T>,
   words: string[],
   start: number,

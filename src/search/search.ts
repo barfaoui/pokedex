@@ -1,11 +1,17 @@
 import { index } from '../data/dataset'
 import type { PokedexIndex } from '../data/types/model'
 import { withEvolutionFamilies } from './evolution'
+import {
+  exclusionsOf,
+  NO_EXCLUSIONS,
+  withoutExcluded,
+  type Exclusions,
+} from './exclusion'
 import { parseQuery } from './parse'
 import { scoreItem } from './score'
 import { compareResults, sortMatches } from './sort'
 import type { ParsedQuery, Sort } from './types/query'
-import type { SearchableItem, SearchResult } from './types/result'
+import type { ResultKind, SearchableItem, SearchResult } from './types/result'
 
 // Pokémon listed by a lone sort word without matching it: below any name match, never an exact match.
 const LISTED_SCORE = 0.1
@@ -34,10 +40,30 @@ export function search(
     ? matchingResults(parsed, pokedex)
     : parsed.sort
       ? sortWordResults(parsed.sort, pokedex)
-      : []
-  return results
+      : parsed.excluded
+        ? listedItems(pokedex, parsed.kinds ?? ['pokemon'], new Set())
+        : []
+  return withoutExcluded(results, exclusionsOf(parsed, pokedex).rules)
     .map((result) => withSortMatches(result, parsed.sort))
     .sort(compareResults(parsed.sort))
+}
+
+/** What the query excludes with "not" / "no", for the note above the results. */
+export function queryExclusions(
+  query: string,
+  pokedex: PokedexIndex = index,
+): Exclusions {
+  const parsed = parseQuery(query)
+  return parsed.excluded ? exclusionsOf(parsed, pokedex) : NO_EXCLUSIONS
+}
+
+/**
+ * The text semantic search embeds: the query without its "not" / "no" segments, or '' when
+ * nothing is left to search ("not electric"). A query without a negation goes as typed.
+ */
+export function semanticQueryOf(query: string): string {
+  const parsed = parseQuery(query)
+  return parsed.excluded ? parsed.normalizedQuery : query
 }
 
 function searchableItems(pokedex: PokedexIndex): SearchableItem[] {
@@ -83,14 +109,22 @@ function sortWordResults(sort: Sort, pokedex: PokedexIndex): SearchResult[] {
     { parts: [{ kind: 'word', text: sort.word }], normalizedQuery: sort.word },
     pokedex,
   )
-  const found = new Set(nameMatches.map((result) => result.item))
-  const listed = searchableItems(pokedex)
+  const found = new Set(nameMatches.map((result) => result.item.name))
+  return [...nameMatches, ...listedItems(pokedex, ['pokemon'], found)]
+}
+
+/** Every item of these kinds not already found, in Pokédex order, below any real match. */
+function listedItems(
+  pokedex: PokedexIndex,
+  kinds: ResultKind[],
+  found: Set<string>,
+): SearchResult[] {
+  return searchableItems(pokedex)
     .filter(
       (searchable) =>
-        searchable.kind === 'pokemon' && !found.has(searchable.item),
+        kinds.includes(searchable.kind) && !found.has(searchable.item.name),
     )
     .map((searchable) => ({ ...searchable, score: LISTED_SCORE, matched: [] }))
-  return [...nameMatches, ...listed]
 }
 
 /** Adds the sorted attribute (e.g. speed 130) to what a Pokémon result shows. */

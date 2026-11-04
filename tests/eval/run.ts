@@ -1,7 +1,13 @@
 import { readFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { env, pipeline } from '@huggingface/transformers'
-import { needsSemantic, search } from '@/search/search'
+import { withoutExcluded } from '@/search/exclusion'
+import {
+  needsSemantic,
+  queryExclusions,
+  search,
+  semanticQueryOf,
+} from '@/search/search'
 import {
   EMBED_OPTIONS,
   MODEL_DTYPE,
@@ -123,15 +129,19 @@ export async function runEval(queries: EvalQuery[]): Promise<EvalRun> {
     const outcomes: Outcome[] = []
     for (const query of queries) {
       const manual = search(query.query)
-      const triggered = needsSemantic(manual)
-      const vector = await embed(query.query)
+      const semanticQuery = semanticQueryOf(query.query)
+      const triggered = semanticQuery !== '' && needsSemantic(manual)
+      const vector = await embed(semanticQuery || query.query)
       const semantic = triggered
         ? withQueryDirection(
             semanticResults(vector, texts, vectors),
-            query.query,
+            semanticQuery,
           )
         : []
-      const results = withSemanticResults(manual, semantic)
+      const results = withoutExcluded(
+        withSemanticResults(manual, semantic),
+        queryExclusions(query.query).rules,
+      )
       const semanticSet = new Set(semantic)
       const fromSemantic = results.map((result) => semanticSet.has(result))
 
@@ -140,12 +150,12 @@ export async function runEval(queries: EvalQuery[]): Promise<EvalRun> {
       if (triggered) {
         for (let run = 0; run < SEMANTIC_RUNS; run++) {
           const runStart = performance.now()
-          const runVector = await embed(query.query)
+          const runVector = await embed(semanticQuery)
           withSemanticResults(
             manual,
             withQueryDirection(
               semanticResults(runVector, texts, vectors),
-              query.query,
+              semanticQuery,
             ),
           )
           semanticMs.push(performance.now() - runStart)

@@ -2,6 +2,31 @@ import { describe, expect, it } from 'vitest'
 import { parseQuery } from '../../src/search/parse'
 
 describe('parseQuery', () => {
+  describe('"not" / "no" segments', () => {
+    it('searches what comes before, excludes what follows up to "and"', () => {
+      const parsed = parseQuery('fire but not flying and fast')
+      expect(parsed.excluded).toEqual([['flying']])
+      expect(parsed.normalizedQuery).toBe('fire but fast')
+    })
+
+    it('starts a new segment at each negation', () => {
+      expect(parseQuery('water not ice no blue').excluded).toEqual([
+        ['ice'],
+        ['blue'],
+      ])
+    })
+
+    it('a lone negation has nothing to search', () => {
+      const parsed = parseQuery('not electric')
+      expect(parsed.parts).toEqual([])
+      expect(parsed.excluded).toEqual([['electric']])
+    })
+
+    it('"no" inside a name is not a negation: "snorlax"', () => {
+      expect(parseQuery('snorlax').excluded).toBeUndefined()
+    })
+  })
+
   describe('stat conditions', () => {
     it.each([
       ['speed over 150', 'speed', 'over', 150],
