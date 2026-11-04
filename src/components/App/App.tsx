@@ -1,15 +1,20 @@
-import { useState } from 'react'
 import { AppHeader } from '../AppHeader/AppHeader'
 import { SearchPage } from '../SearchPage/SearchPage'
+import { useUrlState } from './useUrlState'
 import './App.scss'
 
 function App() {
-  const [query, setQuery] = useState('')
+  const [{ query, tab }, setUrlState] = useUrlState()
 
   return (
     <div className="app">
       <AppHeader />
-      <SearchPage query={query} onQueryChange={setQuery} />
+      <SearchPage
+        query={query}
+        tab={tab}
+        onQueryChange={(nextQuery) => setUrlState({ query: nextQuery, tab })}
+        onTabChange={(nextTab) => setUrlState({ query, tab: nextTab })}
+      />
     </div>
   )
 }

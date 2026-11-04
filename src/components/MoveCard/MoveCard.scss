@@ -1,0 +1,24 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/mixins' as *;
+
+.move-card {
+  &__name {
+    @include card-name;
+  }
+
+  &__kind {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-2;
+  }
+
+  &__kind-label {
+    color: $accent;
+  }
+
+  &__count {
+    margin-top: auto;
+    color: $count-text;
+  }
+}

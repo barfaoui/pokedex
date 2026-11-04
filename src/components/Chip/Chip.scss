@@ -1,4 +1,5 @@
 @use '../../styles/tokens' as *;
+@use '../../styles/typography' as Typography;
 @use '../../styles/mixins' as *;
 
 .chip {
@@ -9,9 +10,7 @@
   padding: $space-1 $space-3;
   background: $surface;
   color: $accent;
-  font-family: $font-display;
-  font-size: $font-size-label-small;
-  line-height: $line-height-display;
+  @include Typography.small-display;
   cursor: pointer;
   transition: background-color $duration-fast;
 

@@ -61,8 +61,8 @@ test('a query with results does not show the no-results message', async ({
   page,
 }) => {
   await page.getByRole('searchbox', { name: 'Search' }).fill('pikachu')
+  await expect(page.getByRole('article', { name: 'Pikachu' })).toBeVisible()
   await expect(page.getByText(/Prof\. Chen found nothing/)).toHaveCount(0)
-  await expect(page.getByText(/\d+ results?/)).toBeAttached()
 })
 
 test('the clear button empties the search bar and goes back home', async ({

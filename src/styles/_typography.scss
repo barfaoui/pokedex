@@ -1,0 +1,41 @@
+@use 'tokens' as *;
+
+@mixin -display($size) {
+  font-family: $font-display;
+  font-size: $size;
+  line-height: $line-height-display;
+}
+
+@mixin title-large-display {
+  @include -display($font-size-title-large);
+}
+
+@mixin title-display {
+  @include -display($font-size-title);
+}
+
+@mixin label-display {
+  @include -display($font-size-label);
+}
+
+@mixin small-display {
+  @include -display($font-size-label-small);
+}
+
+@mixin tiny-display {
+  @include -display($font-size-label-tiny);
+}
+
+@mixin -body($size) {
+  font-family: $font-body;
+  font-size: $size;
+  line-height: $line-height-body;
+}
+
+@mixin body {
+  @include -body($font-size-body);
+}
+
+@mixin input-body {
+  @include -body($font-size-input);
+}

@@ -1,4 +1,3 @@
-// Palette roles
 $paper: #e9d8a6;
 $ink: #001219;
 $accent: #005f73;
@@ -10,21 +9,17 @@ $warm-1: #ca6702;
 $warm-2: #bb3e03;
 $warm-3: #ae2012;
 
-// Surfaces drawn on paper
 $surface: #f6eed3;
-// Hard drop shadow of raised elements
 $shadow: #b9a46c;
-// Placeholders (missing image): decorative, paired with the Pokémon's name
 $placeholder: #6b6b6b;
 
-// Illustration colours
 $white: #ffffff;
 $chen-hair: #8d8d8d;
 $chen-skin: #f2c08f;
 $chen-coat: $white;
 $chen-shirt: $accent;
 
-// Spacing scale, in rem so it follows the user's font size
+// rem, so spacing follows the user's font size
 $space-1: 0.25rem;
 $space-2: 0.5rem;
 $space-3: 0.75rem;
@@ -33,40 +28,72 @@ $space-5: 1.5rem;
 $space-6: 2rem;
 $space-7: 3rem;
 
-// One pixel of the pixel look
 $pixel: 0.25rem;
-// How far raised elements cast their shadow
 $pixel-lift: $pixel * 2;
 
-// Fonts
 $font-display: 'Press Start 2P', monospace;
 $font-body: 'VT323', monospace;
 
-// Press Start 2P (short text only)
+// Press Start 2P: short text only
 $font-size-label: 0.75rem;
 $font-size-label-small: 0.625rem;
+// All four tabs fit one row on a phone
+$font-size-label-tiny: 0.5625rem;
 $font-size-title: 1rem;
 $font-size-title-large: 1.25rem;
-// VT323 renders small: body text never below 1.125rem
+// VT323 renders small: body text never below 1.125rem (spec)
 $font-size-body: 1.125rem;
 $font-size-input: 1.75rem;
 $line-height-display: 1.6;
 $line-height-body: 1.2;
 
-// Sizes
 $touch-target: 2.75rem;
 $search-bar-height: 3.5rem;
 $icon-size: 1rem;
-// 12 pixel art pixels, each 2 or 3 screen pixels
+// A 12-pixel drawing, 2 or 3 screen pixels per pixel
 $logo-size: 1.5rem;
 $logo-size-desktop: 2.25rem;
 $content-width: 46rem;
+$content-width-wide: 75rem;
+$tabs-width: 12rem;
+$card-min-width: 10rem;
+$stat-bar-height: $pixel * 2;
+$match-line-clamp: 3;
 $avatar-large: 8rem;
 $avatar-small: 3rem;
 
-// The one desktop breakpoint (mobile first)
 $breakpoint-desktop: 48rem;
 
-// Motion
 $duration-fast: 100ms;
 $duration-base: 150ms;
+$duration-pop: 120ms;
+$duration-sparkle: 900ms;
+
+// Each reaches 4.5:1 with ink text, or with paper text for $type-light-text
+$type-colors: (
+  normal: #a8a77a,
+  fire: #ee8130,
+  water: #6390f0,
+  electric: #f7d02c,
+  grass: #7ac74c,
+  ice: #96d9d6,
+  fighting: #a82520,
+  poison: #7e2f7c,
+  ground: #e2bf65,
+  flying: #a98ff3,
+  psychic: #f95587,
+  bug: #a6b91a,
+  rock: #b6a136,
+  ghost: #5a4478,
+  dragon: #5a2ad0,
+  dark: #5a4537,
+  steel: #b7b7ce,
+  fairy: #d685ad,
+);
+$type-light-text: fighting, poison, ghost, dragon, dark;
+
+$heart: $warm-3;
+$heart-size: 1.25rem;
+
+// 4.8:1 on $surface
+$count-text: $warm-2;

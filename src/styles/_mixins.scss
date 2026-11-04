@@ -1,8 +1,13 @@
 @use 'sass:list';
 @use 'tokens' as *;
+@use 'typography' as Typography;
 
-// A border with stepped corners
-@mixin pixel-border($color: $ink, $size: $pixel, $lift: 0) {
+@function pixel-border-layers(
+  $color: $ink,
+  $size: $pixel,
+  $lift: 0,
+  $shadow-color: $shadow
+) {
   $layers: (
     0 (-$size) 0 0 $color,
     0 $size 0 0 $color,
@@ -10,25 +15,55 @@
     $size 0 0 0 $color
   );
   @if $lift > 0 {
-    // Add a hard drop shadow with the same stepped corners, so the element looks raised.
     $layers: list.join(
       $layers,
-      (($lift + $size) $lift 0 0 $shadow, $lift ($lift + $size) 0 0 $shadow),
+      (
+        ($lift + $size) $lift 0 0 $shadow-color,
+        $lift ($lift + $size) 0 0 $shadow-color
+      ),
       $separator: comma
     );
   }
-  border: none;
-  // Keep the border from overlapping neighbours
-  margin: $size ($size + $lift) ($size + $lift) $size;
-  box-shadow: $layers;
+  @return $layers;
 }
 
-// A hard shadow under a full-width bar
+@mixin pixel-border(
+  $color: $ink,
+  $size: $pixel,
+  $lift: 0,
+  $shadow-color: $shadow
+) {
+  border: none;
+  // The border is drawn outside the box: the margin keeps it off neighbours
+  margin: $size ($size + $lift) ($size + $lift) $size;
+  box-shadow: pixel-border-layers($color, $size, $lift, $shadow-color);
+}
+
+@mixin card($shadow-color: $shadow) {
+  @include pixel-border($ink, $pixel, $pixel-lift, $shadow-color);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  min-width: 0;
+  padding: $space-3;
+  background: $surface;
+}
+
+// Bulbasaur must fit a phone-width card
+@mixin card-name {
+  @include Typography.small-display;
+  overflow-wrap: anywhere;
+
+  @include desktop {
+    @include Typography.label-display;
+  }
+}
+
 @mixin pixel-drop-shadow($lift: $pixel-lift) {
   box-shadow: 0 $lift 0 0 $shadow;
 }
 
-// A square pixel focus ring, drawn outside the pixel border.
 @mixin focus-ring {
   &:focus-visible {
     outline: $pixel solid $accent;
@@ -48,7 +83,6 @@
   }
 }
 
-// Hidden on screen, still read by screen readers.
 @mixin visually-hidden {
   position: absolute;
   width: 1px;

@@ -12,9 +12,13 @@
   object-fit: contain;
   image-rendering: pixelated;
 
+  &[data-ready='false'] {
+    visibility: hidden;
+  }
+
   &__placeholder {
     @include image-box;
-    
+
     padding: 20%;
   }
 }

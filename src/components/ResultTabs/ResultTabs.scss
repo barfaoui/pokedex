@@ -1,0 +1,53 @@
+@use '../../styles/tokens' as *;
+@use '../../styles/typography' as Typography;
+@use '../../styles/mixins' as *;
+
+.result-tabs {
+  display: flex;
+  gap: $space-1;
+
+  @include desktop {
+    flex-direction: column;
+    gap: $space-2;
+  }
+
+  &__tab {
+    @include pixel-border($ink, $pixel * 0.5);
+    @include focus-ring;
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+    min-height: $touch-target;
+    padding: $space-1;
+    background: $surface;
+    @include Typography.tiny-display;
+    white-space: nowrap;
+    cursor: pointer;
+
+    @include desktop {
+      flex: none;
+      flex-direction: row;
+      justify-content: space-between;
+      gap: $space-3;
+      padding: $space-2 $space-3;
+      @include Typography.small-display;
+    }
+
+    &:hover {
+      background: $mint;
+    }
+
+    &[aria-selected='true'] {
+      background: $ink;
+      color: $paper;
+    }
+  }
+
+  &__count {
+    @include Typography.body;
+    line-height: 1;
+  }
+}

@@ -1,0 +1,37 @@
+@use '../../styles/tokens' as *;
+
+.match-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+
+  &__line {
+    overflow-wrap: anywhere;
+  }
+
+  &[data-trimmed='true'] &__line {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: $match-line-clamp;
+    line-clamp: $match-line-clamp;
+  }
+
+  &__stat {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+  }
+
+  &__label {
+    color: $accent;
+  }
+
+  &__value {
+    font-variant-numeric: tabular-nums;
+  }
+
+  &__more {
+    color: $accent;
+  }
+}

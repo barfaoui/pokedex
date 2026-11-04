@@ -1,4 +1,5 @@
 @use '../../styles/tokens' as *;
+@use '../../styles/typography' as Typography;
 @use '../../styles/mixins' as *;
 
 .search-page {
@@ -37,15 +38,16 @@
     max-width: 34rem;
 
     @include desktop {
-      font-size: $font-size-title-large;
+      max-width: 40rem;
+      @include Typography.title-large-display;
     }
   }
 
-  &__count {
-    margin: $space-5 0 0;
+  &[data-state='results'] {
+    max-width: $content-width-wide;
+  }
 
-    &[data-visible='false'] {
-      @include visually-hidden;
-    }
+  &__count {
+    @include visually-hidden;
   }
 }
