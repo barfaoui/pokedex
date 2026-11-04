@@ -1,5 +1,6 @@
 import { useState, type SyntheticEvent } from 'react'
 import { BrokenImageIcon } from '../BrokenImageIcon/BrokenImageIcon'
+import { pixelatedPokemonsCache } from './pixelated-pokemons-cache'
 import { pixelate } from './pixelate'
 import './PokemonImage.scss'
 
@@ -18,7 +19,13 @@ interface Pixelated {
 export function PokemonImage({ src, name }: PokemonImageProps) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null)
   const [pixelated, setPixelated] = useState<Pixelated | null>(null)
-  const current = pixelated?.src === src ? pixelated : null
+  const cached = pixelatedPokemonsCache.get(src)
+  const current =
+    pixelated?.src === src
+      ? pixelated
+      : cached !== undefined
+        ? { src, dataUrl: cached }
+        : null
 
   if (failedSrc === src) {
     return (
@@ -42,6 +49,7 @@ export function PokemonImage({ src, name }: PokemonImageProps) {
     } catch {
       // Keep the original
     }
+    pixelatedPokemonsCache.set(src, dataUrl)
     setPixelated({ src, dataUrl })
   }
 
