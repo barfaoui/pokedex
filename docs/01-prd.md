@@ -123,12 +123,11 @@ Each story has an example query and a "done when" acceptance criterion.
 - Entry points: "Compare with" on a card, and selecting two results in the list.
 - Done when: for each stat, I can tell which of the two is higher, and I can see which types and abilities they share.
 
-#### S3. Browse and filter
+#### S3. Browse and filter — dropped
 
 > As a researcher, I want to browse all Pokémon and filter by type, ability or move, including or excluding a value, so that I can explore without typing a query.
 
-- Examples: Electric only · everything except Electric · Fire but not Flying
-- Done when: each filter value can be set to include or exclude, filters combine, and the result count updates.
+- **Dropped after testing the built search:** typing a type, colour or stat ("electric", "green", "fast fire") already does what the filters would do, in one place. Excluding a value belongs in the search bar as negation ("not electric"), listed in the next steps.
 
 #### S4. Evolution family on the card
 
@@ -194,6 +193,7 @@ Each query below is an automated test:
 - **Gaps aren't detected.** The app shows what the data has, not what it lacks: a search for a "rain team" doesn't say that nothing can start rain. Known gaps are in [data discovery](./02-data-discovery.md#2-what-the-data-can-answer-for-the-briefs-examples).
 - **Not a battle tool:** no damage calculation or optimisation.
 - **No accounts:** favourites and teams live in the browser (cleared with browser data, not shared across devices).
+- **No exclusion:** a search can't leave a value out ("not electric", "fire but not flying"). Negation in the search bar is a next step.
 - **English only.** Accents don't matter ("é" matches "e").
 - **Semantic search** uses a small model that prepares itself in the background on the first visit, so a search by meaning in the first few seconds takes a moment longer.
 

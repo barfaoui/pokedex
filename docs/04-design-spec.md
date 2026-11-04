@@ -45,7 +45,7 @@ Our own palette, defined once as variables (nothing copied from the Game Boy scr
 | Accent | `#005F73` dark teal | Links, selected tab, tick boxes, focus ring (5.1:1 on paper) |
 | Accent, light | `#0A9396` teal, `#94D2BD` mint | Hover, backgrounds of selected cards. **Never for text on paper** (too light) |
 | Glow | `#EE9B00` amber | Exact-match border. Decoration only: never text on paper (1.6:1) |
-| Danger | `#9B2226` dark red | Remove, excluded filters (5.6:1 on paper) |
+| Danger | `#9B2226` dark red | Remove (5.6:1 on paper) |
 | Warm accents | `#CA6702`, `#BB3E03`, `#AE2012` | Illustrations, the waiting animation, pixel details |
 
 - **Type colours** are a separate set of 18 (the palette has no green, purple, pink or yellow, which Grass, Poison, Psychic and Electric need). They're used only as small badges, always with the type's name written on them, with ink or paper text chosen for contrast.
@@ -66,7 +66,7 @@ Wireframes: [v1, hand-drawn](./design/wireframe-v1.png) and v2 below, generated 
 ### 3.1 Home
 
 Header: the lab's name (Okido Institute) on the left; **Create a team · Compare 2** and the **Pokédex** icon (favourites) on the right.
-Before anything is typed, Professor Chen and the search bar are **centred and large**: "What are you looking for? Professor Chen is here to help", with **example queries** under the bar, one per brief scenario (bulba · fast electric · put my opponent to sleep · rain team · green), and a small "or browse all Pokémon" link. Once the user types, Chen and the bar move to the top and results appear below.
+Before anything is typed, Professor Chen and the search bar are **centred and large**: "What are you looking for? Professor Chen is here to help", with **example queries** under the bar, one per brief scenario (bulba · fast electric · put my opponent to sleep · rain team · green). Once the user types, Chen and the bar move to the top and results appear below.
 
 ![Home, waiting and no-result states](./design/wireframe-v2-1-home-and-states.png)
 
@@ -86,17 +86,9 @@ An overlay on top of the results.
 - **Mobile:** picture on top, the same details below, most important first.
 - **Evolution family:** in order (Pikachu → Raichu); Eevee's as a branch.
 
-### 3.4 Browse and filter
+### 3.4 Browse and filter — designed, then dropped
 
-For exploring without typing ([PRD S3](./01-prd.md#s3-browse-and-filter)). **On the Pokémon tab only**, like selection mode.
-- **Desktop:** a Filters section under the tabs. **Mobile:** a "Filters (2)" tab that opens a bottom sheet, closed with "Show 10 Pokémon".
-- **Type:** one button per type. Each click cycles **neutral → included ✓ → excluded ✕** (an excluded value is struck through and dashed). "Fire ✓, Flying ✕" = the fire Pokémon that aren't flying: 10 of the 12, without Charizard and Moltres.
-- **Ability and move:** a small search field each, with the same include / exclude choice.
-- **Colour, habitat, shape:** folded under one line, opened on demand.
-- **Active filters** appear as removable chips above the results, with the live count; "clear all" resets them.
-- **With a query, filters narrow it** ("fast" + Fire ✓ = fire Pokémon by speed); with an empty query, they browse all 151.
-
-![Browse and filter](./design/wireframe-v2-5-browse-and-filter.png)
+Filters with include / exclude were designed for [PRD S3](./01-prd.md#s3-browse-and-filter--dropped) ([wireframe](./design/wireframe-v2-5-browse-and-filter.png)), then dropped after testing the built search: typing "electric", "green" or "fast fire" already narrows the results, and excluding a value fits better as negation in the search bar.
 
 ### 3.5 Selection mode (compare, team)
 
@@ -154,10 +146,6 @@ An overlay that looks like a **photo album**: cards with picture, name and a cou
 - Compare: the action is enabled at exactly two selected; a third tick replaces the oldest.
 - Team: up to six; the bar shows "x / 6". Adding a Pokémon already in the team does nothing.
 
-**Filters**
-- Each click on a value cycles neutral → included → excluded → neutral.
-- Results and the count update immediately; on mobile, the sheet's "Show N Pokémon" closes it.
-
 **Persistence**
 - Favourites and the team are saved in the browser and come back after a refresh.
 
@@ -180,29 +168,28 @@ Mobile first; one breakpoint for desktop layouts.
 | Tabs | Vertical, left of the results | Horizontal, under the search bar, scrollable |
 | Results | Grid, ~5–6 cards per row | 2 cards per row |
 | Compare / team | Buttons in the header | A floating button (bottom right) opening a small menu; Pokémon tab only |
-| Filters | Section under the tabs | Bottom sheet |
 | Detail card | Picture left, details right | Picture top, details below; full-height sheet |
 
 Touch targets are at least 2.75 rem (44 px) square on mobile.
 
 ## 8. Accessibility
 
-- **Keyboard:** everything works without a mouse. Tabs follow the standard tabs pattern (arrow keys move between tabs); cards, hearts, tick boxes and filters are reachable with Tab; overlays trap focus and close with Escape.
+- **Keyboard:** everything works without a mouse. Tabs follow the standard tabs pattern (arrow keys move between tabs); cards, hearts and tick boxes are reachable with Tab; overlays trap focus and close with Escape.
 - **Visible focus:** a clear pixel-style focus ring on every focusable element.
-- **Accessible names:** the heart is "Add Pikachu to the Pokédex" / "Remove Pikachu from the Pokédex"; the tick box "Select Pikachu"; a filter "Fire: included".
-- **No information by colour alone:** the glow comes with an "Exact match" label for screen readers; selection uses a tick; compare uses ▲ ▼ = and numbers; type badges carry the type's name; excluded filters are struck through.
+- **Accessible names:** the heart is "Add Pikachu to the Pokédex" / "Remove Pikachu from the Pokédex"; the tick box "Select Pikachu".
+- **No information by colour alone:** the glow comes with an "Exact match" label for screen readers; selection uses a tick; compare uses ▲ ▼ = and numbers; type badges carry the type's name.
 - **Announcements:** the result count is announced politely when it changes ("12 results"), so screen-reader users know the search reacted.
 - **Images:** Pokémon images have their name as alternative text; decorative pixel details are hidden from screen readers.
 - **Contrast:** WCAG AA for all text, checked on the pixel style too. An automated accessibility check runs in the end-to-end tests.
 
 ## 9. Scope
 
-Everything above is designed; not everything is built in this first version. Build order follows the PRD's priorities: home, results, tabs, detail card and states first ([Must](./01-prd.md#must)), then compare and browse-and-filter ([S2](./01-prd.md#s2-compare-two-pokémon), [S3](./01-prd.md#s3-browse-and-filter)), then the Pokédex and teams ([C1](./01-prd.md#c1-favourites), [C2](./01-prd.md#c2-teams-up-to-6)). Whatever isn't built is hidden in the app and listed in the next steps.
+Everything above is designed; not everything is built in this first version. Build order follows the PRD's priorities: home, results, tabs, detail card and states first ([Must](./01-prd.md#must)), then compare ([S2](./01-prd.md#s2-compare-two-pokémon)), then the Pokédex and teams ([C1](./01-prd.md#c1-favourites), [C2](./01-prd.md#c2-teams-up-to-6)). Whatever isn't built is hidden in the app and listed in the next steps. Browse and filter (S3) was dropped after testing (3.4).
 
 ## 10. 🤖 How I used AI for this document
 
 - **My wireframe first.** I drew the first version of the UI myself (desktop, mobile, cards, selection).
-- **Review and missing screens.** Claude reviewed it against the PRD (results that aren't Pokémon, exact matches, empty and no-result states, the heart and tick box in the same corner, features out of scope) and generated the screens I hadn't drawn yet (detail card, compare, team, Pokédex, filters, states) from my descriptions.
+- **Review and missing screens.** Claude reviewed it against the PRD (results that aren't Pokémon, exact matches, empty and no-result states, the heart and tick box in the same corner, features out of scope) and generated the screens I hadn't drawn yet (detail card, compare, team, Pokédex, filters, states). After testing the built search, I dropped the filters from my descriptions.
 - **Where I decided:** tabs instead of a filter, the centred home, the waiting message, selection mode only on the Pokémon tab, designing teams and favourites now, the pixel style, the pixel shine instead of glass.
 - **Where it changed my design:** it added an "All" tab ranked by score, since tabs alone would also hide the best result.
 
