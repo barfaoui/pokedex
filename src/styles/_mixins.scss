@@ -101,6 +101,27 @@
   }
 }
 
+// Light on a plastic sleeve: a few white pixels in the top-right corner, decorative only
+@mixin pixel-shine {
+  position: relative;
+
+  &::after {
+    content: '';
+    position: absolute;
+    top: $pixel * 2;
+    right: $pixel * 3;
+    width: $pixel;
+    height: $pixel;
+    background: $white;
+    box-shadow:
+      $pixel 0 0 0 $white,
+      0 $pixel 0 0 $white,
+      (-$pixel) ($pixel * 2) 0 0 $white,
+      ($pixel * 2) (-$pixel) 0 0 $white;
+    pointer-events: none;
+  }
+}
+
 @mixin pixel-drop-shadow($lift: $pixel-lift) {
   box-shadow: 0 $lift 0 0 $shadow;
 }

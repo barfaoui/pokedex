@@ -1,5 +1,13 @@
+@use 'styles/tokens' as *;
+
 .app {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: $space-2;
+  }
 }

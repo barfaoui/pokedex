@@ -1,5 +1,6 @@
 import {
   useEffect,
+  useId,
   useLayoutEffect,
   useRef,
   type MouseEvent,
@@ -33,8 +34,10 @@ const ARROW_LEFT = [
 
 const ICON_PIXELS = { '#': 'overlay__icon-pixel' }
 
-interface OverlayProps {
-  labelledBy: string
+// Either a title shown in the title bar, or the id of a heading in the content that names it
+type OverlayName = { title: string } | { labelledBy: string }
+
+type OverlayProps = OverlayName & {
   /** Changes when the content is replaced, so it starts at the top again. */
   contentKey: string
   onClose: () => void
@@ -45,12 +48,13 @@ interface OverlayProps {
 
 // Open while mounted. A modal <dialog> keeps focus inside and makes the page behind inert.
 export function Overlay({
-  labelledBy,
   contentKey,
   onClose,
   onBack,
   children,
+  ...name
 }: OverlayProps) {
+  const titleId = useId()
   const dialogRef = useRef<HTMLDialogElement>(null)
   const bodyRef = useRef<HTMLDivElement>(null)
   const closeRef = useRef<HTMLButtonElement>(null)
@@ -99,7 +103,7 @@ export function Overlay({
     <dialog
       ref={dialogRef}
       className="overlay"
-      aria-labelledby={labelledBy}
+      aria-labelledby={'title' in name ? titleId : name.labelledBy}
       onCancel={handleCancel}
       onClick={handleClick}
     >
@@ -118,6 +122,11 @@ export function Overlay({
                 pixelClasses={ICON_PIXELS}
               />
             </button>
+          )}
+          {'title' in name && (
+            <h2 className="overlay__title" id={titleId}>
+              {name.title}
+            </h2>
           )}
           <button
             ref={closeRef}

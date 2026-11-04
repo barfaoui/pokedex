@@ -1,0 +1,30 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+.album-card {
+  @include pixel-border($ink, $bevel-edge);
+  @include pixel-shine;
+
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  height: 100%;
+  padding: $space-2;
+  background: $surface;
+
+  &__picture {
+    align-self: center;
+    width: 100%;
+    max-width: $album-picture-width;
+  }
+
+  &__name {
+    @include card-name;
+  }
+
+  &__remove {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+}

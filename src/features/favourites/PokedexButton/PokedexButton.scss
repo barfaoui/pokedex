@@ -1,0 +1,49 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+@use 'styles/typography' as Typography;
+
+.pokedex-button {
+  @include bevel-raised;
+  @include focus-ring;
+
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  min-width: $touch-target;
+  min-height: $touch-target;
+  padding: $space-1 $space-2;
+  border: none;
+  background: $surface;
+  color: $ink;
+  cursor: pointer;
+
+  &:active {
+    @include bevel-pressed;
+  }
+
+  &__icon {
+    display: block;
+    width: $logo-size;
+    height: $logo-size;
+  }
+
+  &__count {
+    @include Typography.small-display;
+  }
+
+  &__outline {
+    fill: $ink;
+  }
+
+  &__cover {
+    fill: $accent;
+  }
+
+  &__heart {
+    fill: $heart;
+  }
+
+  &__pages {
+    fill: $paper;
+  }
+}
