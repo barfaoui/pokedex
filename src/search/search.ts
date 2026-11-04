@@ -10,7 +10,7 @@ import type { SearchableItem, SearchResult } from './types/result'
 const LISTED_SCORE = 0.1
 
 // Set with the PRD queries: "pikachoo" (0.71) is the weakest answer that must count as confident.
-const CONFIDENT_SCORE = 0.7
+export const CONFIDENT_SCORE = 0.7
 
 export function needsSemantic(results: SearchResult[]): boolean {
   return !results.some((result) => result.score >= CONFIDENT_SCORE)

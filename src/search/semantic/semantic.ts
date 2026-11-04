@@ -12,7 +12,7 @@ const TOP_SCORE = 0.95
 /** 0–1, after rescaling: cosine 0.40. */
 export const SEMANTIC_THRESHOLD = 0.24
 /** Descriptions rank below the moves and abilities that do what was asked. */
-const DESCRIPTION_WEIGHT = 0.85
+export const DESCRIPTION_WEIGHT = 0.85
 const MAX_RESULTS = 12
 
 export function rescale(cosine: number): number {

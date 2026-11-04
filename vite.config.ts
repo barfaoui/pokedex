@@ -19,13 +19,18 @@ export default defineConfig({
   test: {
     // Vitest runs tests/**/*.test.ts; Playwright runs tests/e2e/*.spec.ts.
     // The PRD queries are their own project (npm run test:queries), a separate CI step.
+    // The search evaluation (npm run eval) only reports, so it stays out of CI.
     projects: [
       {
         extends: true,
         test: {
           name: 'unit',
           include: ['tests/**/*.test.ts'],
-          exclude: ['tests/queries.test.ts', 'tests/semantic.test.ts'],
+          exclude: [
+            'tests/queries.test.ts',
+            'tests/semantic.test.ts',
+            'tests/eval/**',
+          ],
         },
       },
       {
@@ -42,6 +47,13 @@ export default defineConfig({
           include: ['tests/semantic.test.ts'],
           testTimeout: 60_000,
           hookTimeout: 120_000,
+        },
+      },
+      {
+        extends: true,
+        test: {
+          name: 'eval',
+          include: ['tests/eval/eval.test.ts'],
         },
       },
     ],
