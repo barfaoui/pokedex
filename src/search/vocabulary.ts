@@ -3,6 +3,7 @@ import { CONCEPTS } from './concepts/seed'
 import type { ConceptId } from './concepts/types'
 import { normalize } from '../text/normalize'
 import type { Comparison, Descriptor, Sort, StatCriterion } from './types/query'
+import type { ResultKind } from './types/result'
 
 export const SORT_WORDS = new Map<string, Omit<Sort, 'word'>>([
   ['fast', { attribute: 'speed', direction: 'desc' }],
@@ -52,11 +53,28 @@ export const DESCRIPTORS = new Map<string, Descriptor>([
   ),
 ])
 
+// The roots too: "pokemon that paralyzes" says "paralyzes", not "paralyze". A query is read word
+// by word, so two-word roots ("rain dance") can't match here.
 export const CONCEPT_WORDS = new Map<string, ConceptId>(
   CONCEPTS.flatMap((concept) =>
-    concept.words.map((word) => [word, concept.id] as const),
+    [...concept.words, ...concept.roots]
+      .filter((word) => !word.includes(' '))
+      .map((word) => [word, concept.id] as const),
   ),
 )
+
+// Names the kind of result wanted. It ranks that kind first, it doesn't filter: the others stay below.
+export const KIND_WORDS = new Map<string, ResultKind>([
+  ['pokemon', 'pokemon'],
+  ['pokemons', 'pokemon'],
+  ['move', 'move'],
+  ['moves', 'move'],
+  ['ability', 'ability'],
+  ['abilities', 'ability'],
+])
+
+// "Something that can paralyze" asks for an ability, unless a kind is named ("pokemon that can…").
+export const ABILITY_HINT = 'can'
 
 // Dropped from a query unless it is made only of them ("put my opponent to sleep").
 export const FILLER_WORDS = new Set([

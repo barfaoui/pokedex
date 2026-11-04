@@ -39,6 +39,14 @@ describe('nameScore', () => {
     expect(nameScore('aur', 'bulbasaur')).toBeGreaterThan(0)
   })
 
+  it('with shortPrefix: false, needs 3+ letters to match the start of a name', () => {
+    expect(nameScore('in', 'insomnia', { shortPrefix: false })).toBe(0)
+    expect(
+      nameScore('ins', 'insomnia', { shortPrefix: false }),
+    ).toBeGreaterThan(0)
+    expect(nameScore('in', 'insomnia')).toBeGreaterThan(0)
+  })
+
   it('scores a typo 1 − changes ÷ length', () => {
     expect(nameScore('pikachoo', 'pikachu')).toBeCloseTo(1 - 2 / 7)
   })

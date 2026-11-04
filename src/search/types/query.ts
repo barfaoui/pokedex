@@ -6,12 +6,15 @@ import type {
   StatName,
 } from '../../data/types/model'
 import type { ConceptId } from '../concepts/types'
+import type { ResultKind } from './result'
 
 export interface ParsedQuery {
   parts: QueryPart[]
   sort?: Sort
   /** Every word typed, normalised, before filler words are dropped ("double team"). */
   normalizedQuery: string
+  /** The kinds of result the query names ("pokemon that…"), ranked first. */
+  kinds?: ResultKind[]
 }
 
 export type QueryPart = WordPart | StatPart

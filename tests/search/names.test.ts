@@ -16,3 +16,21 @@ describe('multi-word names', () => {
     })
   })
 })
+
+describe('short words', () => {
+  it('"weather in paris" → "in" alone finds no name starting with it', () => {
+    const names = search('weather in paris').map((r) => r.item.name)
+    for (const name of [
+      'insomnia',
+      'intimidate',
+      'inner-focus',
+      'infiltrator',
+    ]) {
+      expect(names).not.toContain(name)
+    }
+  })
+
+  it('"ab" typed alone still finds Abra', () => {
+    expect(search('ab').map((r) => r.item.name)).toContain('abra')
+  })
+})

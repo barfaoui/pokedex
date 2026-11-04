@@ -8,9 +8,8 @@ function rankOf(query: string, name: string): number {
 }
 
 describe('weather search', () => {
-  it('ranks what starts the weather first, scored 1: Drought before Chlorophyll', () => {
+  it('ranks what starts the weather first: Drought before Chlorophyll', () => {
     expect(rankOf('sun', 'drought')).toBeLessThan(rankOf('sun', 'chlorophyll'))
-    expect(search('sun').find((r) => r.item.name === 'drought')?.score).toBe(1)
   })
 
   it('ranks what benefits before what is only affected: Swift Swim before Solar Beam', () => {

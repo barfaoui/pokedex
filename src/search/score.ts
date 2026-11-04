@@ -20,7 +20,10 @@ export function scoreItem(
   searchable: SearchableItem,
   pokedex: PokedexIndex,
 ): Scored {
-  const parts = query.parts.map((part) => scorePart(part, searchable, pokedex))
+  const alone = query.parts.length === 1
+  const parts = query.parts.map((part) =>
+    scorePart(part, searchable, pokedex, alone),
+  )
   const average = {
     score: parts.reduce((sum, part) => sum + part.score, 0) / parts.length,
     matched: parts.flatMap((part) => part.matched),
@@ -33,10 +36,11 @@ function scorePart(
   part: QueryPart,
   searchable: SearchableItem,
   pokedex: PokedexIndex,
+  alone: boolean,
 ): Scored {
   return part.kind === 'stat'
     ? scoreStat(part, searchable)
-    : scoreWord(part, searchable, pokedex)
+    : scoreWord(part, searchable, pokedex, alone)
 }
 
 /**
@@ -60,11 +64,17 @@ function scoreWord(
   part: WordPart,
   searchable: SearchableItem,
   pokedex: PokedexIndex,
+  alone: boolean,
 ): Scored {
   return [
-    part.concept ? matchConcept(part.concept, searchable, pokedex) : NO_MATCH,
+    part.concept
+      ? matchConcept(part.concept, searchable, pokedex, part.text)
+      : NO_MATCH,
     // A concept word ("rain") only matches names from the start: never "Mega Drain".
-    scoreName(part.text, searchable, { anywhere: !part.concept }),
+    scoreName(part.text, searchable, {
+      anywhere: !part.concept,
+      shortPrefix: alone,
+    }),
     scoreType(part, searchable),
     scoreDescriptor(part, searchable),
   ].reduce((best, candidate) =>
@@ -87,7 +97,7 @@ function scoreStat(part: StatPart, searchable: SearchableItem): Scored {
 function scoreName(
   text: string,
   searchable: SearchableItem,
-  options?: { anywhere?: boolean },
+  options?: { anywhere?: boolean; shortPrefix?: boolean },
 ): Scored {
   const score = nameScore(text, searchable.item.searchName, options)
   return score > 0

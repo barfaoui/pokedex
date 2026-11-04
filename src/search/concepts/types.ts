@@ -26,6 +26,8 @@ export const DIRECTIONS = [
   'starts',
   'benefits',
   'affected',
+  // Passes on a status it received (Synchronize): it inflicts it, but only in return.
+  'copies',
   'prevents',
   'self',
   'unclear',

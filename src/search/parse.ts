@@ -1,11 +1,14 @@
 import { matchType } from './match/type'
 import { normalize } from '../text/normalize'
 import type { ParsedQuery, StatPart, WordPart } from './types/query'
+import type { ResultKind } from './types/result'
 import {
+  ABILITY_HINT,
   COMPARISON_WORDS,
   CONCEPT_WORDS,
   DESCRIPTORS,
   FILLER_WORDS,
+  KIND_WORDS,
   SORT_WORDS,
   STAT_WORDS,
 } from './vocabulary'
@@ -22,8 +25,15 @@ interface Read<T> {
  */
 export function parseQuery(query: string): ParsedQuery {
   const typed = normalize(spellOutOperators(query)).split(' ').filter(Boolean)
-  const words = withoutFiller(typed)
-  const parsed: ParsedQuery = { parts: [], normalizedQuery: typed.join(' ') }
+  const asked = typed.filter((word) => !KIND_WORDS.has(word))
+  const words = withoutFiller(asked.length ? asked : typed)
+  const kinds = kindsOf(typed)
+  const parsed: ParsedQuery = {
+    parts: [],
+    normalizedQuery: typed.join(' '),
+    // A lone kind word ("pokemon") is searched as a word, it has nothing to rank.
+    ...(kinds.length && words.some(isSearched) && { kinds }),
+  }
   let i = 0
   while (i < words.length) {
     const sort = SORT_WORDS.get(words[i])
@@ -37,6 +47,20 @@ export function parseQuery(query: string): ParsedQuery {
     i += part.length
   }
   return parsed
+}
+
+function kindsOf(typed: string[]): ResultKind[] {
+  const named = [
+    ...new Set(typed.flatMap((word) => KIND_WORDS.get(word) ?? [])),
+  ]
+  if (named.length) {
+    return named
+  }
+  return typed.includes(ABILITY_HINT) ? ['ability'] : []
+}
+
+function isSearched(word: string): boolean {
+  return !FILLER_WORDS.has(word) && !KIND_WORDS.has(word)
 }
 
 /** Drops filler words ("put my opponent to"), unless nothing else is left. */

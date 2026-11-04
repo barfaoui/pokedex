@@ -60,6 +60,7 @@ export const GENERATED_TAGS: Concepts = {
         source: 'effect',
       },
     ],
+    copies: [],
     prevents: [
       {
         kind: 'ability',
@@ -191,6 +192,7 @@ export const GENERATED_TAGS: Concepts = {
     starts: [],
     benefits: [],
     affected: [],
+    copies: [],
     prevents: [
       {
         kind: 'ability',
@@ -299,6 +301,7 @@ export const GENERATED_TAGS: Concepts = {
     starts: [],
     benefits: [],
     affected: [],
+    copies: [],
     prevents: [
       {
         kind: 'move',
@@ -388,6 +391,7 @@ export const GENERATED_TAGS: Concepts = {
     starts: [],
     benefits: [],
     affected: [],
+    copies: [],
     prevents: [
       {
         kind: 'ability',
@@ -451,6 +455,7 @@ export const GENERATED_TAGS: Concepts = {
         source: 'effect',
       },
     ],
+    copies: [],
     prevents: [],
     self: [],
     unclear: [],
@@ -498,6 +503,7 @@ export const GENERATED_TAGS: Concepts = {
         source: 'short_effect',
       },
     ],
+    copies: [],
     prevents: [
       {
         kind: 'move',
@@ -618,6 +624,7 @@ export const GENERATED_TAGS: Concepts = {
         source: 'short_effect',
       },
     ],
+    copies: [],
     prevents: [
       {
         kind: 'ability',
@@ -681,6 +688,7 @@ export const GENERATED_TAGS: Concepts = {
         source: 'effect',
       },
     ],
+    copies: [],
     prevents: [],
     self: [],
     unclear: [
@@ -760,6 +768,7 @@ export const GENERATED_TAGS: Concepts = {
         source: 'short_effect',
       },
     ],
+    copies: [],
     prevents: [],
     self: [],
     unclear: [],
@@ -789,6 +798,7 @@ export const GENERATED_TAGS: Concepts = {
       },
     ],
     affected: [],
+    copies: [],
     prevents: [],
     self: [],
     unclear: [
@@ -838,6 +848,7 @@ export const GENERATED_TAGS: Concepts = {
         source: 'effect',
       },
     ],
+    copies: [],
     prevents: [],
     self: [],
     unclear: [

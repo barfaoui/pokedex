@@ -12,12 +12,15 @@ export const CORRECTIONS: Corrections = {
       { kind: 'ability', name: 'guts' },
       { kind: 'ability', name: 'quick-feet' },
     ],
+    copies: [{ kind: 'ability', name: 'synchronize' }],
   },
   poison: {
     affected: [{ kind: 'ability', name: 'guts' }],
+    copies: [{ kind: 'ability', name: 'synchronize' }],
   },
   burn: {
     affected: [{ kind: 'ability', name: 'guts' }],
+    copies: [{ kind: 'ability', name: 'synchronize' }],
   },
   confusion: {
     unclear: [{ kind: 'ability', name: 'magic-guard' }],

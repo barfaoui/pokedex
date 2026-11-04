@@ -9,6 +9,10 @@ import type { SearchableItem, SearchResult } from './types/result'
 // Pokémon listed by a lone sort word without matching it: below any name match, never an exact match.
 const LISTED_SCORE = 0.1
 
+// The kinds a query doesn't ask for stay visible, below the asked kind: for "pokemon that
+// paralyzes", Thunder Wave (0.85) drops to 0.6, under Pikachu (0.82).
+const OTHER_KIND_WEIGHT = 0.7
+
 // Set with the PRD queries: "pikachoo" (0.71) is the weakest answer that must count as confident.
 export const CONFIDENT_SCORE = 0.7
 
@@ -63,6 +67,11 @@ function matchingResults(
       ...searchable,
       ...scoreItem(parsed, searchable, pokedex),
     }))
+    .map((result) =>
+      parsed.kinds && !parsed.kinds.includes(result.kind)
+        ? { ...result, score: result.score * OTHER_KIND_WEIGHT }
+        : result,
+    )
     .filter((result) => result.score > 0)
 }
 
