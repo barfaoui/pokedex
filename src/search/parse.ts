@@ -165,6 +165,9 @@ function spellOutOperators(query: string): string {
       .replace(/</g, ' under ')
       // Pokémon GO: "@surf" lists the Pokémon that know Surf
       .replace(/@/g, ' learns ')
+      // Pokémon GO: "water & !ice"
+      .replace(/!/g, ' not ')
+      .replace(/&/g, ' and ')
   )
 }
 

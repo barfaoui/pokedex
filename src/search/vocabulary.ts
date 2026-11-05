@@ -135,7 +135,7 @@ export const LEARN_WORDS = new Set([
 /** The same with "pokemon" in the query ("which pokemon have levitate"), for abilities too. */
 export const HAVE_WORDS = new Set(['have', 'has', 'with'])
 
-export const NEGATING_WORDS = new Set(['not', 'no'])
+export const NEGATING_WORDS = new Set(['not', 'no', 'without', 'except'])
 export const SEGMENT_END_WORD = 'and'
 
 export const NEGATION_WORDS = new Set([
