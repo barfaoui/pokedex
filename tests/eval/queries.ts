@@ -265,6 +265,18 @@ const probeTuning: EvalQuery[] = [
     },
     seen: USER_TESTING,
   },
+  {
+    query: 'blaaastoiise',
+    group: 'probe-tuning',
+    expect: { type: 'first', key: 'pokemon:blastoise' },
+    seen: USER_TESTING,
+  },
+  {
+    query: '3',
+    group: 'probe-tuning',
+    expect: { type: 'first', key: 'pokemon:venusaur' },
+    seen: USER_TESTING,
+  },
   { query: 'pizza', group: 'probe-tuning', expect: { type: 'nothing' } },
   { query: 'hello', group: 'probe-tuning', expect: { type: 'nothing' } },
   { query: 'best car', group: 'probe-tuning', expect: { type: 'nothing' } },
@@ -301,6 +313,11 @@ const probeHoldout: EvalQuery[] = [
       type: 'includes',
       keys: ['move:supersonic', 'move:confuse-ray'],
     },
+  },
+  {
+    query: 'mutate',
+    group: 'probe-holdout',
+    expect: { type: 'includes', keys: ['pokemon:eevee'] },
   },
   {
     query: 'stock market',

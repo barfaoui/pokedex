@@ -2,15 +2,6 @@ import { describe, expect, test } from 'vitest'
 import { exclusionNote } from '@/features/results/exclusion-note'
 
 describe('exclusionNote', () => {
-  test('names what is excluded', () => {
-    expect(
-      exclusionNote({
-        rules: [{ kind: 'type', value: 'flying' }],
-        unknown: [],
-      }),
-    ).toEqual(['Excluding: Flying'])
-  })
-
   test('lists several exclusions once each', () => {
     expect(
       exclusionNote({

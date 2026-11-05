@@ -23,6 +23,11 @@ export function editDistance(a: string, b: string): number {
   return distances[a.length][b.length]
 }
 
-export function typoLimit(length: number): number {
-  return Math.floor((length * 3) / 10)
+const TYPO_RATIO = 0.4
+
+export function typoScore(word: string, target: string): number {
+  const changes = editDistance(word, target)
+  return changes <= Math.floor(target.length * TYPO_RATIO)
+    ? 1 - changes / target.length
+    : 0
 }

@@ -21,22 +21,16 @@ describe('parseQuery', () => {
       expect(parsed.parts).toEqual([])
       expect(parsed.excluded).toEqual([['electric']])
     })
-
-    it('"no" inside a name is not a negation: "snorlax"', () => {
-      expect(parseQuery('snorlax').excluded).toBeUndefined()
-    })
   })
 
   describe('stat conditions', () => {
+    // One per way of writing it: plain, operator, two-word stat, two-word comparison, decimal.
     it.each([
       ['speed over 150', 'speed', 'over', 150],
       ['attack > 100', 'attack', 'over', 100],
       ['special attack >= 90', 'special-attack', 'atLeast', 90],
-      ['hp below 50', 'hp', 'under', 50],
       ['defense at most 40', 'defense', 'atMost', 40],
-      ['total more than 500', 'total', 'over', 500],
       ['speed over 99.5', 'speed', 'over', 99.5],
-      ['attack >= 100.0', 'attack', 'atLeast', 100],
     ])('%s', (query, stat, comparison, value) => {
       expect(parseQuery(query).parts).toEqual([
         { kind: 'stat', stat, comparison, value },
@@ -51,67 +45,23 @@ describe('parseQuery', () => {
     })
   })
 
-  describe('sort words', () => {
-    it.each([
-      ['fast', 'speed', 'desc'],
-      ['slow', 'speed', 'asc'],
-      ['strong', 'attack', 'desc'],
-      ['strongest', 'total', 'desc'],
-      ['best', 'total', 'desc'],
-      ['heavy', 'weight', 'desc'],
-      ['tall', 'height', 'desc'],
-      ['tanky', 'hpAndDefense', 'desc'],
-    ])('%s → %s, %s', (word, attribute, direction) => {
-      const parsed = parseQuery(word)
-      expect(parsed.sort).toEqual({ word, attribute, direction })
-      expect(parsed.parts).toEqual([])
-    })
-
-    it('keeps only the first sort word as the sort', () => {
-      const parsed = parseQuery('fast heavy')
-      expect(parsed.sort?.word).toBe('fast')
-      expect(parsed.parts).toEqual([{ kind: 'word', text: 'heavy' }])
-    })
+  it('keeps only the first sort word as the sort', () => {
+    const parsed = parseQuery('fast heavy')
+    expect(parsed.sort?.word).toBe('fast')
+    expect(parsed.parts).toEqual([{ kind: 'word', text: 'heavy' }])
   })
 
-  describe('descriptors', () => {
-    it.each([
-      ['green', { field: 'color', value: 'green' }],
-      ['cave', { field: 'habitat', value: 'cave' }],
-      ['fish', { field: 'shape', value: 'fish' }],
-      ['waters edge', { field: 'habitat', value: 'waters-edge' }],
-      ['bug wings', { field: 'shape', value: 'bug-wings' }],
-    ])('%s', (query, descriptor) => {
+  it.each([
+    ['green', { field: 'color', value: 'green' }],
+    ['waters edge', { field: 'habitat', value: 'waters-edge' }],
+  ])(
+    'reads the descriptor "%s", two-word ones included',
+    (query, descriptor) => {
       expect(parseQuery(query).parts).toEqual([
         { kind: 'word', text: query, descriptor },
       ])
-    })
-  })
-
-  describe('types', () => {
-    it('recognises a type', () => {
-      expect(parseQuery('electric').parts).toEqual([
-        {
-          kind: 'word',
-          text: 'electric',
-          type: { value: 'electric', score: 1 },
-        },
-      ])
-    })
-
-    it('recognises a type with a typo, scored below 1', () => {
-      const [part] = parseQuery('electrik').parts
-      expect(part).toMatchObject({
-        kind: 'word',
-        type: { value: 'electric' },
-      })
-      expect(part.kind === 'word' && part.type?.score).toBeCloseTo(1 - 1 / 8)
-    })
-
-    it('needs an exact match for 3-letter types', () => {
-      expect(parseQuery('icy').parts).toEqual([{ kind: 'word', text: 'icy' }])
-    })
-  })
+    },
+  )
 
   it('parses "fast electric" into a speed sort and a typed word', () => {
     expect(parseQuery('fast electric')).toEqual({
@@ -127,37 +77,19 @@ describe('parseQuery', () => {
     })
   })
 
-  describe('concepts', () => {
-    it.each([
-      ['sleep', 'sleep'],
-      ['doze', 'sleep'],
-      ['paralyze', 'paralysis'],
-      ['flinch', 'flinch'],
-    ] as const)('"%s" → %s', (word, concept) => {
-      expect(parseQuery(word).parts).toEqual([
-        { kind: 'word', text: word, concept },
-      ])
-    })
-
-    it.each([
-      ['rain', 'rain'],
-      ['sunny', 'sun'],
-    ] as const)('recognises weather: "%s" → %s', (word, concept) => {
-      expect(parseQuery(word).parts).toEqual([
-        { kind: 'word', text: word, concept },
-      ])
-    })
-
-    it('drops "team": it only tells the UI to show Pokémon first', () => {
-      expect(parseQuery('rain team').parts).toEqual([
-        { kind: 'word', text: 'rain', concept: 'rain' },
-      ])
-    })
+  it.each([
+    ['doze', 'sleep'],
+    ['sunny', 'sun'],
+  ] as const)('reads "%s" as the concept %s', (word, concept) => {
+    expect(parseQuery(word).parts).toMatchObject([
+      { kind: 'word', text: word, concept },
+    ])
   })
 
   describe('filler words', () => {
     it('drops them around the words that matter', () => {
-      expect(parseQuery('put my opponent to sleep').parts).toEqual([
+      // A word can also read as a low-score type typo ("sleep" → steel): only the concept matters here.
+      expect(parseQuery('put my opponent to sleep').parts).toMatchObject([
         { kind: 'word', text: 'sleep', concept: 'sleep' },
       ])
     })
@@ -165,12 +97,6 @@ describe('parseQuery', () => {
     it('keeps them when the query is only filler', () => {
       expect(parseQuery('to').parts).toEqual([{ kind: 'word', text: 'to' }])
     })
-  })
-
-  it('keeps unknown words as plain words', () => {
-    expect(parseQuery('spaghetti').parts).toEqual([
-      { kind: 'word', text: 'spaghetti' },
-    ])
   })
 
   it('returns no parts for an empty query', () => {

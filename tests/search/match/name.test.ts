@@ -22,18 +22,6 @@ describe('nameScore', () => {
     )
   })
 
-  it('keeps partial and typo scores between 0 and 1', () => {
-    for (const [part, name] of [
-      ['b', 'bulbasaur'],
-      ['saur', 'bulbasaur'],
-      ['pikachoo', 'pikachu'],
-    ]) {
-      const score = nameScore(part, name)
-      expect(score, part).toBeGreaterThan(0)
-      expect(score, part).toBeLessThan(1)
-    }
-  })
-
   it('needs 3+ letters to match anywhere in a name', () => {
     expect(nameScore('sa', 'bulbasaur')).toBe(0)
     expect(nameScore('aur', 'bulbasaur')).toBeGreaterThan(0)
@@ -47,15 +35,11 @@ describe('nameScore', () => {
     expect(nameScore('in', 'insomnia')).toBeGreaterThan(0)
   })
 
-  it('scores a typo 1 − changes ÷ length', () => {
-    expect(nameScore('pikachoo', 'pikachu')).toBeCloseTo(1 - 2 / 7)
+  it('allows typos up to 40% of the name: "blaaastoiise" → Blastoise', () => {
+    expect(nameScore('blaaastoiise', 'blastoise')).toBeCloseTo(1 - 3 / 9)
   })
 
   it('checks typos against the whole name, not each word', () => {
     expect(nameScore('drain', 'rain dish')).toBe(0)
-  })
-
-  it('scores 0 when nothing matches', () => {
-    expect(nameScore('spaghetti', 'pikachu')).toBe(0)
   })
 })

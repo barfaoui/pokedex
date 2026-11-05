@@ -77,6 +77,7 @@ function scoreWord(
     }),
     scoreType(part, searchable),
     scoreDescriptor(part, searchable),
+    scoreNumber(part, searchable),
   ].reduce((best, candidate) =>
     candidate.score > best.score ? candidate : best,
   )
@@ -120,6 +121,14 @@ function scoreType(part: WordPart, searchable: SearchableItem): Scored {
         score: part.type.score,
         matched: [{ field: 'type', value: part.type.value }],
       }
+    : NO_MATCH
+}
+
+function scoreNumber(part: WordPart, searchable: SearchableItem): Scored {
+  return part.number !== undefined &&
+    searchable.kind === 'pokemon' &&
+    searchable.item.id === part.number
+    ? { score: 1, matched: [{ field: 'number', value: part.number }] }
     : NO_MATCH
 }
 

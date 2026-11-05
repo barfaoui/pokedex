@@ -162,6 +162,7 @@ function readWord(words: string[], start: number): Read<WordPart> {
   const text = words.slice(start, start + length).join(' ')
   const type = matchType(text)
   const concept = CONCEPT_WORDS.get(text)
+  const number = /^\d+$/.test(text) ? Number(text) : undefined
   return {
     value: {
       kind: 'word',
@@ -169,6 +170,7 @@ function readWord(words: string[], start: number): Read<WordPart> {
       ...(type && { type }),
       ...(descriptor && { descriptor: descriptor.value }),
       ...(concept && { concept }),
+      ...(number !== undefined && { number }),
     },
     length,
   }
