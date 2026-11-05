@@ -11,8 +11,7 @@ type PokemonResult = Extract<SearchResult, { kind: 'pokemon' }>
 
 /**
  * Both directions. A member that matches the query keeps its own result. Members of the same
- * stage aren't related: "vaporeon" brings Eevee, not Jolteon. When the family is what was asked,
- * the relatives come before the Pokémon named, those the query points to first.
+ * stage aren't related: "vaporeon" brings Eevee, not Jolteon.
  */
 export function withEvolutionFamilies(
   results: SearchResult[],
@@ -53,7 +52,6 @@ function isNameMatch(result: SearchResult): boolean {
   return result.matched.some((match) => match.field === 'name')
 }
 
-/** Nearest first in each direction; the direction asked for comes first. */
 function relativesOf(
   pokemon: Pokemon,
   score: number,

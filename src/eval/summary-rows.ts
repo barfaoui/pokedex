@@ -1,7 +1,7 @@
 import { decimal, euros, ms, percent } from './format'
 import type { Summary } from './metrics'
 
-/** One row per metric, engines across: the same table in the report and the page. */
+/** Shared, so the report and the page show the same table. */
 export const SUMMARY_ROWS: { label: string; value: (s: Summary) => string }[] =
   [
     {

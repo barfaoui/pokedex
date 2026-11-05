@@ -3,10 +3,7 @@ import { KIND_WORDS } from '../vocabulary'
 
 const wordsByGenus = new Map<string, Set<string>>()
 
-/**
- * 1 when the word is a whole word of the category ("Mouse Pokémon"), else 0: a part of one
- * ("shell" in Shellfish) or a typo would let everyday words reach unrelated Pokémon.
- */
+/** Whole words only */
 export function genusScore(word: string, genus: string): number {
   let words = wordsByGenus.get(genus)
   if (!words) {

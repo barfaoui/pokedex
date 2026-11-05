@@ -25,7 +25,6 @@ export const STAT_WORDS = new Map<string, ConditionStat>([
 
 type Measure = Extract<ConditionStat, 'weight' | 'height'>
 
-/** The stat they compare is in the word: "heavier than 200 kg". */
 export const COMPARATIVE_WORDS = new Map<
   string,
   { stat: Measure; comparison: Comparison }
@@ -159,7 +158,6 @@ export const FAMILY_DIRECTION_WORDS = new Map<string, FamilyDirection>([
 /** "evolves into X" asks for what comes before X; "X evolves into" for what comes after. */
 export const FAMILY_INTO_WORD = 'into'
 
-/** Ask for the Pokémon that learn a move named in the query; they imply Pokémon. */
 export const LEARN_WORDS = new Set([
   'learn',
   'learns',
@@ -168,10 +166,9 @@ export const LEARN_WORDS = new Set([
   'know',
   'knows',
 ])
-/** The same with "pokemon" in the query ("which pokemon have levitate"), for abilities too. */
+/** Only next to "pokemon": on their own these words are too common to mean "learns". */
 export const HAVE_WORDS = new Set(['have', 'has', 'with'])
 
-/** The data's own flags: "legendary" means is_legendary, not the word in a category. */
 export const RARITY_WORDS = new Map<string, 'legendary' | 'mythical'>([
   ['legendary', 'legendary'],
   ['legendaries', 'legendary'],

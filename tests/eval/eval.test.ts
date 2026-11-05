@@ -1,5 +1,4 @@
-// Measures every engine on tests/eval/cases.csv and writes a report: npm run eval. It reports, it
-// doesn't judge: the test only fails if the evaluation itself can't run.
+// It reports, it doesn't judge: the test only fails if the evaluation itself can't run.
 // EVAL_SNAPSHOT=<file.json> writes the numbers and every case's outcome there instead of a report,
 // to compare two runs.
 import { execSync } from 'node:child_process'

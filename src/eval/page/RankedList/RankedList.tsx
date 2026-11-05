@@ -9,9 +9,8 @@ import './RankedList.scss'
 interface RankedListProps {
   results: SearchResult[]
   query: string
-  /** Marks the right and forbidden answers; left out for a live query. */
+  /** Left out for a live query: nothing is expected. */
   evalCase?: EvalCase
-  /** Top N only, without scores; every result with its score and match otherwise. */
   limit?: number
 }
 

@@ -116,7 +116,7 @@ export function splitExclusions(typed: string[]): {
   return { searched, ...(excluded && { excluded }) }
 }
 
-/** A learn word, unless the query names another kind ("what moves can pikachu learn"). */
+/** Not when the query names another kind: "what moves can pikachu learn" asks for moves. */
 function asksForLearners(typed: string[], named: ResultKind[]): boolean {
   const forPokemon = !named.length || named.includes('pokemon')
   return (
@@ -168,9 +168,8 @@ function spellOutOperators(query: string): string {
       .replace(/<=/g, ' atmost ')
       .replace(/>/g, ' over ')
       .replace(/</g, ' under ')
-      // Pokémon GO: "@surf" lists the Pokémon that know Surf
+      // Pokémon GO search syntax: "@surf", "water & !ice"
       .replace(/@/g, ' learns ')
-      // Pokémon GO: "water & !ice"
       .replace(/!/g, ' not ')
       .replace(/&/g, ' and ')
   )
@@ -178,16 +177,11 @@ function spellOutOperators(query: string): string {
 
 const NUMBER = /^\d+(?:\.\d+)?$/
 
-/** "90kg" is typed as one word: the number and its unit. */
 function splitUnit(word: string): string[] {
   const glued = /^(\d+(?:\.\d+)?)([a-z]+)$/.exec(word)
   return glued && UNITS.has(glued[2]) ? [glued[1], glued[2]] : [word]
 }
 
-/**
- * "attack over 100", "heavier than 200 kg", "over 2 m", or a bare measure ("90 kg", read as
- * about 90 kg). A unit names the stat when nothing else does, and converts the number.
- */
 function readStatCondition(
   words: string[],
   start: number,

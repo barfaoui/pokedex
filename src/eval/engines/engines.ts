@@ -13,7 +13,7 @@ export interface AvailableEngine extends Engine {
   id: string
 }
 
-/** Every engine that can run here; one without its key is left out, never billed. */
+/** An engine without its key is left out, so it is never billed. */
 export function availableEngines(context: EngineContext): AvailableEngine[] {
   return ENGINE_DEFINITIONS.flatMap((definition) => {
     const engine = definition.create(context)
