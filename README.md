@@ -14,7 +14,6 @@ Built for the Biolevate full-stack technical assessment.
 - `rain team`: a theme across Pokémon, moves and abilities
 - `make the enemy doze off`: search by meaning
 
-
 ## Requirements
 
 - **Node.js 22.12 or later** (developed on the version in [`.nvmrc`](./.nvmrc); with nvm: `nvm use`)
