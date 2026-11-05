@@ -21,3 +21,19 @@ describe('"evolution of X"', () => {
     expect(top.every((r) => r.score === 1)).toBe(true)
   })
 })
+
+describe('which way a family query points', () => {
+  const first = (query: string) => search(query)[0]?.item.name
+
+  it('"evolution of X" → its next form first, before X itself', () => {
+    expect(first('evolution of squirtle')).toBe('wartortle')
+  })
+
+  it('"what evolves into X" → its previous form first', () => {
+    expect(first('what evolves into venusaur')).toBe('ivysaur')
+  })
+
+  it('"final evolution of X" → the last form first', () => {
+    expect(first('final evolution of caterpie')).toBe('butterfree')
+  })
+})

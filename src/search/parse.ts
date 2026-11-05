@@ -1,13 +1,20 @@
 import { matchDescriptor } from './match/descriptor'
 import { matchType } from './match/type'
 import { normalize } from '../text/normalize'
-import type { ParsedQuery, StatPart, WordPart } from './types/query'
+import type {
+  FamilyDirection,
+  ParsedQuery,
+  StatPart,
+  WordPart,
+} from './types/query'
 import type { ResultKind } from './types/result'
 import {
   ABILITY_HINT,
   COMPARISON_WORDS,
   CONCEPT_WORDS,
   DESCRIPTORS,
+  FAMILY_DIRECTION_WORDS,
+  FAMILY_INTO_WORD,
   FAMILY_WORDS,
   FILLER_WORDS,
   KIND_WORDS,
@@ -31,13 +38,17 @@ export function parseQuery(query: string): ParsedQuery {
   // search: a lone negation, listing the named kind.
   const lone = !!excluded && !searched.some(isSearched)
   const typed = lone ? [] : searched
+  const hasFamilyWord = typed.some((word) => FAMILY_WORDS.has(word))
   const asked = typed.filter(
-    (word) => !KIND_WORDS.has(word) && !FAMILY_WORDS.has(word),
+    (word) =>
+      !KIND_WORDS.has(word) &&
+      !FAMILY_WORDS.has(word) &&
+      !(hasFamilyWord && isFamilyDirectionWord(word)),
   )
   const words = withoutFiller(asked.length ? asked : typed)
   // A lone family word ("evolution") is searched as a word, it names no one's family.
   const family =
-    asked.length > 0 && typed.some((word) => FAMILY_WORDS.has(word))
+    asked.length > 0 && hasFamilyWord ? familyDirection(typed) : undefined
   const kinds = kindsOf(searched)
   const parsed: ParsedQuery = {
     parts: [],
@@ -92,6 +103,22 @@ export function splitExclusions(typed: string[]): {
     }
   }
   return { searched, ...(excluded && { excluded }) }
+}
+
+function isFamilyDirectionWord(word: string): boolean {
+  return FAMILY_DIRECTION_WORDS.has(word) || word === FAMILY_INTO_WORD
+}
+
+function familyDirection(typed: string[]): FamilyDirection {
+  const stated = typed.flatMap((word) => FAMILY_DIRECTION_WORDS.get(word) ?? [])
+  if (stated.length) {
+    return stated[0]
+  }
+  const into = typed.indexOf(FAMILY_INTO_WORD)
+  const named = typed
+    .slice(into + 1)
+    .some((word) => isSearched(word) && !FAMILY_WORDS.has(word))
+  return into >= 0 && named ? 'earlier' : 'later'
 }
 
 function kindsOf(typed: string[]): ResultKind[] {

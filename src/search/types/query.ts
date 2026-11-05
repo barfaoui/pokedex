@@ -15,8 +15,11 @@ export interface ParsedQuery {
   normalizedQuery: string
   kinds?: ResultKind[]
   excluded?: string[][]
-  family?: boolean
+  /** Set when the query asks for a Pokémon's family: the relatives it asks for first. */
+  family?: FamilyDirection
 }
+
+export type FamilyDirection = 'later' | 'earlier' | 'last'
 
 export type QueryPart = WordPart | StatPart
 

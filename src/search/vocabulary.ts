@@ -2,7 +2,13 @@ import { COLORS, HABITATS, SHAPES } from '../data/types/model'
 import { CONCEPTS } from './concepts/seed'
 import type { ConceptId } from './concepts/types'
 import { normalize } from '../text/normalize'
-import type { Comparison, Descriptor, Sort, StatCriterion } from './types/query'
+import type {
+  Comparison,
+  Descriptor,
+  FamilyDirection,
+  Sort,
+  StatCriterion,
+} from './types/query'
 import type { ResultKind } from './types/result'
 
 export const STAT_WORDS = new Map<string, StatCriterion>([
@@ -100,6 +106,16 @@ export const FAMILY_WORDS = new Set([
   'evolve',
   'evolves',
 ])
+
+/** Only with a family word: "pre evolution", "final evolution". */
+export const FAMILY_DIRECTION_WORDS = new Map<string, FamilyDirection>([
+  ['pre', 'earlier'],
+  ['previous', 'earlier'],
+  ['final', 'last'],
+  ['last', 'last'],
+])
+/** "evolves into X" asks for what comes before X; "X evolves into" for what comes after. */
+export const FAMILY_INTO_WORD = 'into'
 
 export const NEGATING_WORDS = new Set(['not', 'no'])
 export const SEGMENT_END_WORD = 'and'
