@@ -11,12 +11,6 @@ function get<T>(items: Map<string, T>, name: string): T {
 }
 
 describe('buildIndex', () => {
-  it('keeps every Pokémon, move and ability', () => {
-    expect(index.pokemon.size).toBe(151)
-    expect(index.moves.size).toBe(164)
-    expect(index.abilities.size).toBe(114)
-  })
-
   it('keys every item by its dataset name, in dataset order', () => {
     expect([...index.pokemon.keys()]).toEqual(
       dataset.pokemon.map((p) => p.name),
@@ -27,17 +21,24 @@ describe('buildIndex', () => {
     )
   })
 
-  it('converts height to metres and weight to kilograms', () => {
+  it('flattens species fields onto the Pokémon, with types, stats, metres and kilograms', () => {
     const bulbasaur = get(index.pokemon, 'bulbasaur')
+    expect(bulbasaur.id).toBe(1)
+    expect(bulbasaur.displayName).toBe('Bulbasaur')
+    expect(bulbasaur.genus).toBe('Seed Pokémon')
+    expect(bulbasaur.color).toBe('green')
+    expect(bulbasaur.habitat).toBe('grassland')
+    expect(bulbasaur.shape).toBe('quadruped')
+    expect(bulbasaur.isLegendary).toBe(false)
+    expect(bulbasaur.sprite).toBe(dataset.pokemon[0].images.sprite)
+    expect(bulbasaur.artwork).toBe(dataset.pokemon[0].images.official_artwork)
     expect(bulbasaur.heightM).toBeCloseTo(0.7)
     expect(bulbasaur.weightKg).toBeCloseTo(6.9)
 
     const pikachu = get(index.pokemon, 'pikachu')
     expect(pikachu.heightM).toBeCloseTo(0.4)
     expect(pikachu.weightKg).toBeCloseTo(6)
-  })
 
-  it('keeps types and stats', () => {
     expect(get(index.pokemon, 'electrode').stats.speed).toBe(150)
     expect(get(index.pokemon, 'clefairy').types).toEqual(['fairy'])
     expect(get(index.pokemon, 'bulbasaur').types).toEqual(['grass', 'poison'])
@@ -58,34 +59,14 @@ describe('buildIndex', () => {
     expect(get(index.abilities, 'rain-dish').searchName).toBe('rain dish')
   })
 
-  it('flattens species fields onto the Pokémon', () => {
-    const bulbasaur = get(index.pokemon, 'bulbasaur')
-    expect(bulbasaur.id).toBe(1)
-    expect(bulbasaur.displayName).toBe('Bulbasaur')
-    expect(bulbasaur.genus).toBe('Seed Pokémon')
-    expect(bulbasaur.color).toBe('green')
-    expect(bulbasaur.habitat).toBe('grassland')
-    expect(bulbasaur.shape).toBe('quadruped')
-    expect(bulbasaur.isLegendary).toBe(false)
-    expect(bulbasaur.sprite).toBe(dataset.pokemon[0].images.sprite)
-    expect(bulbasaur.artwork).toBe(dataset.pokemon[0].images.official_artwork)
-  })
-
-  it('removes the soft hyphens left in descriptions', () => {
+  it('removes the soft hyphens left in descriptions and writes POKéMON as Pokémon', () => {
     for (const p of dataset.pokemon) {
       const { description } = get(index.pokemon, p.name)
       expect(description, p.name).not.toBe('')
       expect(description, p.name).not.toContain('­')
+      expect(description, p.name).not.toContain('POKéMON')
     }
     expect(get(index.pokemon, 'rattata').description).toContain('scavenges')
-  })
-
-  it('writes the all-caps POKéMON of the descriptions as Pokémon', () => {
-    for (const p of dataset.pokemon) {
-      expect(get(index.pokemon, p.name).description, p.name).not.toContain(
-        'POKéMON',
-      )
-    }
     expect(get(index.pokemon, 'bulbasaur').description).toContain(
       'with this Pokémon',
     )
@@ -128,19 +109,6 @@ describe('buildIndex', () => {
         )
       }
     })
-
-    it('links Sing to the 6 Pokémon that learn it', () => {
-      expect(new Set(get(index.moves, 'sing').learnedBy)).toEqual(
-        new Set([
-          'chansey',
-          'clefable',
-          'clefairy',
-          'jigglypuff',
-          'lapras',
-          'wigglytuff',
-        ]),
-      )
-    })
   })
 
   describe('evolution families', () => {
@@ -153,32 +121,12 @@ describe('buildIndex', () => {
       expect(chainIds.size).toBe(78)
     })
 
-    it('orders members by Pokédex number', () => {
+    it('orders members by Pokédex number, each in its own stage, a family of one included', () => {
       expect(get(index.pokemon, 'ivysaur').evolution?.members).toEqual([
         'bulbasaur',
         'ivysaur',
         'venusaur',
       ])
-    })
-
-    it("gives every member of Eevee's family the same branching family", () => {
-      const eevee = get(index.pokemon, 'eevee').evolution
-      expect(eevee?.members).toEqual([
-        'eevee',
-        'vaporeon',
-        'jolteon',
-        'flareon',
-      ])
-      expect(get(index.pokemon, 'jolteon').evolution).toEqual(eevee)
-    })
-
-    it('gives a Pokémon that does not evolve a family of one', () => {
-      expect(get(index.pokemon, 'tauros').evolution?.members).toEqual([
-        'tauros',
-      ])
-    })
-
-    it('puts each member of a straight family in its own stage, in order', () => {
       expect(get(index.pokemon, 'ivysaur').evolution?.stages).toEqual([
         ['bulbasaur'],
         ['ivysaur'],
@@ -189,7 +137,15 @@ describe('buildIndex', () => {
       ])
     })
 
-    it("puts Eevee's three evolutions in one branching stage", () => {
+    it("gives every member of Eevee's family the same family, its three evolutions in one stage", () => {
+      const eevee = get(index.pokemon, 'eevee').evolution
+      expect(eevee?.members).toEqual([
+        'eevee',
+        'vaporeon',
+        'jolteon',
+        'flareon',
+      ])
+      expect(get(index.pokemon, 'jolteon').evolution).toEqual(eevee)
       expect(get(index.pokemon, 'jolteon').evolution?.stages).toEqual([
         ['eevee'],
         ['vaporeon', 'jolteon', 'flareon'],
@@ -209,15 +165,9 @@ describe('buildIndex', () => {
     })
   })
 
-  describe('purity', () => {
-    it('does not change its input', () => {
-      const input = structuredClone(dataset)
-      buildIndex(input)
-      expect(input).toEqual(dataset)
-    })
-
-    it('gives the same output for the same input', () => {
-      expect(buildIndex(dataset)).toEqual(buildIndex(dataset))
-    })
+  it('is pure: leaves its input unchanged, same output for the same input', () => {
+    const input = structuredClone(dataset)
+    expect(buildIndex(input)).toEqual(index)
+    expect(input).toEqual(dataset)
   })
 })

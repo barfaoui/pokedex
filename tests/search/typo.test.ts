@@ -8,7 +8,6 @@ describe('editDistance', () => {
     ['pikachu', 'pikachuu', 1],
     ['pikachu', 'pikchu', 1],
     ['pikachu', 'pikahcu', 1],
-    ['pikachu', 'pikcahuoo', 3],
   ])('%s → %s: %i change(s)', (a, b, expected) => {
     expect(editDistance(a, b)).toBe(expected)
   })

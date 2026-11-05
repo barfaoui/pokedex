@@ -14,16 +14,13 @@ describe('url state', () => {
     expect(readUrlState('?tab=spaghetti')).toEqual({ query: '', tab: 'all' })
   })
 
-  test('writes the query and leaves out the default tab', () => {
+  test('writes the query and leaves out the default tab, so the home page has no parameters', () => {
     expect(writeUrlState({ query: 'rain team', tab: 'all' })).toBe(
       '?q=rain+team',
     )
     expect(writeUrlState({ query: 'rain team', tab: 'moves' })).toBe(
       '?q=rain+team&tab=moves',
     )
-  })
-
-  test('the home page has no parameters', () => {
     expect(writeUrlState({ query: '', tab: 'all' })).toBe('')
   })
 

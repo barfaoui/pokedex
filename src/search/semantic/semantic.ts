@@ -50,10 +50,8 @@ export function semanticResults(
 }
 
 /**
- * Drops the moves and abilities the concept dictionary relates to the query's concept the other
- * way round: for "make it fall asleep", Rest (puts itself to sleep) and Insomnia (prevents it).
- * The model reads them as close in meaning; the dictionary knows their direction. A query with
- * no concept, or with a negation ("prevent sleep"), keeps every result.
+ * The model reads "make it fall asleep" as close to Insomnia; the dictionary knows its direction.
+ * A query with no concept, or with a negation, keeps every result.
  */
 export function withQueryDirection(
   results: SearchResult[],

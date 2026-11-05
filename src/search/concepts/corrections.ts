@@ -1,5 +1,4 @@
-// Human corrections to generated.ts, from the review, grouped like it:
-// concept → corrected direction. The dictionary is generated + these.
+// Human corrections to generated.ts from the review; the dictionary is generated + these.
 import type { Corrections } from './types'
 
 export const CORRECTIONS: Corrections = {

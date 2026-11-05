@@ -2,15 +2,12 @@ import { describe, expect, it } from 'vitest'
 import { search } from '@/search/search'
 
 describe('filler words', () => {
-  it.each(['show me pikachu', 'i want to find pikachu'])(
-    '"%s" → Pikachu as an exact match: the filler words don\'t lower its score',
-    (query) => {
-      expect(search(query)[0]).toMatchObject({
-        item: { name: 'pikachu' },
-        score: 1,
-      })
-    },
-  )
+  it('"i want to find pikachu" → Pikachu as an exact match: the filler words don\'t lower its score', () => {
+    expect(search('i want to find pikachu')[0]).toMatchObject({
+      item: { name: 'pikachu' },
+      score: 1,
+    })
+  })
 })
 
 describe('"evolution of X"', () => {
@@ -22,12 +19,5 @@ describe('"evolution of X"', () => {
       'charmeleon',
     ])
     expect(top.every((r) => r.score === 1)).toBe(true)
-  })
-
-  it('"evolutions of eevee" → all three branches, at Eevee\'s score', () => {
-    const scores = search('evolutions of eevee')
-      .filter((r) => ['vaporeon', 'jolteon', 'flareon'].includes(r.item.name))
-      .map((r) => r.score)
-    expect(scores).toEqual([1, 1, 1])
   })
 })

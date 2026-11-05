@@ -1,6 +1,6 @@
 import { useCallback, useSyncExternalStore } from 'react'
 
-/** A list of names saved in the browser; anything unreadable is an empty list. */
+/** Anything unreadable is an empty list. */
 export function parseSavedNames(stored: string | null): string[] {
   if (!stored) {
     return []
@@ -67,7 +67,7 @@ function getList(key: string, parse: (stored: string | null) => string[]) {
   return list.cachedList
 }
 
-/** A list saved in the browser under \`key\`, shared by every component that uses it. */
+/** Shared by every component that uses the same key. */
 export function useSavedList(
   key: string,
   parse: (stored: string | null) => string[],

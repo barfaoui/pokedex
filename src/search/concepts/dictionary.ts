@@ -11,7 +11,6 @@ import {
 
 type ByDirection = Record<Direction, GeneratedTag[]>
 
-/** The concept dictionary: the generated tags, moved by the human corrections. */
 export const DICTIONARY: Concepts = applyCorrections(
   GENERATED_TAGS,
   CORRECTIONS,
@@ -28,7 +27,6 @@ const TAGS_BY_ITEM = new Map(
   ),
 )
 
-/** How a move or ability relates to a concept, with its evidence; none if it doesn't. */
 export function tagOf(
   concept: ConceptId,
   kind: GeneratedTag['kind'],
@@ -49,7 +47,6 @@ function applyCorrections(
   ) as Concepts
 }
 
-/** Moves each corrected tag from its generated direction to its corrected one. */
 function correctConcept(
   byDirection: ByDirection,
   corrected: Partial<Record<Direction, Correction[]>>,

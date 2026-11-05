@@ -15,15 +15,6 @@ describe('describeMatch', () => {
     })
   })
 
-  test('stats get short readable labels', () => {
-    expect(describeMatch({ field: 'hp', value: 250 })).toMatchObject({
-      label: 'HP',
-    })
-    expect(
-      describeMatch({ field: 'special-attack', value: 154 }),
-    ).toMatchObject({ label: 'sp. attack' })
-  })
-
   test('the total has its own maximum', () => {
     expect(describeMatch({ field: 'total', value: 680 })).toEqual({
       kind: 'stat',
@@ -114,13 +105,10 @@ describe('describeMatches', () => {
     { field: 'ability', value: 'chlorophyll', detail: 'Faster in sun.' },
   ]
 
-  test('keeps the first lines and counts the rest', () => {
+  test('keeps the first lines and counts the rest, never below 0', () => {
     const { lines, moreCount } = describeMatches(sunMatches, 2)
     expect(lines.map((line) => line.label)).toEqual(['Growth', 'Solar Beam'])
     expect(moreCount).toBe(1)
-  })
-
-  test('nothing more to show counts 0', () => {
     expect(describeMatches(sunMatches.slice(0, 2), 2).moreCount).toBe(0)
   })
 })

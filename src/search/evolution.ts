@@ -9,10 +9,8 @@ const ASKED_FAMILY_WEIGHT = 1
 type PokemonResult = Extract<SearchResult, { kind: 'pokemon' }>
 
 /**
- * Adds the evolution family of every Pokémon found by its name, in both directions: "pikachu"
- * also brings Raichu, "charizard" Charmander and Charmeleon. A member that matches the query
- * itself keeps its own result. Members of the same stage aren't related: "vaporeon" brings Eevee,
- * not Jolteon.
+ * Both directions. A member that matches the query keeps its own result. Members of the same
+ * stage aren't related: "vaporeon" brings Eevee, not Jolteon.
  */
 export function withEvolutionFamilies(
   results: SearchResult[],

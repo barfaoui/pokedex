@@ -29,12 +29,7 @@ const INFLICTS =
 const POSITIVE =
   /\b(?:doubles?|increases?|raises?|heals?|cures?|restores?|protects?|strengthens?|boosts?|skipped)\b|100%/i
 
-/**
- * Tags a move or ability for a concept: its short effect is read first, then
- * its full effect. The first sentence with a clear direction decides and is
- * kept as evidence; otherwise the item is unclear. No tag when the concept
- * never appears, or only in passing.
- */
+/** Short effect first, then full effect: the first sentence with a clear direction decides. */
 export function tagItem(
   shortEffect: string,
   effect: string,
@@ -51,9 +46,7 @@ export function tagItem(
 }
 
 /**
- * The direction a sentence gives a concept, or undefined when it doesn't
- * concern it: none of its roots appears as a whole word, or only in passing
- * ("cannot be selected by Sleep Talk"). For weather, "inflicts" becomes
+ * Undefined when the concept only appears in passing. For weather, "inflicts" becomes
  * "starts", and "affected" becomes "benefits" when the clause is positive.
  */
 export function classifySentence(
@@ -93,7 +86,7 @@ function wholeWord(root: string): RegExp {
   return new RegExp(`\\b${root}\\b`, 'i')
 }
 
-/** The ordered rules, shared by every concept; the first that fits wins. */
+/** Shared by every concept; the first that fits wins. */
 function baseDirection(sentence: string, root: string): Direction {
   if (followedByRoot(PREVENT_WORDS, root).test(sentence)) {
     return 'prevents'

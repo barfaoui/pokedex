@@ -15,7 +15,6 @@ interface Related {
   score: number
 }
 
-/** How a concept group is scored and shown. */
 interface GroupRules {
   /** 0 for a direction search doesn't use. */
   score: (tag: Tag) => number
@@ -91,16 +90,11 @@ const GROUPS: Record<Concept['group'], GroupRules> = {
 
 const NO_MATCH: Scored = { score: 0, matched: [] }
 
-/** Whether the search uses this tag's direction for its concept: what scores above 0 here. */
 export function isWantedDirection(concept: ConceptId, tag: Tag): boolean {
   return GROUPS[CONCEPT_BY_ID[concept].group].score(tag) > 0
 }
 
-/**
- * How well an item relates to a concept: a move or ability through its own
- * tag, a Pokémon through its moves and abilities (read from the Pokémon's own
- * lists). `word` is the word as typed, looked for in the names.
- */
+/** A Pokémon relates through its moves and abilities; `word` is the word as typed, looked for in the names. */
 export function matchConcept(
   concept: ConceptId,
   searchable: SearchableItem,
@@ -148,7 +142,7 @@ function matchPokemon(
   }
 }
 
-/** The Pokémon's moves and abilities that relate to the concept, best first. */
+/** Best first. */
 function relatedOf(
   concept: ConceptId,
   pokemon: Pokemon,

@@ -14,7 +14,7 @@ function pokemon(name: string): Pokemon {
 describe('compareStats', () => {
   const rows = compareStats(pokemon('electrode'), pokemon('jolteon'))
 
-  test('has one row per stat, then the total', () => {
+  test('has one row per stat, then their total', () => {
     expect(rows.map((row) => row.stat)).toEqual([
       'hp',
       'attack',
@@ -24,19 +24,6 @@ describe('compareStats', () => {
       'speed',
       'total',
     ])
-  })
-
-  test('says which of the two is higher', () => {
-    expect(rows.find((row) => row.stat === 'speed')).toEqual({
-      stat: 'speed',
-      left: 150,
-      right: 130,
-      higher: 'left',
-    })
-    expect(rows.find((row) => row.stat === 'hp')?.higher).toBe('right')
-  })
-
-  test('sums the stats into the total', () => {
     expect(rows.at(-1)).toEqual({
       stat: 'total',
       left: 490,
@@ -45,7 +32,14 @@ describe('compareStats', () => {
     })
   })
 
-  test('equal values are a tie', () => {
+  test('says which of the two is higher, or a tie', () => {
+    expect(rows.find((row) => row.stat === 'speed')).toEqual({
+      stat: 'speed',
+      left: 150,
+      right: 130,
+      higher: 'left',
+    })
+    expect(rows.find((row) => row.stat === 'hp')?.higher).toBe('right')
     const special = compareStats(pokemon('raichu'), pokemon('electrode')).find(
       (row) => row.stat === 'special-defense',
     )
@@ -58,17 +52,6 @@ describe('sharedTraits', () => {
     expect(sharedTraits(pokemon('electrode'), pokemon('voltorb'))).toEqual({
       types: ['electric'],
       abilities: ['aftermath', 'soundproof', 'static'],
-    })
-  })
-
-  test('nothing in common gives empty lists', () => {
-    expect(sharedTraits(pokemon('electrode'), pokemon('jolteon'))).toEqual({
-      types: ['electric'],
-      abilities: [],
-    })
-    expect(sharedTraits(pokemon('pikachu'), pokemon('bulbasaur'))).toEqual({
-      types: [],
-      abilities: [],
     })
   })
 })

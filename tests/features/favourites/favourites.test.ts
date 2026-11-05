@@ -5,17 +5,14 @@ import {
 } from '@/features/favourites/favourites'
 
 describe('parseFavourites', () => {
-  test('reads the stored list of Pokémon names', () => {
-    expect(parseFavourites('["pikachu","eevee"]')).toEqual(['pikachu', 'eevee'])
-  })
-
   test('nothing stored, broken JSON or the wrong shape is an empty list', () => {
     expect(parseFavourites(null)).toEqual([])
     expect(parseFavourites('{not json')).toEqual([])
     expect(parseFavourites('{"pikachu":true}')).toEqual([])
   })
 
-  test('drops entries that are not names', () => {
+  test('reads the stored names, dropping entries that are not names', () => {
+    expect(parseFavourites('["pikachu","eevee"]')).toEqual(['pikachu', 'eevee'])
     expect(parseFavourites('["pikachu",3,null]')).toEqual(['pikachu'])
   })
 })

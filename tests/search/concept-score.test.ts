@@ -2,9 +2,9 @@ import { describe, expect, it } from 'vitest'
 import { search } from '@/search/search'
 import type { ResultKind, SearchResult } from '@/search/types/result'
 
-// One stated status, one that is only a chance, one weather. Not "poison": it is also a type,
-// a literal match that rightly scores 1.
-const CONCEPT_QUERIES = ['put my opponent to sleep', 'burn', 'rain team']
+// One status, one weather: each group has its own scores. Not "poison": it is also a type, a
+// literal match that rightly scores 1.
+const CONCEPT_QUERIES = ['put my opponent to sleep', 'rain team']
 
 function scoreOf(
   results: SearchResult[],

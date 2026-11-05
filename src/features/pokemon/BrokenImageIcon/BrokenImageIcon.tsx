@@ -1,7 +1,6 @@
 import { PixelArt } from '@/shared/PixelArt/PixelArt'
 import './BrokenImageIcon.scss'
 
-// A picture torn in two: the right half drops by two pixels.
 const BROKEN_IMAGE = [
   '................',
   '.#######........',

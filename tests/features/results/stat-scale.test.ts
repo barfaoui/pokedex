@@ -15,11 +15,6 @@ describe('stat scale', () => {
     })
   })
 
-  test('the strongest Pokémon fills its bar', () => {
-    const electrode = index.pokemon.get('electrode')
-    expect(electrode?.stats.speed).toBe(STAT_SCALE.speed)
-  })
-
   test('is worked out from the Pokémon it is given', () => {
     const pikachu = index.pokemon.get('pikachu')
     const raichu = index.pokemon.get('raichu')

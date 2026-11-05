@@ -2,11 +2,9 @@ import { defineConfig, devices } from '@playwright/test'
 
 const PORT = 4173
 
-// https://playwright.dev/docs/test-configuration
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
-  // Fail on CI if a test.only was left in the code
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   workers: process.env.CI ? 1 : undefined,

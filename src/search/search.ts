@@ -27,10 +27,7 @@ export function needsSemantic(results: SearchResult[]): boolean {
   return !results.some((result) => result.score >= CONFIDENT_SCORE)
 }
 
-/**
- * Searches Pokémon, moves and abilities. Results scoring 0 are hidden; the
- * rest are sorted by score, then by the query's sort word if it has one.
- */
+/** Results scoring 0 are hidden; equal scores follow the query's sort word. */
 export function search(
   query: string,
   pokedex: PokedexIndex = index,
@@ -48,7 +45,6 @@ export function search(
     .sort(compareResults(parsed.sort))
 }
 
-/** What the query excludes with "not" / "no", for the note above the results. */
 export function queryExclusions(
   query: string,
   pokedex: PokedexIndex = index,
@@ -58,10 +54,8 @@ export function queryExclusions(
 }
 
 /**
- * The text semantic search embeds: the query without its "not" / "no" segments, or '' when
- * nothing is left to search: a lone negation ("not electric") or a lone sort word ("the fastest
- * pokemon"), whose listed Pokémon would otherwise look weak enough to call the model.
- * A query without a negation goes as typed.
+ * '' when nothing is left to search (a lone negation or sort word): its listed Pokémon would
+ * otherwise look weak enough to call the model.
  */
 export function semanticQueryOf(query: string): string {
   const parsed = parseQuery(query)
@@ -88,7 +82,7 @@ function searchableItems(pokedex: PokedexIndex): SearchableItem[] {
   ]
 }
 
-/** Scores every item and keeps those above 0; with a sort word, only Pokémon (the only items with the attribute). */
+/** With a sort word, only Pokémon: the only items with the attribute. */
 function matchingResults(
   parsed: ParsedQuery,
   pokedex: PokedexIndex,
@@ -125,7 +119,7 @@ function sortWordResults(sort: Sort, pokedex: PokedexIndex): SearchResult[] {
   return [...nameMatches, ...listedItems(pokedex, ['pokemon'], found)]
 }
 
-/** Every item of these kinds not already found, in Pokédex order, below any real match. */
+/** In Pokédex order, below any real match. */
 function listedItems(
   pokedex: PokedexIndex,
   kinds: ResultKind[],
@@ -139,7 +133,6 @@ function listedItems(
     .map((searchable) => ({ ...searchable, score: LISTED_SCORE, matched: [] }))
 }
 
-/** Adds the sorted attribute (e.g. speed 130) to what a Pokémon result shows. */
 function withSortMatches(result: SearchResult, sort?: Sort): SearchResult {
   if (!sort || result.kind !== 'pokemon') {
     return result

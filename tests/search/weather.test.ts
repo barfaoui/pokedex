@@ -1,23 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { search } from '../../src/search/search'
 
-function rankOf(query: string, name: string): number {
-  const rank = search(query).findIndex((r) => r.item.name === name)
-  expect(rank, name).toBeGreaterThanOrEqual(0)
-  return rank
-}
-
 describe('weather search', () => {
-  it('ranks what starts the weather first: Drought before Chlorophyll', () => {
-    expect(rankOf('sun', 'drought')).toBeLessThan(rankOf('sun', 'chlorophyll'))
-  })
-
-  it('ranks what benefits before what is only affected: Swift Swim before Solar Beam', () => {
-    expect(rankOf('rain', 'swift-swim')).toBeLessThan(
-      rankOf('rain', 'solar-beam'),
-    )
-  })
-
+  // The order starts, benefits, affected is tested on the scores, in concept-score.test.ts.
   it("shows a move's weather sentence and direction, not its short effect", () => {
     const thunder = search('rain').find((r) => r.item.name === 'thunder')
     expect(thunder?.matched).toEqual([

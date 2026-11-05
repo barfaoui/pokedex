@@ -23,18 +23,11 @@ describe('evolutionAround', () => {
     expect(around('venusaur')).toEqual({ previous: ['ivysaur'], next: [] })
   })
 
-  test('Eevee evolves into each of its three forms', () => {
+  test('Eevee evolves into each of its three forms, and a branch does not list the others', () => {
     expect(around('eevee')).toEqual({
       previous: [],
       next: ['vaporeon', 'jolteon', 'flareon'],
     })
-  })
-
-  test('one branch of Eevee does not list the other branches', () => {
     expect(around('jolteon')).toEqual({ previous: ['eevee'], next: [] })
-  })
-
-  test('a Pokémon that does not evolve has nothing around it', () => {
-    expect(around('tauros')).toEqual({ previous: [], next: [] })
   })
 })

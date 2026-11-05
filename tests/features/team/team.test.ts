@@ -27,15 +27,7 @@ describe('toggleTeamMember', () => {
 })
 
 describe('parseTeam', () => {
-  test('reads the saved team', () => {
-    expect(parseTeam('["pikachu","raichu"]')).toEqual(['pikachu', 'raichu'])
-  })
-
-  test('nothing saved or unreadable is an empty team', () => {
-    expect(parseTeam(null)).toEqual([])
-    expect(parseTeam('{not json')).toEqual([])
-  })
-
+  // Reading and unreadable values are parseSavedNames, tested through parseFavourites.
   test('keeps six at most, each Pokémon once', () => {
     expect(parseTeam(JSON.stringify([...SIX, 'eevee', 'pikachu']))).toEqual(SIX)
     expect(parseTeam('["pikachu","pikachu"]')).toEqual(['pikachu'])

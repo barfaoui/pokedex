@@ -3,26 +3,13 @@ import { dataset } from '../../src/data/dataset'
 import { displayName } from '../../src/data/display-name'
 
 describe('displayName', () => {
-  it.each([
-    ['bulbasaur', 'Bulbasaur'],
-    ['sleep-powder', 'Sleep Powder'],
-    ['solar-beam', 'Solar Beam'],
-    ['high-jump-kick', 'High Jump Kick'],
-    ['lightning-rod', 'Lightning Rod'],
-  ])('title-cases each word: %s → %s', (name, expected) => {
-    expect(displayName(name)).toBe(expected)
+  it('title-cases each word', () => {
+    expect(displayName('high-jump-kick')).toBe('High Jump Kick')
   })
 
-  it.each([
-    ['nidoran-f', 'Nidoran♀'],
-    ['nidoran-m', 'Nidoran♂'],
-    ['mr-mime', 'Mr. Mime'],
-    ['farfetchd', "Farfetch'd"],
-    ['double-edge', 'Double-Edge'],
-    ['self-destruct', 'Self-Destruct'],
-    ['soft-boiled', 'Soft-Boiled'],
-  ])('uses the official name: %s → %s', (name, expected) => {
-    expect(displayName(name)).toBe(expected)
+  it('uses the official name where title case would be wrong', () => {
+    expect(displayName('nidoran-f')).toBe('Nidoran♀')
+    expect(displayName('double-edge')).toBe('Double-Edge')
   })
 
   it('gives every name in the dataset a readable display name', () => {

@@ -22,11 +22,7 @@ interface Read<T> {
   length: number
 }
 
-/**
- * Splits a query into the parts that get scored (stat conditions, and words
- * with the type or descriptor they may mean) and an optional sort word.
- * Only the first sort word sorts; later ones are kept as words.
- */
+/** Only the first sort word sorts; later ones are kept as words. */
 export function parseQuery(query: string): ParsedQuery {
   const { searched, excluded } = splitExclusions(
     normalize(spellOutOperators(query)).split(' ').filter(Boolean),
@@ -112,7 +108,7 @@ function isSearched(word: string): boolean {
   return !FILLER_WORDS.has(word) && !KIND_WORDS.has(word)
 }
 
-/** Drops filler words ("put my opponent to"), unless nothing else is left. */
+/** Filler words are kept when nothing else is left. */
 function withoutFiller(words: string[]): string[] {
   const meaningful = words.filter((word) => !FILLER_WORDS.has(word))
   return meaningful.length ? meaningful : words
@@ -126,7 +122,6 @@ function spellOutOperators(query: string): string {
     .replace(/</g, ' under ')
 }
 
-/** Reads "<stat> <comparison> <number>" (e.g. "speed over 150") at `start`, or nothing if the words don't form one. */
 function readStatCondition(
   words: string[],
   start: number,
@@ -153,10 +148,7 @@ function readStatCondition(
   }
 }
 
-/**
- * Reads one word, or a two-word descriptor such as "waters edge", with the
- * type and descriptor it may mean. Its text is still matched against names.
- */
+/** A word, or a two-word descriptor ("waters edge"); its text is still matched against names. */
 function readWord(words: string[], start: number): Read<WordPart> {
   const phrase = readPhrase(DESCRIPTORS, words, start)
   const length = phrase?.length ?? 1

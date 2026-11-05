@@ -1,7 +1,6 @@
 import { PixelArt } from '@/shared/PixelArt/PixelArt'
 import './PokedexButton.scss'
 
-// A closed photo album with a heart on its cover
 const ALBUM = [
   '.##########.',
   '#AAAAAAAAA##',

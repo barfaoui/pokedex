@@ -3,7 +3,7 @@ import { statValue } from './stat-value'
 import type { Sort } from './types/query'
 import type { Match, SearchResult } from './types/result'
 
-/** The attribute a sort word sorts by, as shown on a Pokémon result (hp and defense for "tanky"). */
+/** As shown on a Pokémon result: hp and defense for "tanky". */
 export function sortMatches(sort: Sort, pokemon: Pokemon): Match[] {
   switch (sort.attribute) {
     case 'weight':
@@ -37,7 +37,7 @@ function compareBySort(sort: Sort, a: SearchResult, b: SearchResult): number {
   return sort.direction === 'desc' ? valueB - valueA : valueA - valueB
 }
 
-/** The number to sort on (summed for "tanky"); moves and abilities have none. */
+/** Summed for "tanky"; moves and abilities have none. */
 function sortValue(sort: Sort, result: SearchResult): number | undefined {
   if (result.kind !== 'pokemon') {
     return undefined

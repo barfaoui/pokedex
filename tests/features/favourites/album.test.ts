@@ -32,13 +32,10 @@ describe('albumStats', () => {
 })
 
 describe('pocketCount', () => {
-  test('an album page has 6 pockets, even when empty', () => {
+  test('fills whole pages of 6 pockets, one page even when empty', () => {
     expect(pocketCount(0)).toBe(6)
     expect(pocketCount(1)).toBe(6)
     expect(pocketCount(6)).toBe(6)
-  })
-
-  test('more favourites start a new page of 6', () => {
     expect(pocketCount(7)).toBe(12)
     expect(pocketCount(13)).toBe(18)
   })

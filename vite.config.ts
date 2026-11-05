@@ -5,7 +5,6 @@ import { defineConfig } from 'vite'
 
 const src = fileURLToPath(new URL('./src', import.meta.url))
 
-// https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
   resolve: {
@@ -17,7 +16,6 @@ export default defineConfig({
     },
   },
   test: {
-    // Vitest runs tests/**/*.test.ts; Playwright runs tests/e2e/*.spec.ts.
     // The PRD queries are their own project (npm run test:queries), a separate CI step.
     // The search evaluation (npm run eval) only reports, so it stays out of CI.
     projects: [

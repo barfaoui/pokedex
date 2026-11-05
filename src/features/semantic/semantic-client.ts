@@ -17,7 +17,7 @@ let client: SemanticClient | undefined
 let status: ModelStatus | null = null
 const listeners = new Set<() => void>()
 
-/** One worker for the whole visit, started by the first query that needs it. */
+/** One worker for the whole visit. */
 export function semanticClient(): SemanticClient {
   client ??= createClient()
   return client

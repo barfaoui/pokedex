@@ -1,8 +1,4 @@
-/**
- * Redraws a loaded image at `size`×`size` pixels and returns it as a PNG data URL;
- * shown scaled up with `image-rendering: pixelated`, it becomes pixel art.
- * Throws when the image can't be read back (a server without CORS headers).
- */
+/** Throws when the image can't be read back (a server without CORS headers). */
 export function pixelate(image: HTMLImageElement, size: number): string {
   const canvas = document.createElement('canvas')
   canvas.width = size

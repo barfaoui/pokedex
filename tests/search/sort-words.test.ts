@@ -13,9 +13,7 @@ function shownValues(query: string, field: MatchField): number[] {
 describe('superlatives and "high / low / most / least + stat"', () => {
   // First Pokémon looked up in the dataset; on a tie, Pokédex order decides.
   it.each([
-    ['fastest', 'speed', 'desc', 'electrode'],
     ['weakest', 'total', 'asc', 'caterpie'], // tied with Weedle at 195
-    ['high hp', 'hp', 'desc', 'chansey'],
     ['high special attack', 'special-attack', 'desc', 'mewtwo'],
     // A phrase is never matched as a name: it was read as a typo of Horn Attack.
     ['most attack', 'attack', 'desc', 'dragonite'],

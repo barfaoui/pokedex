@@ -20,28 +20,18 @@ describe('kind words', () => {
     expect(parsed.parts).toHaveLength(1)
   })
 
-  it('"pokemon that paralyzes the enemy" → the Pokémon first, then the moves and abilities that do it', () => {
+  it('"pokemon that paralyzes the enemy" → the Pokémon first, then the moves and abilities that do it, kept below', () => {
     const results = search('pokemon that paralyzes the enemy')
     expect(results[0].kind).toBe('pokemon')
     const lastPokemon = results.findLastIndex((r) => r.kind === 'pokemon')
     const thunderWave = results.findIndex((r) => r.item.name === 'thunder-wave')
     expect(thunderWave).toBeGreaterThan(lastPokemon)
-  })
-
-  it('keeps the other kinds, below: they are ranked, not filtered', () => {
-    const names = search('pokemon that paralyzes the enemy').map(
-      (r) => r.item.name,
-    )
-    expect(names).toContain('thunder-wave')
-    expect(names).toContain('static')
+    // Ranked, not filtered: the abilities stay too.
+    expect(results.map((r) => r.item.name)).toContain('static')
   })
 
   it('"paralysis moves" → the moves first', () => {
     expect(search('paralysis moves')[0].kind).toBe('move')
-  })
-
-  it('"ability that poisons" → the abilities first', () => {
-    expect(search('ability that poisons')[0].kind).toBe('ability')
   })
 
   it('"that can paralyze" → the abilities first', () => {

@@ -35,7 +35,7 @@ export function typoScore(word: string, target: string): number {
     : 0
 }
 
-/** How close a word is to a vocabulary word (a type, a colour…): exact, its start, or a typo. */
+/** Exact, its start, or a typo. */
 export function closeScore(word: string, target: string): number {
   const prefix =
     word.length >= MIN_PREFIX_LENGTH && target.startsWith(word)

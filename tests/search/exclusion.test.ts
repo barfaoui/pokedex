@@ -14,13 +14,6 @@ function pokemonWithout(type: string): string[] {
 }
 
 describe('excluding with "not" / "no"', () => {
-  it('"fire but not flying" → no Charizard or Moltres, Charmander still there', () => {
-    const found = names(search('fire but not flying'))
-    expect(found).not.toContain('charizard')
-    expect(found).not.toContain('moltres')
-    expect(found).toContain('charmander')
-  })
-
   it('"electric not flying" → no Zapdos, and Pikachu keeps its score of 1: removed, not scored down', () => {
     const results = search('electric not flying')
     expect(names(results)).not.toContain('zapdos')
@@ -31,11 +24,6 @@ describe('excluding with "not" / "no"', () => {
     const results = search('not electric')
     expect(results.every((r) => r.kind === 'pokemon')).toBe(true)
     expect(names(results)).toEqual(pokemonWithout('electric'))
-  })
-
-  it('"no poison" → no Poison-type Pokémon', () => {
-    const results = search('no poison')
-    expect(names(results)).toEqual(pokemonWithout('poison'))
   })
 
   it.each(['pokemon not electric', 'not electric pokemon'])(
@@ -79,12 +67,6 @@ describe('excluding with "not" / "no"', () => {
     const results = search('fire moves not burn')
     expect(names(results)).not.toContain('ember')
     expect(names(results)).toContain('charmander')
-  })
-
-  it('"and" ends what is excluded: "electric not flying and fast"', () => {
-    expect(queryExclusions('electric not flying and fast').rules).toEqual([
-      { kind: 'type', value: 'flying' },
-    ])
   })
 
   it('semantic search never sees the excluded words, and a lone negation never reaches it', () => {

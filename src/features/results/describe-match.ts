@@ -22,7 +22,7 @@ export const DESCRIPTOR_LABELS = {
   shape: 'shape',
 } as const
 
-/** What a card shows for one match; undefined when the card already shows it (name, type). */
+/** Undefined when the card already shows it (name, type). */
 export function describeMatch(match: Match): MatchLine | undefined {
   const { field, value } = match
   switch (field) {
@@ -84,7 +84,6 @@ export function describeMatch(match: Match): MatchLine | undefined {
   }
 }
 
-/** The first `limit` lines a card shows, and how many more there are. */
 export function describeMatches(
   matches: Match[],
   limit: number,

@@ -31,18 +31,21 @@ describe('dataset', () => {
     }
   })
 
-  it.each([
-    [
-      'types',
-      POKEMON_TYPES,
-      [...pokemon.flatMap((p) => p.types), ...moves.map((m) => m.type)],
-    ],
-    ['colors', COLORS, pokemon.map((p) => p.species.color)],
-    ['shapes', SHAPES, pokemon.map((p) => p.species.shape)],
-    ['habitats', HABITATS, pokemon.map((p) => p.species.habitat)],
-    ['damage classes', DAMAGE_CLASSES, moves.map((m) => m.damage_class)],
-  ])('uses exactly the known %s', (_label, known, values) => {
-    expect(new Set(values)).toEqual(new Set(known))
+  it('uses exactly the known types, colours, shapes, habitats and damage classes', () => {
+    const lists: [string, readonly string[], string[]][] = [
+      [
+        'types',
+        POKEMON_TYPES,
+        [...pokemon.flatMap((p) => p.types), ...moves.map((m) => m.type)],
+      ],
+      ['colors', COLORS, pokemon.map((p) => p.species.color)],
+      ['shapes', SHAPES, pokemon.map((p) => p.species.shape)],
+      ['habitats', HABITATS, pokemon.map((p) => p.species.habitat)],
+      ['damage classes', DAMAGE_CLASSES, moves.map((m) => m.damage_class)],
+    ]
+    for (const [label, known, values] of lists) {
+      expect(new Set(values), label).toEqual(new Set(known))
+    }
   })
 
   it('only references moves and abilities that exist', () => {

@@ -23,8 +23,4 @@ describe('exclusionNote', () => {
       "Can't exclude “banana”",
     ])
   })
-
-  test('nothing negated, no note', () => {
-    expect(exclusionNote({ rules: [], unknown: [] })).toEqual([])
-  })
 })

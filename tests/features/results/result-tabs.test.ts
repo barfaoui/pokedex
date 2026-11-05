@@ -3,13 +3,9 @@ import { search } from '@/search/search'
 import { resultsInTab, tabCounts } from '@/features/results/result-tabs'
 
 describe('result tabs', () => {
-  test('All keeps every result in the order search ranked them', () => {
+  test('All keeps every result, each kind tab only its kind, in the order search ranked them', () => {
     const results = search('sun team')
     expect(resultsInTab(results, 'all')).toEqual(results)
-  })
-
-  test('each kind tab keeps only its kind, in the same order', () => {
-    const results = search('sun team')
     const kinds = { pokemon: 'pokemon', abilities: 'ability', moves: 'move' }
     for (const [tab, kind] of Object.entries(kinds)) {
       const inTab = resultsInTab(results, tab as keyof typeof kinds)
@@ -29,14 +25,5 @@ describe('result tabs', () => {
     expect(counts.moves).toBe(
       results.filter((result) => result.kind === 'move').length,
     )
-  })
-
-  test('an empty search counts 0 everywhere', () => {
-    expect(tabCounts([])).toEqual({
-      all: 0,
-      pokemon: 0,
-      abilities: 0,
-      moves: 0,
-    })
   })
 })

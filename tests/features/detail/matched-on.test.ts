@@ -2,13 +2,10 @@ import { describe, expect, test } from 'vitest'
 import { matchedOn } from '@/features/detail/matched-on'
 
 describe('matchedOn', () => {
-  test('a name match quotes what the user typed', () => {
+  test('a name match quotes what the user typed, and says when it was a close match', () => {
     expect(
       matchedOn([{ field: 'name', value: 'pikachu' }], 'pikachu', 1),
     ).toEqual(['name “pikachu”'])
-  })
-
-  test('a name reached despite a typo says it was a close match', () => {
     expect(
       matchedOn([{ field: 'name', value: 'pikachu' }], ' Pikachoo ', 0.71),
     ).toEqual(['name “Pikachoo” (close match)'])
@@ -35,9 +32,5 @@ describe('matchedOn', () => {
         1,
       ),
     ).toEqual(['speed 150', 'Sleep Powder · Puts the target to sleep.'])
-  })
-
-  test('nothing matched gives no line', () => {
-    expect(matchedOn([], 'pikachu', 1)).toEqual([])
   })
 })

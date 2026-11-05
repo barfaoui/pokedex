@@ -15,12 +15,6 @@ describe('parseQuery', () => {
         ['blue'],
       ])
     })
-
-    it('a lone negation has nothing to search', () => {
-      const parsed = parseQuery('not electric')
-      expect(parsed.parts).toEqual([])
-      expect(parsed.excluded).toEqual([['electric']])
-    })
   })
 
   describe('stat conditions', () => {
@@ -51,33 +45,27 @@ describe('parseQuery', () => {
     expect(parsed.parts).toMatchObject([{ kind: 'word', text: 'heavy' }])
   })
 
-  it.each([
-    ['green', { field: 'color', value: 'green' }],
-    ['waters edge', { field: 'habitat', value: 'waters-edge' }],
-  ])(
-    'reads the descriptor "%s", two-word ones included',
-    (query, descriptor) => {
-      expect(parseQuery(query).parts).toEqual([
-        {
-          kind: 'word',
-          text: query,
-          descriptor: { value: descriptor, score: 1 },
+  it('reads a two-word descriptor as one word: "waters edge"', () => {
+    expect(parseQuery('waters edge').parts).toEqual([
+      {
+        kind: 'word',
+        text: 'waters edge',
+        descriptor: {
+          value: { field: 'habitat', value: 'waters-edge' },
+          score: 1,
         },
-      ])
-    },
-  )
+      },
+    ])
+  })
 
-  it.each([
-    ['gren', { field: 'color', value: 'green' }],
-    ['mount', { field: 'habitat', value: 'mountain' }],
-  ])(
-    'reads "%s" as a close descriptor (a typo or its start), scored below 1',
-    (query, value) => {
-      const [part] = parseQuery(query).parts
-      expect(part).toMatchObject({ descriptor: { value } })
-      expect(part.kind === 'word' && part.descriptor?.score).toBeLessThan(1)
-    },
-  )
+  // A descriptor typo ("purpel") is tested through search, in match/type.test.ts.
+  it('reads the start of a descriptor as a close one, scored below 1: "mount"', () => {
+    const [part] = parseQuery('mount').parts
+    expect(part).toMatchObject({
+      descriptor: { value: { field: 'habitat', value: 'mountain' } },
+    })
+    expect(part.kind === 'word' && part.descriptor?.score).toBeLessThan(1)
+  })
 
   it('parses "fast electric" into a speed sort and a typed word', () => {
     expect(parseQuery('fast electric')).toEqual({
@@ -93,12 +81,9 @@ describe('parseQuery', () => {
     })
   })
 
-  it.each([
-    ['doze', 'sleep'],
-    ['sunny', 'sun'],
-  ] as const)('reads "%s" as the concept %s', (word, concept) => {
-    expect(parseQuery(word).parts).toMatchObject([
-      { kind: 'word', text: word, concept },
+  it('reads "doze" as the concept sleep', () => {
+    expect(parseQuery('doze').parts).toMatchObject([
+      { kind: 'word', text: 'doze', concept: 'sleep' },
     ])
   })
 

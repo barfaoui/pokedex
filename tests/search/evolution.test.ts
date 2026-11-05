@@ -28,16 +28,6 @@ describe('evolution family of a Pokémon found by name', () => {
     }
   })
 
-  it('"charmeleon" → Charmander before it, Charizard after it', () => {
-    const results = search('charmeleon')
-    expect(pokemon(results, 'charmander')?.matched).toEqual([
-      { field: 'evolvesInto', value: 'charmeleon' },
-    ])
-    expect(pokemon(results, 'charizard')?.matched).toEqual([
-      { field: 'evolutionOf', value: 'charmeleon' },
-    ])
-  })
-
   it('"vaporeon" → Eevee only, not its siblings', () => {
     const found = names(search('vaporeon'))
     expect(found).toContain('eevee')

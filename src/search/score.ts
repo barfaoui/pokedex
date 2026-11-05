@@ -11,10 +11,7 @@ const MIN_NEAR_MISS_RATIO = 0.5
 
 const NO_MATCH: Scored = { score: 0, matched: [] }
 
-/**
- * How well an item meets the query: the average of its part scores,
- * with what each matching part matched on. Expects at least one part.
- */
+/** The average of the part scores; expects at least one part. */
 export function scoreItem(
   query: ParsedQuery,
   searchable: SearchableItem,
@@ -155,7 +152,6 @@ function isMet({ comparison, value: threshold }: StatPart, value: number) {
   }
 }
 
-/** 0.95 × how close the value came (value ÷ threshold, inverted for "under"), or 0 below half. */
 function nearMissScore(
   { comparison, value: threshold }: StatPart,
   value: number,

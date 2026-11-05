@@ -1,4 +1,3 @@
-// Embeds every searchable text once, at dev time, with the model in public/models/.
 // Run with `npm run embeddings` after the dataset or the model changes; the app only reads the output.
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'

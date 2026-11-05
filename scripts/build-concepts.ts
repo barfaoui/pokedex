@@ -1,4 +1,3 @@
-// Builds the concept dictionary from the dataset's effect texts (tech spec §5.4).
 // Run by hand with `npm run concepts`, then review the output; the app never runs this.
 import { readFileSync, writeFileSync } from 'node:fs'
 import { tagItem } from '../src/search/concepts/direction.ts'

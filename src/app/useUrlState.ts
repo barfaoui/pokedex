@@ -1,7 +1,7 @@
 import { useCallback, useState } from 'react'
 import { readUrlState, writeUrlState, type UrlState } from './url-state'
 
-/** The query and tab, kept in the URL so a search can be shared and survives a refresh. */
+/** In the URL so a search can be shared and survives a refresh. */
 export function useUrlState(): [UrlState, (next: UrlState) => void] {
   const [state, setState] = useState(() => readUrlState(window.location.search))
 

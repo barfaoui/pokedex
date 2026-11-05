@@ -14,7 +14,7 @@ export function isResultTab(value: string): value is ResultTab {
   return (RESULT_TABS as readonly string[]).includes(value)
 }
 
-/** The results a tab shows, in the order search ranked them. */
+/** In the order search ranked them. */
 export function resultsInTab(
   results: SearchResult[],
   tab: ResultTab,

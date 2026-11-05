@@ -17,7 +17,7 @@ export interface AlbumStat {
   value: number
 }
 
-/** What the Pokémon is best at: its highest stats; a tie keeps the usual stat order. */
+/** A tie keeps the usual stat order. */
 export function albumStats(pokemon: Pokemon): AlbumStat[] {
   return [...STAT_NAMES]
     .sort((a, b) => pokemon.stats[b] - pokemon.stats[a])

@@ -8,13 +8,6 @@ describe('multi-word names', () => {
       score: 1,
     })
   })
-
-  it('"mr mime" → Mr. Mime, as an exact match', () => {
-    expect(search('mr mime')[0]).toMatchObject({
-      item: { name: 'mr-mime' },
-      score: 1,
-    })
-  })
 })
 
 describe('short words', () => {

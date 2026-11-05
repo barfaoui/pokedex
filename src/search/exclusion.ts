@@ -23,7 +23,6 @@ export interface Exclusions {
 
 export const NO_EXCLUSIONS: Exclusions = { rules: [], unknown: [] }
 
-/** Reads what each "not" / "no" segment excludes. */
 export function exclusionsOf(
   parsed: ParsedQuery,
   pokedex: PokedexIndex,
@@ -58,7 +57,7 @@ export function exclusionsOf(
   return { rules, unknown }
 }
 
-/** Removes every result an exclusion applies to; the others keep their score. */
+/** The others keep their score. */
 export function withoutExcluded(
   results: SearchResult[],
   rules: Exclusion[],
