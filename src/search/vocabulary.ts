@@ -5,17 +5,6 @@ import { normalize } from '../text/normalize'
 import type { Comparison, Descriptor, Sort, StatCriterion } from './types/query'
 import type { ResultKind } from './types/result'
 
-export const SORT_WORDS = new Map<string, Omit<Sort, 'word'>>([
-  ['fast', { attribute: 'speed', direction: 'desc' }],
-  ['slow', { attribute: 'speed', direction: 'asc' }],
-  ['strong', { attribute: 'attack', direction: 'desc' }],
-  ['strongest', { attribute: 'total', direction: 'desc' }],
-  ['best', { attribute: 'total', direction: 'desc' }],
-  ['heavy', { attribute: 'weight', direction: 'desc' }],
-  ['tall', { attribute: 'height', direction: 'desc' }],
-  ['tanky', { attribute: 'hpAndDefense', direction: 'desc' }],
-])
-
 export const STAT_WORDS = new Map<string, StatCriterion>([
   ['hp', 'hp'],
   ['attack', 'attack'],
@@ -24,6 +13,38 @@ export const STAT_WORDS = new Map<string, StatCriterion>([
   ['special defense', 'special-defense'],
   ['speed', 'speed'],
   ['total', 'total'],
+])
+
+// "high hp", "low speed", "most attack", "least special defense": a stat to sort by.
+const STAT_SORT_QUALIFIERS = new Map<string, Sort['direction']>([
+  ['high', 'desc'],
+  ['most', 'desc'],
+  ['low', 'asc'],
+  ['least', 'asc'],
+])
+
+export const SORT_WORDS = new Map<string, Omit<Sort, 'word'>>([
+  ['fast', { attribute: 'speed', direction: 'desc' }],
+  ['fastest', { attribute: 'speed', direction: 'desc' }],
+  ['slow', { attribute: 'speed', direction: 'asc' }],
+  ['slowest', { attribute: 'speed', direction: 'asc' }],
+  ['strong', { attribute: 'attack', direction: 'desc' }],
+  ['strongest', { attribute: 'total', direction: 'desc' }],
+  ['weakest', { attribute: 'total', direction: 'asc' }],
+  ['best', { attribute: 'total', direction: 'desc' }],
+  ['heavy', { attribute: 'weight', direction: 'desc' }],
+  ['heaviest', { attribute: 'weight', direction: 'desc' }],
+  ['lightest', { attribute: 'weight', direction: 'asc' }],
+  ['tall', { attribute: 'height', direction: 'desc' }],
+  ['tallest', { attribute: 'height', direction: 'desc' }],
+  ['shortest', { attribute: 'height', direction: 'asc' }],
+  ['tanky', { attribute: 'hpAndDefense', direction: 'desc' }],
+  ...[...STAT_SORT_QUALIFIERS].flatMap(([qualifier, direction]) =>
+    [...STAT_WORDS].map(
+      ([stat, attribute]) =>
+        [`${qualifier} ${stat}`, { attribute, direction }] as const,
+    ),
+  ),
 ])
 
 // The parser rewrites >, <, >= and <= into these words before normalising.

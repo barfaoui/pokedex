@@ -45,10 +45,13 @@ export function parseQuery(query: string): ParsedQuery {
   }
   let i = 0
   while (i < words.length) {
-    const sort = SORT_WORDS.get(words[i])
+    const sort = readPhrase(SORT_WORDS, words, i)
     if (sort && !parsed.sort) {
-      parsed.sort = { word: words[i], ...sort }
-      i += 1
+      parsed.sort = {
+        word: words.slice(i, i + sort.length).join(' '),
+        ...sort.value,
+      }
+      i += sort.length
       continue
     }
     const part = readStatCondition(words, i) ?? readWord(words, i)
@@ -164,13 +167,14 @@ function readWord(words: string[], start: number): Read<WordPart> {
   }
 }
 
-/** Tries two-word phrases first, so "special attack" wins over "special". */
+/** Tries longer phrases first, so "special attack" wins over "special". */
 export function readPhrase<T>(
   phrases: Map<string, T>,
   words: string[],
   start: number,
 ): Read<T> | undefined {
-  for (const length of [2, 1]) {
+  // Three words for "high special attack".
+  for (const length of [3, 2, 1]) {
     if (start + length > words.length) {
       continue
     }

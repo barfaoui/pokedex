@@ -51,5 +51,4 @@ export interface Sort {
   direction: 'asc' | 'desc'
 }
 
-export type SortAttribute =
-  'speed' | 'attack' | 'total' | 'weight' | 'height' | 'hpAndDefense'
+export type SortAttribute = StatCriterion | 'weight' | 'height' | 'hpAndDefense'

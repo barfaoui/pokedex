@@ -29,6 +29,9 @@ export interface EvalQuery {
   seen?: string
 }
 
+// Queries that failed when people tried the app, fixed since: they shaped the fix.
+const USER_TESTING = 'from user testing'
+
 const SLEEP_MOVES: Key[] = [
   'move:sing',
   'move:sleep-powder',
@@ -213,6 +216,12 @@ const probeTuning: EvalQuery[] = [
       kindFirst: 'pokemon',
     },
     seen: 'used to design the kind words',
+  },
+  {
+    query: 'the fastest pokemon',
+    group: 'probe-tuning',
+    expect: { type: 'first', key: 'pokemon:electrode' },
+    seen: USER_TESTING,
   },
   { query: 'pizza', group: 'probe-tuning', expect: { type: 'nothing' } },
   { query: 'hello', group: 'probe-tuning', expect: { type: 'nothing' } },

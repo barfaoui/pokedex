@@ -59,10 +59,15 @@ export function queryExclusions(
 
 /**
  * The text semantic search embeds: the query without its "not" / "no" segments, or '' when
- * nothing is left to search ("not electric"). A query without a negation goes as typed.
+ * nothing is left to search: a lone negation ("not electric") or a lone sort word ("the fastest
+ * pokemon"), whose listed Pokémon would otherwise look weak enough to call the model.
+ * A query without a negation goes as typed.
  */
 export function semanticQueryOf(query: string): string {
   const parsed = parseQuery(query)
+  if (!parsed.parts.length) {
+    return ''
+  }
   return parsed.excluded ? parsed.normalizedQuery : query
 }
 
