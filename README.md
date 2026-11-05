@@ -2,7 +2,18 @@
 
 A search for the first 151 Pokémon that understands what you mean: type part of a name, a typo, criteria ("fast electric") or an effect in your own words ("put my opponent to sleep"), and get ranked results showing what matched. Everything runs in the browser.
 
+**Live: https://prof-chen.vercel.app/**
+
 Built for the Biolevate full-stack technical assessment.
+
+## Try these
+
+- `bulba`: part of a name
+- `fast electric`: criteria
+- `put my opponent to sleep`: an effect in your own words
+- `rain team`: a theme across Pokémon, moves and abilities
+- `make the enemy doze off`: search by meaning
+
 
 ## Requirements
 
@@ -12,21 +23,41 @@ Built for the Biolevate full-stack technical assessment.
 ## Run it
 
 ```bash
+git clone https://github.com/barfaoui/pokedex.git
+cd pokedex
+nvm use
 npm install
 npm run dev
 ```
 
-Then open http://localhost:5173.
+Then open http://localhost:5173. No API key and no model download: the model is in the repo and everything runs locally.
+
+On Linux, if `npm install` hangs, run `ONNXRUNTIME_NODE_INSTALL=skip npm install`: it skips a GPU download the app doesn't use.
 
 ## Test it
 
 ```bash
 npm test                              # unit tests
+npm run test:queries                  # the PRD's test queries
+npm run test:semantic                 # search by meaning, with the real model
+npm run eval                          # measures the search and prints a report
 npx playwright install chromium       # once, for end-to-end tests
 npm run test:e2e                      # end-to-end tests on the built app
 ```
 
+`npm run eval` reports and never fails: accuracy, order, false positives, latency and cost for every test query. Each run is saved as a dated Markdown file in [`eval-reports/`](./eval-reports/).
+
+To run the end-to-end tests against the live site instead of a local build:
+
+```bash
+BASE_URL=https://prof-chen.vercel.app npm run test:e2e
+```
+
 Also available: `npm run lint`, `npm run typecheck`, `npm run format`.
+
+## How it works
+
+The manual search runs first: names, typos, types, criteria and effects, each result scored from 0 to 1. Effects come from a concept dictionary that knows their direction (Hypnosis puts the target to sleep, Insomnia prevents it). When no result is confident, a small embedding model searches by meaning, in a Web Worker so typing never waits. Details: [docs/03-tech-spec.md](./docs/03-tech-spec.md).
 
 ## How it was built
 
