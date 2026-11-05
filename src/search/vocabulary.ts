@@ -117,6 +117,18 @@ export const FAMILY_DIRECTION_WORDS = new Map<string, FamilyDirection>([
 /** "evolves into X" asks for what comes before X; "X evolves into" for what comes after. */
 export const FAMILY_INTO_WORD = 'into'
 
+/** Ask for the Pokémon that learn a move named in the query; they imply Pokémon. */
+export const LEARN_WORDS = new Set([
+  'learn',
+  'learns',
+  'learned',
+  'learnt',
+  'know',
+  'knows',
+])
+/** The same with "pokemon" in the query ("which pokemon have levitate"), for abilities too. */
+export const HAVE_WORDS = new Set(['have', 'has', 'with'])
+
 export const NEGATING_WORDS = new Set(['not', 'no'])
 export const SEGMENT_END_WORD = 'and'
 

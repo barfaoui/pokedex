@@ -17,7 +17,9 @@ import {
   FAMILY_INTO_WORD,
   FAMILY_WORDS,
   FILLER_WORDS,
+  HAVE_WORDS,
   KIND_WORDS,
+  LEARN_WORDS,
   NEGATING_WORDS,
   SEGMENT_END_WORD,
   SORT_WORDS,
@@ -39,17 +41,20 @@ export function parseQuery(query: string): ParsedQuery {
   const lone = !!excluded && !searched.some(isSearched)
   const typed = lone ? [] : searched
   const hasFamilyWord = typed.some((word) => FAMILY_WORDS.has(word))
+  const named = kindsOf(searched)
+  const learners = asksForLearners(typed, named)
   const asked = typed.filter(
     (word) =>
       !KIND_WORDS.has(word) &&
       !FAMILY_WORDS.has(word) &&
-      !(hasFamilyWord && isFamilyDirectionWord(word)),
+      !(hasFamilyWord && isFamilyDirectionWord(word)) &&
+      !(learners && (LEARN_WORDS.has(word) || HAVE_WORDS.has(word))),
   )
   const words = withoutFiller(asked.length ? asked : typed)
   // A lone family word ("evolution") is searched as a word, it names no one's family.
   const family =
     asked.length > 0 && hasFamilyWord ? familyDirection(typed) : undefined
-  const kinds = kindsOf(searched)
+  const kinds: ResultKind[] = learners && !named.length ? ['pokemon'] : named
   const parsed: ParsedQuery = {
     parts: [],
     normalizedQuery: typed.join(' '),
@@ -57,6 +62,7 @@ export function parseQuery(query: string): ParsedQuery {
     ...(kinds.length && (lone || words.some(isSearched)) && { kinds }),
     ...(excluded && { excluded }),
     ...(family && { family }),
+    ...(learners && { learners }),
   }
   let i = 0
   while (i < words.length) {
@@ -105,6 +111,15 @@ export function splitExclusions(typed: string[]): {
   return { searched, ...(excluded && { excluded }) }
 }
 
+/** A learn word, unless the query names another kind ("what moves can pikachu learn"). */
+function asksForLearners(typed: string[], named: ResultKind[]): boolean {
+  const forPokemon = !named.length || named.includes('pokemon')
+  return (
+    (forPokemon && typed.some((word) => LEARN_WORDS.has(word))) ||
+    (named.includes('pokemon') && typed.some((word) => HAVE_WORDS.has(word)))
+  )
+}
+
 function isFamilyDirectionWord(word: string): boolean {
   return FAMILY_DIRECTION_WORDS.has(word) || word === FAMILY_INTO_WORD
 }
@@ -142,11 +157,15 @@ function withoutFiller(words: string[]): string[] {
 }
 
 function spellOutOperators(query: string): string {
-  return query
-    .replace(/>=/g, ' atleast ')
-    .replace(/<=/g, ' atmost ')
-    .replace(/>/g, ' over ')
-    .replace(/</g, ' under ')
+  return (
+    query
+      .replace(/>=/g, ' atleast ')
+      .replace(/<=/g, ' atmost ')
+      .replace(/>/g, ' over ')
+      .replace(/</g, ' under ')
+      // Pokémon GO: "@surf" lists the Pokémon that know Surf
+      .replace(/@/g, ' learns ')
+  )
 }
 
 function readStatCondition(

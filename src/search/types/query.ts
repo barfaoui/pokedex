@@ -17,6 +17,8 @@ export interface ParsedQuery {
   excluded?: string[][]
   /** Set when the query asks for a Pokémon's family: the relatives it asks for first. */
   family?: FamilyDirection
+  /** Asks which Pokémon learn a move or have an ability ("who can learn surf"). */
+  learners?: boolean
 }
 
 export type FamilyDirection = 'later' | 'earlier' | 'last'

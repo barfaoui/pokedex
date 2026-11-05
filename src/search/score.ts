@@ -19,7 +19,7 @@ export function scoreItem(
 ): Scored {
   const alone = query.parts.length === 1
   const parts = query.parts.map((part) =>
-    scorePart(part, searchable, pokedex, alone),
+    scorePart(part, searchable, pokedex, alone, !!query.learners),
   )
   const average = {
     score: parts.reduce((sum, part) => sum + part.score, 0) / parts.length,
@@ -34,10 +34,11 @@ function scorePart(
   searchable: SearchableItem,
   pokedex: PokedexIndex,
   alone: boolean,
+  learners: boolean,
 ): Scored {
   return part.kind === 'stat'
     ? scoreStat(part, searchable)
-    : scoreWord(part, searchable, pokedex, alone)
+    : scoreWord(part, searchable, pokedex, alone, learners)
 }
 
 /**
@@ -62,6 +63,7 @@ function scoreWord(
   searchable: SearchableItem,
   pokedex: PokedexIndex,
   alone: boolean,
+  learners: boolean,
 ): Scored {
   return [
     part.concept
@@ -75,6 +77,7 @@ function scoreWord(
     scoreType(part, searchable),
     scoreDescriptor(part, searchable),
     scoreNumber(part, searchable),
+    learners ? scoreLearned(part, searchable, pokedex) : NO_MATCH,
   ].reduce((best, candidate) =>
     candidate.score > best.score ? candidate : best,
   )
@@ -136,6 +139,30 @@ function scoreDescriptor(part: WordPart, searchable: SearchableItem): Scored {
   }
   return searchable.item[descriptor.value.field] === descriptor.value.value
     ? { score: descriptor.score, matched: [descriptor.value] }
+    : NO_MATCH
+}
+
+/** Exact names only: "fire" must not bring every Pokémon that learns Fire Blast. */
+function scoreLearned(
+  part: WordPart,
+  searchable: SearchableItem,
+  pokedex: PokedexIndex,
+): Scored {
+  if (searchable.kind !== 'pokemon') {
+    return NO_MATCH
+  }
+  const { moves, abilities } = searchable.item
+  const move = moves.find(
+    (name) => pokedex.moves.get(name)?.searchName === part.text,
+  )
+  if (move) {
+    return { score: 1, matched: [{ field: 'move', value: move }] }
+  }
+  const ability = abilities.find(
+    (name) => pokedex.abilities.get(name)?.searchName === part.text,
+  )
+  return ability
+    ? { score: 1, matched: [{ field: 'ability', value: ability }] }
     : NO_MATCH
 }
 
