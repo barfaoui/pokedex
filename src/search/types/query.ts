@@ -41,14 +41,18 @@ export type Descriptor =
 
 export interface StatPart {
   kind: 'stat'
-  stat: StatCriterion
+  stat: ConditionStat
   comparison: Comparison
   value: number
 }
 
 export type StatCriterion = StatName | 'total'
 
-export type Comparison = 'over' | 'under' | 'atLeast' | 'atMost'
+/** Weight in kg and height in m, as in the data. */
+export type ConditionStat = StatCriterion | 'weight' | 'height'
+
+/** "about": a bare measure ("90kg"), the closer the better. */
+export type Comparison = 'over' | 'under' | 'atLeast' | 'atMost' | 'about'
 
 export interface Sort {
   word: string
@@ -56,4 +60,4 @@ export interface Sort {
   direction: 'asc' | 'desc'
 }
 
-export type SortAttribute = StatCriterion | 'weight' | 'height' | 'hpAndDefense'
+export type SortAttribute = ConditionStat | 'hpAndDefense'

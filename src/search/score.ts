@@ -1,9 +1,15 @@
-import type { PokedexIndex } from '../data/types/model'
+import type { PokedexIndex, Pokemon } from '../data/types/model'
 import { matchConcept } from './match/concept'
 import { genusScore } from './match/genus'
 import { nameScore } from './match/name'
 import { statValue } from './stat-value'
-import type { ParsedQuery, QueryPart, StatPart, WordPart } from './types/query'
+import type {
+  ConditionStat,
+  ParsedQuery,
+  QueryPart,
+  StatPart,
+  WordPart,
+} from './types/query'
 import { RARITY_WORDS } from './vocabulary'
 import type { Scored, SearchableItem } from './types/result'
 
@@ -92,7 +98,7 @@ function scoreStat(part: StatPart, searchable: SearchableItem): Scored {
   if (searchable.kind !== 'pokemon') {
     return NO_MATCH
   }
-  const value = statValue(searchable.item, part.stat)
+  const value = conditionValue(searchable.item, part.stat)
   const score = isMet(part, value) ? 1 : nearMissScore(part, value)
   return score > 0
     ? { score, matched: [{ field: part.stat, value }] }
@@ -195,6 +201,17 @@ function scoreRarity(part: WordPart, searchable: SearchableItem): Scored {
     : NO_MATCH
 }
 
+function conditionValue(pokemon: Pokemon, stat: ConditionStat): number {
+  switch (stat) {
+    case 'weight':
+      return pokemon.weightKg
+    case 'height':
+      return pokemon.heightM
+    default:
+      return statValue(pokemon, stat)
+  }
+}
+
 function isMet({ comparison, value: threshold }: StatPart, value: number) {
   switch (comparison) {
     case 'over':
@@ -205,6 +222,8 @@ function isMet({ comparison, value: threshold }: StatPart, value: number) {
       return value < threshold
     case 'atMost':
       return value <= threshold
+    case 'about':
+      return value === threshold
   }
 }
 
@@ -213,6 +232,12 @@ function nearMissScore(
   value: number,
 ) {
   const wantsMore = comparison === 'over' || comparison === 'atLeast'
-  const ratio = wantsMore ? value / threshold : threshold / value
+  // Symmetric, so the closest measure ranks first whichever side it is on
+  const ratio =
+    comparison === 'about'
+      ? 1 - Math.abs(value - threshold) / threshold
+      : wantsMore
+        ? value / threshold
+        : threshold / value
   return ratio >= MIN_NEAR_MISS_RATIO ? NEAR_MISS_WEIGHT * ratio : 0
 }

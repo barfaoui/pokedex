@@ -10,6 +10,7 @@ import type {
 import type { ResultKind } from './types/result'
 import {
   ABILITY_HINT,
+  COMPARATIVE_WORDS,
   COMPARISON_WORDS,
   CONCEPT_WORDS,
   DESCRIPTORS,
@@ -24,6 +25,7 @@ import {
   SEGMENT_END_WORD,
   SORT_WORDS,
   STAT_WORDS,
+  UNITS,
 } from './vocabulary'
 
 interface Read<T> {
@@ -34,7 +36,10 @@ interface Read<T> {
 /** Only the first sort word sorts; later ones are kept as words. */
 export function parseQuery(query: string): ParsedQuery {
   const { searched, excluded } = splitExclusions(
-    normalize(spellOutOperators(query)).split(' ').filter(Boolean),
+    normalize(spellOutOperators(query))
+      .split(' ')
+      .filter(Boolean)
+      .flatMap(splitUnit),
   )
   // With a negation, filler and kind words alone ("pokemon not electric") have nothing to
   // search: a lone negation, listing the named kind.
@@ -171,29 +176,52 @@ function spellOutOperators(query: string): string {
   )
 }
 
+const NUMBER = /^\d+(?:\.\d+)?$/
+
+/** "90kg" is typed as one word: the number and its unit. */
+function splitUnit(word: string): string[] {
+  const glued = /^(\d+(?:\.\d+)?)([a-z]+)$/.exec(word)
+  return glued && UNITS.has(glued[2]) ? [glued[1], glued[2]] : [word]
+}
+
+/**
+ * "attack over 100", "heavier than 200 kg", "over 2 m", or a bare measure ("90 kg", read as
+ * about 90 kg). A unit names the stat when nothing else does, and converts the number.
+ */
 function readStatCondition(
   words: string[],
   start: number,
 ): Read<StatPart> | undefined {
-  const stat = readPhrase(STAT_WORDS, words, start)
-  const comparison =
-    stat && readPhrase(COMPARISON_WORDS, words, start + stat.length)
-  if (!stat || !comparison) {
+  const comparative = readPhrase(COMPARATIVE_WORDS, words, start)
+  const stat = comparative ? undefined : readPhrase(STAT_WORDS, words, start)
+  let at = start + (comparative?.length ?? stat?.length ?? 0)
+  const comparison = comparative
+    ? undefined
+    : readPhrase(COMPARISON_WORDS, words, at)
+  if (stat && !comparison) {
     return undefined
   }
-  const end = start + stat.length + comparison.length
-  const value = words[end]
-  if (!value || !/^\d+(?:\.\d+)?$/.test(value)) {
+  at += comparison?.length ?? 0
+  const number = words[at]
+  if (!number || !NUMBER.test(number)) {
+    return undefined
+  }
+  const named = comparative?.value.stat ?? stat?.value
+  const unit = UNITS.get(words[at + 1] ?? '')
+  const fits = unit && (!named || named === unit.stat)
+  const conditionStat = named ?? (fits ? unit.stat : undefined)
+  // A lone number is a Pokédex number ("pokemon 150"), never a condition.
+  if (!conditionStat) {
     return undefined
   }
   return {
     value: {
       kind: 'stat',
-      stat: stat.value,
-      comparison: comparison.value,
-      value: Number(value),
+      stat: conditionStat,
+      comparison: comparative?.value.comparison ?? comparison?.value ?? 'about',
+      value: Number(number) * (fits ? unit.factor : 1),
     },
-    length: end - start + 1,
+    length: at + (fits ? 2 : 1) - start,
   }
 }
 

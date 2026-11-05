@@ -4,14 +4,14 @@ import type { ConceptId } from './concepts/types'
 import { normalize } from '../text/normalize'
 import type {
   Comparison,
+  ConditionStat,
   Descriptor,
   FamilyDirection,
   Sort,
-  StatCriterion,
 } from './types/query'
 import type { ResultKind } from './types/result'
 
-export const STAT_WORDS = new Map<string, StatCriterion>([
+export const STAT_WORDS = new Map<string, ConditionStat>([
   ['hp', 'hp'],
   ['attack', 'attack'],
   ['defense', 'defense'],
@@ -19,6 +19,40 @@ export const STAT_WORDS = new Map<string, StatCriterion>([
   ['special defense', 'special-defense'],
   ['speed', 'speed'],
   ['total', 'total'],
+  ['weight', 'weight'],
+  ['height', 'height'],
+])
+
+type Measure = Extract<ConditionStat, 'weight' | 'height'>
+
+/** The stat they compare is in the word: "heavier than 200 kg". */
+export const COMPARATIVE_WORDS = new Map<
+  string,
+  { stat: Measure; comparison: Comparison }
+>([
+  ['heavier than', { stat: 'weight', comparison: 'over' }],
+  ['lighter than', { stat: 'weight', comparison: 'under' }],
+  ['taller than', { stat: 'height', comparison: 'over' }],
+  ['shorter than', { stat: 'height', comparison: 'under' }],
+])
+
+/** Into the data's units, kg and m. */
+export const UNITS = new Map<string, { stat: Measure; factor: number }>([
+  ...['kg', 'kgs', 'kilo', 'kilos', 'kilogram', 'kilograms'].map(
+    (unit) => [unit, { stat: 'weight', factor: 1 }] as const,
+  ),
+  ...['lb', 'lbs', 'pound', 'pounds'].map(
+    (unit) => [unit, { stat: 'weight', factor: 0.4536 }] as const,
+  ),
+  ...['m', 'meter', 'meters', 'metre', 'metres'].map(
+    (unit) => [unit, { stat: 'height', factor: 1 }] as const,
+  ),
+  ...['cm', 'centimeter', 'centimeters', 'centimetre', 'centimetres'].map(
+    (unit) => [unit, { stat: 'height', factor: 0.01 }] as const,
+  ),
+  ...['ft', 'foot', 'feet'].map(
+    (unit) => [unit, { stat: 'height', factor: 0.3048 }] as const,
+  ),
 ])
 
 export const SORT_WORDS = new Map<string, Omit<Sort, 'word'>>([
