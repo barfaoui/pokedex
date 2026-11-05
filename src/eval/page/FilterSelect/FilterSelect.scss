@@ -1,0 +1,17 @@
+@use 'styles/tokens' as *;
+@use 'styles/typography' as Typography;
+
+.filter-select {
+  display: inline-flex;
+  align-items: center;
+  gap: $space-2;
+
+  &__input {
+    @include Typography.body;
+
+    padding: $space-1;
+    border: $bevel-edge solid $ink;
+    background: $surface;
+    color: $ink;
+  }
+}

@@ -1,0 +1,48 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+.case-row {
+  border-bottom: $bevel-edge solid $shadow;
+
+  &[data-clickable='true'] {
+    cursor: pointer;
+  }
+
+  &__cell {
+    padding: $space-2;
+    vertical-align: top;
+  }
+
+  &__query {
+    @include focus-ring;
+
+    display: block;
+    padding: 0;
+    border: none;
+    background: none;
+    color: $accent;
+    font: inherit;
+    text-align: left;
+    text-decoration: underline;
+    cursor: pointer;
+  }
+
+  &__meta,
+  &__expected {
+    display: block;
+    color: $placeholder;
+  }
+
+  &__expected {
+    color: $ink;
+  }
+
+  &__verdict {
+    display: block;
+    color: $danger;
+
+    &[data-passed='true'] {
+      color: $accent;
+    }
+  }
+}

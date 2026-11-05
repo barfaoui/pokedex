@@ -1,0 +1,42 @@
+@use 'styles/tokens' as *;
+@use 'styles/typography' as Typography;
+@use 'styles/mixins' as *;
+
+.engine-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax($card-min-width * 2, 1fr));
+  gap: $space-5;
+
+  &__card {
+    @include pixel-border($ink, $pixel * 0.5);
+
+    border-collapse: collapse;
+    background: $surface;
+  }
+
+  &__name {
+    @include Typography.small-display;
+
+    padding: $space-2;
+    text-align: left;
+  }
+
+  &__head {
+    @include Typography.tiny-display;
+
+    padding: $space-1 $space-2;
+    text-align: right;
+  }
+
+  &__label {
+    padding: $space-1 $space-2;
+    font-weight: 400;
+    text-align: left;
+  }
+
+  &__value {
+    padding: $space-1 $space-2;
+    text-align: right;
+    white-space: nowrap;
+  }
+}

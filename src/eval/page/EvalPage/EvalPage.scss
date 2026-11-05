@@ -1,0 +1,64 @@
+@use 'styles/tokens' as *;
+@use 'styles/typography' as Typography;
+@use 'styles/mixins' as *;
+
+.eval-page {
+  display: flex;
+  flex-direction: column;
+  gap: $space-5;
+  max-width: $content-width-wide;
+  margin: 0 auto;
+  padding: $space-5 $space-4;
+
+  &__title {
+    @include Typography.title-display;
+  }
+
+  &__controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: $space-4;
+  }
+
+  &__group {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-3;
+    padding: $space-2 $space-3;
+    border: $bevel-edge solid $ink;
+  }
+
+  &__legend {
+    @include Typography.tiny-display;
+
+    padding: 0 $space-1;
+  }
+
+  &__option {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+  }
+
+  &__run {
+    @include focus-ring;
+    @include Typography.small-display;
+
+    min-height: $touch-target;
+    padding: $space-2 $space-3;
+    border: $bevel-edge solid $ink;
+    background: $mint;
+    color: $ink;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: progress;
+      opacity: 0.6;
+    }
+  }
+
+  &__status {
+    color: $placeholder;
+  }
+}

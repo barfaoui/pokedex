@@ -1,55 +1,61 @@
-import { CONFIDENT_SCORE } from '@/search/search'
-import { MODEL_DTYPE, MODEL_ID } from '@/search/semantic/model'
+import type { EvalCase, Split } from '@/eval/cases'
+import type { AvailableEngine } from '@/eval/engines/engines'
 import {
-  DESCRIPTION_WEIGHT,
-  rescale,
-  SEMANTIC_THRESHOLD,
-} from '@/search/semantic/semantic'
-import type { Expectation, Group } from './queries'
-import { ORDER_TOP, type EvalRun, type ItemCosine, type Outcome } from './run'
+  gradeOf,
+  groupRuns,
+  summarize,
+  type GroupBy,
+  type Summary,
+} from '@/eval/metrics'
+import { keyOf, type CaseRun } from '@/eval/run'
+import { decimal, euros, itemLabel, ms, percent } from '@/eval/format'
+import { GLOSSARY } from '@/eval/glossary'
+import { MODEL_DTYPE, MODEL_ID } from '@/search/semantic/model'
 
 export interface Context {
   date: Date
   commit: string
   dirty: boolean | null
   machine: string
-  cost: CostCheck
+  /** null when no engine that ran needs the model. */
+  modelLoadMs: number | null
+  skipped: string[]
 }
 
-export interface CostCheck {
-  paidDependencies: string[]
-  remoteUrls: string[]
-  secrets: string[]
-  workerLocalOnly: boolean
-}
-
-const GROUPS: { group: Group; title: string; intro: string }[] = [
+const SPLITS: { split: Split; title: string; intro: string }[] = [
   {
-    group: 'prd',
-    title: 'PRD queries (section 7)',
+    split: 'holdout',
+    title: 'Holdout',
     intro:
-      'The spec the manual search was built on: these numbers show it still holds, not how it does on new queries.',
+      'Never used to tune anything: the closest thing here to queries nobody has tried yet.',
   },
   {
-    group: 'probe-tuning',
-    title: 'Semantic probes, tuning',
-    intro: 'May be used to adjust a threshold.',
-  },
-  {
-    group: 'probe-holdout',
-    title: 'Semantic probes, held out',
-    intro:
-      'Never used to tune anything: the closest thing here to how the search does on queries nobody tried.',
+    split: 'tuning',
+    title: 'Tuning',
+    intro: 'Used to set rules and thresholds, so expect these to look better.',
   },
 ]
+
+// GitHub and VS Code render <details> folded; the blank lines let the list inside stay Markdown.
+const GLOSSARY_LINES = [
+  '<details>',
+  '<summary>What the terms mean</summary>',
+  '',
+  ...GLOSSARY.map(({ term, meaning }) => `- **${term}**: ${meaning}`),
+  '',
+  '</details>',
+]
+
 const TOP_SHOWN = 5
 
-export function formatReport(run: EvalRun, context: Context): string {
+export function formatReport(
+  engines: AvailableEngine[],
+  runs: CaseRun[],
+  context: Context,
+): string {
   const lines: string[] = []
   const push = (...more: string[]) => lines.push(...more)
-  const { outcomes } = run
-  const floor = floorCosine(1)
-  const descriptionFloor = floorCosine(DESCRIPTION_WEIGHT)
+  const cases = [...new Map(runs.map((r) => [r.evalCase.id, r.evalCase])).values()]
 
   push(
     `# Search evaluation · ${stamp(context.date)}`,
@@ -57,391 +63,157 @@ export function formatReport(run: EvalRun, context: Context): string {
     '| | |',
     '| --- | --- |',
     `| Commit | ${context.commit}${context.dirty ? ' + uncommitted changes' : context.dirty === null ? ' (status unknown)' : ''} |`,
-    `| Model | ${MODEL_ID} (${MODEL_DTYPE}), run in Node with the committed files, not in the browser worker |`,
-    `| Semantic search runs | when no manual result scores ≥ ${CONFIDENT_SCORE} |`,
-    `| Semantic floor | score ${SEMANTIC_THRESHOLD} = cosine ${floor.toFixed(3)} (${descriptionFloor.toFixed(3)} for Pokémon descriptions, weighted ${DESCRIPTION_WEIGHT}) |`,
     `| Machine | ${context.machine} |`,
-    `| Queries | ${GROUPS.map(({ group, title }) => `${count(outcomes, group)} ${title.toLowerCase()}`).join(' · ')} |`,
+    `| Cases | ${SPLITS.map(({ split, title }) => `${cases.filter((c) => c.split === split).length} ${title.toLowerCase()}`).join(' · ')} (tests/eval/cases.csv) |`,
+    `| Engines | ${engines.map((e) => e.name).join(' · ')}${context.skipped.length ? ` (not run: ${context.skipped.join(', ')})` : ''} |`,
+    `| Model | ${MODEL_ID} (${MODEL_DTYPE}) |`,
     '',
-    '_Italic_ results come from semantic search. † marks a query already used to set a threshold.',
+    context.modelLoadMs === null
+      ? 'Model load: not needed by the engines run.'
+      : `Model load, once, before any query: ${ms(context.modelLoadMs)}.`,
+    '',
+    '**Timings are measured in Node on this machine, not in the browser.** In the app the model runs in a web worker on WebAssembly: expect it slower there. Open eval.html in `npm run dev` for browser timings.',
+    '',
+    '## Summary',
+    '',
+    ...GLOSSARY_LINES,
     '',
   )
 
-  for (const { group, title, intro } of GROUPS) {
-    const rows = outcomes.filter((o) => o.query.group === group)
+  for (const { split, title, intro } of SPLITS) {
+    const inSplit = runs.filter((r) => r.evalCase.split === split)
     push(
-      `## ${title}`,
+      `### ${title} (${cases.filter((c) => c.split === split).length} cases)`,
       '',
       intro,
       '',
-      '| Query | Expected | Found | First expected at (All tab · own tab) | Answered by | Result | Order |',
-      '| --- | --- | --- | --- | --- | --- | --- |',
-      ...rows.map(
-        (o) =>
-          `| ${o.query.query}${o.query.seen ? ' †' : ''} | ${describe(o.query.expect)} | ${found(o)} | ${firstRank(o)} | ${o.layer} | ${o.check.passed ? 'pass' : 'FAIL'} | ${orderCell(o)} |`,
+      '| Engine | Pass | Hit@1 | Recall@10 | MRR | nDCG@10 | False positives | p50 | p95 | Cost / 1,000 |',
+      '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
+      ...engines.map((engine) =>
+        summaryRow(
+          engine.name,
+          summarize(inSplit.filter((r) => r.engineId === engine.id)),
+        ),
       ),
       '',
     )
-    const seen = rows.filter((o) => o.query.seen)
-    if (seen.length) {
-      push(...seen.map((o) => `† ${o.query.query}: ${o.query.seen}`), '')
-    }
   }
 
-  push(
-    '## Order',
-    '',
-    `Kept apart from the result: the first expected result is in the top ${ORDER_TOP} of the All tab, and the kind a query names comes first.`,
-    '',
-  )
-  const misordered = outcomes.filter((o) => o.check.orderPassed === false)
-  push(
-    ...(misordered.length
-      ? misordered.map(
-          (o) =>
-            `- **${o.query.query}** (${groupTitle(o.query.group)}): ${o.check.orderNotes.join('; ')}`,
-        )
-      : ['None out of order.']),
-    '',
-  )
-
-  push('## False negatives and false positives', '')
-  push(
-    'False negative: an expected result that is missing. False positive: a forbidden result, any result for a query that should find nothing, or an extra result where the expected list is complete. Extra results elsewhere are not judged.',
-    '',
-  )
-  const wrong = outcomes.filter(
-    (o) =>
-      o.check.missing.length ||
-      o.check.falsePositives.length ||
-      o.check.notes.length,
-  )
-  if (!wrong.length) {
-    push('None.', '')
-  }
-  for (const o of wrong) {
-    push(`- **${o.query.query}** (${groupTitle(o.query.group)})`)
-    if (o.check.missing.length) {
-      push(
-        `  - false negatives (${o.check.missing.length}): ${o.check.missing.join(', ')}`,
-      )
-    }
-    if (o.check.falsePositives.length) {
-      push(
-        `  - false positives (${o.check.falsePositives.length}): ${o.check.falsePositives.join(', ')}`,
-      )
-    }
-    for (const note of o.check.notes) {
-      push(`  - ${note}`)
-    }
-  }
-  push('')
-
-  const manualRuns = outcomes.flatMap((o) =>
-    o.manualMs.map((ms) => ({ ms, query: o.query.query })),
-  )
-  const semanticRuns = outcomes.flatMap((o) =>
-    o.semanticMs.map((ms) => ({ ms, query: o.query.query })),
-  )
-  push(
-    '## Latency',
-    '',
-    '| | Median | Slowest | Runs |',
-    '| --- | --- | --- | --- |',
-    latencyRow('Manual search', manualRuns, outcomes.length),
-    latencyRow(
-      'Semantic search (embed the query, rank, merge)',
-      semanticRuns,
-      outcomes.filter((o) => o.triggered).length,
-    ),
-    `| Model load, once | ${ms(run.modelLoadMs)} | | 1 |`,
-    `| First embedding after load | ${ms(run.firstEmbedMs)} | | 1 |`,
-    '',
-    'Node timings on this machine. In the app the model runs in a web worker on WebAssembly, so expect it slower there, and the first load also downloads 33 MB.',
-    '',
-  )
-
-  const { cost } = context
-  const free =
-    !run.networkRequests.length &&
-    !cost.paidDependencies.length &&
-    !cost.remoteUrls.length &&
-    !cost.secrets.length &&
-    cost.workerLocalOnly
-  push(
-    '## Cost',
-    '',
-    `- Network requests during the run: ${run.networkRequests.length}${run.networkRequests.length ? ` (${run.networkRequests.join(', ')})` : ''}`,
-    `- Paid or remote AI packages in package.json: ${cost.paidDependencies.join(', ') || 'none'}`,
-    `- Remote URLs in src/: ${cost.remoteUrls.join(', ') || 'none'}`,
-    `- API keys or tokens in src/: ${cost.secrets.join(', ') || 'none'}`,
-    `- The app's worker forbids remote models (allowRemoteModels = false): ${cost.workerLocalOnly ? 'yes' : 'NO'}`,
-    '',
-    free
-      ? '**Cost: 0.** Everything runs locally, nothing is billed per query.'
-      : '**Cost: not proven to be 0**, see above.',
-    '',
-  )
-
-  push(...thresholds(outcomes, floor), '')
-
-  push(
-    '## Totals',
-    '',
-    '| Group | Queries passed | Expected results found | Median rank of first expected (All tab · own tab) | Should-find-nothing queries that found something | False positives | Order right |',
-    '| --- | --- | --- | --- | --- | --- | --- |',
-    ...GROUPS.map(({ group, title }) =>
-      totalRow(
-        title,
-        outcomes.filter((o) => o.query.group === group),
-      ),
-    ),
-    totalRow(
-      'All but held out',
-      outcomes.filter((o) => o.query.group !== 'probe-holdout'),
-    ),
-    '',
-  )
+  push(...groupSection('category', 'By category', engines, runs))
+  push(...groupSection('source', 'By source', engines, runs))
+  push(...failingSection(engines, runs))
 
   return lines.join('\n')
 }
 
-function thresholds(outcomes: Outcome[], floor: number): string[] {
+function summaryRow(name: string, s: Summary): string {
+  return `| ${name} | ${s.passed}/${s.cases} (${percent(s.passRate)}) | ${percent(s.hitAt1)} | ${percent(s.recallAt10)} | ${decimal(s.mrr)} | ${decimal(s.ndcgAt10)} | ${s.falsePositiveRate === null ? '—' : `${percent(s.falsePositiveRate)} of ${s.nothingCases}`} | ${ms(s.latencyP50)} | ${ms(s.latencyP95)} | ${euros(s.costPer1000)} |`
+}
+
+function groupSection(
+  by: GroupBy,
+  title: string,
+  engines: AvailableEngine[],
+  runs: CaseRun[],
+): string[] {
   const lines = [
-    '## Thresholds',
+    `## ${title}`,
     '',
-    `### Run semantic search below ${CONFIDENT_SCORE}`,
-    '',
-    '| Query | Best manual score | Semantic search ran | Result |',
-    '| --- | --- | --- | --- |',
-    ...[...outcomes]
-      .sort((a, b) => b.bestManual - a.bestManual)
-      .map(
-        (o) =>
-          `| ${o.query.query} | ${o.bestManual.toFixed(2)} | ${o.triggered ? 'yes' : 'no'} | ${o.check.passed ? 'pass' : 'FAIL'} |`,
-      ),
+    'Pass rate · nDCG@10 for each engine.',
     '',
   ]
-  const signals: string[] = []
-  const confident = outcomes.filter((o) => !o.triggered)
-  const weak = outcomes.filter((o) => o.triggered)
-  for (const o of confident.filter((o) => !o.check.passed)) {
-    signals.push(
-      `"${o.query.query}" failed with a confident manual answer (${o.bestManual.toFixed(2)}): semantic search never got a chance.`,
+  for (const { split, title: splitTitle } of SPLITS) {
+    const groups = groupRuns(
+      runs.filter((r) => r.evalCase.split === split),
+      by,
     )
-  }
-  for (const o of weak.filter(
-    (o) => o.layer === 'manual (weak)' && !o.check.passed,
-  )) {
-    signals.push(
-      `"${o.query.query}" failed on weak manual results alone: semantic search ran but added nothing.`,
-    )
-  }
-  if (confident.length && weak.length) {
-    const lowestConfident = Math.min(...confident.map((o) => o.bestManual))
-    const highestWeak = Math.max(...weak.map((o) => o.bestManual))
     lines.push(
-      `Confident answers start at ${lowestConfident.toFixed(2)}, weak ones stop at ${highestWeak.toFixed(2)}: the trigger has ${(lowestConfident - CONFIDENT_SCORE).toFixed(2)} of margin above and ${(CONFIDENT_SCORE - highestWeak).toFixed(2)} below.`,
+      `### ${splitTitle}`,
+      '',
+      `| ${by === 'category' ? 'Category' : 'Source'} | Cases | ${engines.map((e) => e.name).join(' | ')} |`,
+      `| --- | --- | ${engines.map(() => '---').join(' | ')} |`,
+      ...[...groups].map(([name, group]) => {
+        const cells = engines.map((engine) => {
+          const s = summarize(group.filter((r) => r.engineId === engine.id))
+          return `${percent(s.passRate)} · ${decimal(s.ndcgAt10)}`
+        })
+        return `| ${name} | ${group.length / engines.length} | ${cells.join(' | ')} |`
+      }),
       '',
     )
   }
-
-  const nothing = outcomes.filter((o) => o.query.expect.type === 'nothing')
-  const shouldFind = outcomes.filter(
-    (o) => o.query.group !== 'prd' && o.query.expect.type !== 'nothing',
-  )
-  lines.push(
-    `### Semantic floor, cosine ${floor.toFixed(2)}`,
-    '',
-    'Computed for every query below, even where the app would not run semantic search.',
-    '',
-    '| Query | Should find | Closest item (cosine) | Best expected (cosine, rank) | Worst expected (cosine, rank) |',
-    '| --- | --- | --- | --- | --- |',
-    ...[...nothing, ...shouldFind].map((o) => {
-      const expected = [...o.cosine.expected].sort(
-        (a, b) => b.cosine - a.cosine,
-      )
-      return `| ${o.query.query} | ${o.query.expect.type === 'nothing' ? 'nothing' : 'something'} | ${item(o.cosine.top)} | ${expected.length ? itemRank(expected[0]) : '—'} | ${expected.length ? itemRank(expected[expected.length - 1]) : '—'} |`
-    }),
-    '',
-  )
-
-  const noisiest = nothing.length
-    ? Math.max(...nothing.map((o) => o.cosine.top.cosine))
-    : null
-  for (const o of nothing.filter((o) => o.cosine.top.cosine >= floor)) {
-    signals.push(
-      `"${o.query.query}" should find nothing, but ${o.cosine.top.key} reaches cosine ${o.cosine.top.cosine.toFixed(3)}, above the floor.`,
-    )
-  }
-  for (const o of shouldFind) {
-    const below = o.cosine.expected.filter((e) => e.cosine < floor)
-    if (below.length === o.cosine.expected.length) {
-      signals.push(
-        `"${o.query.query}": every expected result is below the floor (best ${Math.max(...below.map((e) => e.cosine)).toFixed(3)}).`,
-      )
-    } else if (below.length) {
-      signals.push(
-        `"${o.query.query}": ${below.map((e) => `${e.key} (${e.cosine.toFixed(3)})`).join(', ')} below the floor.`,
-      )
-    }
-  }
-  if (shouldFind.length && noisiest !== null) {
-    const weakestHit = Math.min(
-      ...shouldFind.map((o) =>
-        Math.max(...o.cosine.expected.map((e) => e.cosine), 0),
-      ),
-    )
-    lines.push(
-      `Noise peaks at cosine ${noisiest.toFixed(3)}; the weakest query that should find something has its best expected result at ${weakestHit.toFixed(3)}. A floor between the two separates them${noisiest < floor && floor <= weakestHit ? ', and 0.40 is in between' : ', and 0.40 is NOT in between'}.`,
-      '',
-    )
-  }
-
-  lines.push('### Signals', '')
-  lines.push(
-    ...(signals.length
-      ? signals.map((signal) => `- ${signal}`)
-      : [
-          `- None of these queries says a threshold is wrong. With ${nothing.length} should-find-nothing and ${shouldFind.length} should-find probes that is weak evidence, not proof.`,
-        ]),
-  )
   return lines
 }
 
-function describe(expect: Expectation): string {
-  switch (expect.type) {
-    case 'nothing':
-      return 'nothing'
-    case 'first':
-      return `${nameOf(expect.key)} first`
-    case 'ordered':
-      return `${expect.keys.map(nameOf).join(', ')}, in that order`
-    case 'includes': {
-      const parts: string[] = []
-      if (expect.keys.length) {
-        const shown = expect.keys.slice(0, 6).map(nameOf).join(', ')
-        const more =
-          expect.keys.length > 6 ? ` +${expect.keys.length - 6} more` : ''
-        parts.push(
-          `${shown}${more}${expect.exhaustive ? ` (only these${expect.exhaustive === 'all' ? '' : ` ${expect.exhaustive}`})` : ''}`,
-        )
-      }
-      if (expect.forbidden?.length) {
-        parts.push(`never ${expect.forbidden.join(', ')}`)
-      }
-      return parts.join('; ')
-    }
+function failingSection(engines: AvailableEngine[], runs: CaseRun[]): string[] {
+  const byCase = new Map<string, CaseRun[]>()
+  for (const run of runs) {
+    byCase.set(run.evalCase.id, [...(byCase.get(run.evalCase.id) ?? []), run])
   }
-}
-
-const TAB_NAMES = { pokemon: 'Pokémon', move: 'Moves', ability: 'Abilities' }
-
-function firstRank(o: Outcome): string {
-  const { firstRank, firstRankInTab } = o.check
-  if (firstRank === null || !firstRankInTab) {
-    return '—'
-  }
-  return `${firstRank} · ${firstRankInTab.rank} in ${TAB_NAMES[firstRankInTab.kind]}`
-}
-
-function found(o: Outcome): string {
-  if (!o.results.length) {
-    return 'nothing'
-  }
-  const top = o.results.slice(0, TOP_SHOWN).map((result, index) => {
-    const text = `${result.item.name} ${result.score.toFixed(2)}`
-    return o.fromSemantic[index] ? `_${text}_` : text
-  })
-  const rest = o.results.length - TOP_SHOWN
-  return `${top.join(', ')}${rest > 0 ? ` (+${rest})` : ''}`
-}
-
-function latencyRow(
-  label: string,
-  runs: { ms: number; query: string }[],
-  queries: number,
-): string {
-  if (!runs.length) {
-    return `| ${label} | — | — | 0 |`
-  }
-  const slowest = runs.reduce((a, b) => (b.ms > a.ms ? b : a))
-  return `| ${label} | ${ms(median(runs.map((run) => run.ms)))} | ${ms(slowest.ms)} ("${slowest.query}") | ${runs.length} over ${queries} queries |`
-}
-
-function orderCell(o: Outcome): string {
-  const { orderPassed } = o.check
-  return orderPassed === null ? '—' : orderPassed ? 'ok' : 'WRONG'
-}
-
-function totalRow(label: string, rows: Outcome[]): string {
-  const passed = rows.filter((o) => o.check.passed).length
-  const expected = rows.reduce((sum, o) => sum + o.check.expectedCount, 0)
-  const missing = rows.reduce((sum, o) => sum + o.check.missing.length, 0)
-  const ranks = rows.flatMap((o) => o.check.firstRank ?? [])
-  const tabRanks = rows.flatMap((o) => o.check.firstRankInTab?.rank ?? [])
-  const ordered = rows.filter((o) => o.check.orderPassed !== null)
-  const nothing = rows.filter((o) => o.query.expect.type === 'nothing')
-  const noisy = nothing.filter((o) => o.results.length).length
-  const falsePositives = rows.reduce(
-    (sum, o) => sum + o.check.falsePositives.length,
-    0,
+  const failing = [...byCase.values()].filter((caseRuns) =>
+    caseRuns.some((r) => !r.score.passed),
   )
-  return `| ${label} | ${passed}/${rows.length} | ${expected - missing}/${expected}${expected ? ` (${percent((expected - missing) / expected)})` : ''} | ${ranks.length ? `${median(ranks)} · ${median(tabRanks)}` : '—'} | ${noisy}/${nothing.length} | ${falsePositives} | ${ordered.filter((o) => o.check.orderPassed).length}/${ordered.length} |`
-}
-
-function floorCosine(weight: number): number {
-  let low = -1
-  let high = 1
-  for (let step = 0; step < 60; step++) {
-    const middle = (low + high) / 2
-    if (rescale(middle) * weight >= SEMANTIC_THRESHOLD) {
-      high = middle
-    } else {
-      low = middle
-    }
+  const lines = [
+    `## Failing cases (${failing.length})`,
+    '',
+    `Every case that fails on at least one engine, with the top ${TOP_SHOWN} each engine returned. **Bold**: a best answer, _italic_: an okay one, ⛔: forbidden.`,
+    '',
+  ]
+  for (const caseRuns of failing) {
+    const c = caseRuns[0].evalCase
+    lines.push(
+      `### ${c.id}. "${c.query}"`,
+      '',
+      `${c.category} · ${c.split} · ${c.source} · check: ${c.check}${c.note ? ` · _${c.note}_` : ''}`,
+      '',
+      expected(c),
+      '',
+      `| Engine | | First best at | Top ${TOP_SHOWN} | Why |`,
+      '| --- | --- | --- | --- | --- |',
+      ...engines.flatMap((engine) => {
+        const run = caseRuns.find((r) => r.engineId === engine.id)
+        if (!run) {
+          return []
+        }
+        const top = run.results
+          .slice(0, TOP_SHOWN)
+          .map((result) => marked(c, keyOf(result)))
+        return [
+          `| ${engine.name} | ${run.score.passed ? '✓' : '✗'} | ${run.score.firstBestRank ?? '—'} | ${top.join(', ') || 'nothing'}${run.results.length > TOP_SHOWN ? ` (+${run.results.length - TOP_SHOWN})` : ''} | ${run.score.failures.join('; ')} |`,
+        ]
+      }),
+      '',
+    )
   }
-  return high
+  return lines
 }
 
-function item(cosine: ItemCosine): string {
-  return `${nameOf(cosine.key)} ${cosine.cosine.toFixed(3)}${cosine.source === 'description' ? ' (description)' : ''}`
+function expected(c: EvalCase): string {
+  const parts = []
+  if (c.best.length) {
+    parts.push(`best: ${c.best.map(itemLabel).join(', ')}`)
+  }
+  if (c.ok.length) {
+    parts.push(`okay: ${c.ok.map(itemLabel).join(', ')}`)
+  }
+  if (c.forbidden.length) {
+    parts.push(`never: ${c.forbidden.map(itemLabel).join(', ')}`)
+  }
+  return parts.length ? `Expected: ${parts.join(' · ')}` : 'Expected: nothing'
 }
 
-function itemRank(cosine: ItemCosine): string {
-  return `${item(cosine)}, #${cosine.rank}`
-}
-
-function nameOf(key: string): string {
-  return key.slice(key.indexOf(':') + 1)
-}
-
-function groupTitle(group: Group): string {
-  return GROUPS.find((g) => g.group === group)?.title ?? group
-}
-
-function count(outcomes: Outcome[], group: Group): number {
-  return outcomes.filter((o) => o.query.group === group).length
-}
-
-function median(values: number[]): number {
-  const sorted = [...values].sort((a, b) => a - b)
-  const middle = Math.floor(sorted.length / 2)
-  return sorted.length % 2
-    ? sorted[middle]
-    : (sorted[middle - 1] + sorted[middle]) / 2
-}
-
-function ms(value: number): string {
-  return value >= 1000
-    ? `${(value / 1000).toFixed(2)} s`
-    : value >= 10
-      ? `${value.toFixed(0)} ms`
-      : `${value.toFixed(2)} ms`
-}
-
-function percent(ratio: number): string {
-  return `${Math.round(ratio * 100)} %`
+function marked(c: EvalCase, key: string): string {
+  const plain = itemLabel(key)
+  switch (gradeOf(c, key)) {
+    case 'forbidden':
+      return `⛔ ${plain}`
+    case 'best':
+      return `**${plain}**`
+    case 'ok':
+      return `_${plain}_`
+    case null:
+      return plain
+  }
 }
 
 export function stamp(date: Date): string {

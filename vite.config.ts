@@ -27,7 +27,7 @@ export default defineConfig({
           exclude: [
             'tests/queries.test.ts',
             'tests/semantic.test.ts',
-            'tests/eval/**',
+            'tests/eval/eval.test.ts',
           ],
         },
       },

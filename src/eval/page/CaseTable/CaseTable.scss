@@ -1,0 +1,23 @@
+@use 'styles/tokens' as *;
+@use 'styles/typography' as Typography;
+
+.case-table {
+  width: 100%;
+  border-collapse: collapse;
+
+  &__caption {
+    padding: $space-2 0;
+    text-align: left;
+  }
+
+  &__head {
+    @include Typography.tiny-display;
+
+    position: sticky;
+    top: 0;
+    padding: $space-2;
+    border-bottom: $bevel-edge solid $ink;
+    background: $paper;
+    text-align: left;
+  }
+}

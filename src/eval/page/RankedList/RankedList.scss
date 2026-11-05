@@ -1,0 +1,30 @@
+@use 'styles/tokens' as *;
+
+.ranked-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-1;
+  padding-left: $space-5;
+
+  &__item {
+    &[data-grade='best'] {
+      color: $accent;
+      font-weight: 700;
+    }
+
+    &[data-grade='forbidden'] {
+      color: $danger;
+    }
+  }
+
+  &__detail {
+    color: $placeholder;
+    font-weight: 400;
+  }
+
+  &__more,
+  &__empty {
+    color: $placeholder;
+    list-style: none;
+  }
+}
