@@ -202,7 +202,7 @@ export function percentile(values: number[], p: number): number {
   return sorted[Math.max(Math.ceil((p / 100) * sorted.length) - 1, 0)]
 }
 
-export type GroupBy = 'category' | 'split' | 'source'
+export type GroupBy = 'category' | 'source'
 
 export function groupRuns<T extends { evalCase: EvalCase }>(
   runs: T[],

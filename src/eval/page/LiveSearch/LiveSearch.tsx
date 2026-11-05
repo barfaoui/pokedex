@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import type { AvailableEngine } from '@/eval/engines/engines'
 import { ms } from '@/eval/format'
 import type { SearchResult } from '@/search/types/result'
+import { AppLink } from '../AppLink/AppLink'
 import { RankedList } from '../RankedList/RankedList'
 import './LiveSearch.scss'
 
@@ -52,6 +53,7 @@ export function LiveSearch({ engines }: LiveSearchProps) {
           Search
         </button>
       </form>
+      {answers.length > 0 && <AppLink query={asked} />}
       {answers.length > 0 && (
         <div className="live-search__answers">
           {answers.map((answer) => (

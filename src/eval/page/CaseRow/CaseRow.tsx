@@ -2,6 +2,7 @@ import type { EvalCase } from '@/eval/cases'
 import type { AvailableEngine } from '@/eval/engines/engines'
 import { itemLabel, ms } from '@/eval/format'
 import type { CaseRun } from '@/eval/run'
+import { AppLink } from '../AppLink/AppLink'
 import { RankedList } from '../RankedList/RankedList'
 import './CaseRow.scss'
 
@@ -29,16 +30,18 @@ export function CaseRow({
       {/* The whole row opens; the button gives it a keyboard stop and a state. */}
       <tr className="case-row" data-clickable="true" onClick={onToggle}>
         <td className="case-row__cell">
-          <button
-            className="case-row__query"
-            type="button"
-            aria-expanded={open}
-          >
-            {evalCase.query}
-          </button>
+          <span className="case-row__title">
+            <button
+              className="case-row__query"
+              type="button"
+              aria-expanded={open}
+            >
+              {evalCase.query}
+            </button>
+            <AppLink query={evalCase.query} />
+          </span>
           <span className="case-row__meta">
-            {evalCase.id} · {evalCase.category} · {evalCase.split} ·{' '}
-            {evalCase.source}
+            {evalCase.id} · {evalCase.category} · {evalCase.source}
           </span>
         </td>
         <td className="case-row__cell">

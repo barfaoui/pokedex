@@ -13,6 +13,12 @@
     vertical-align: top;
   }
 
+  &__title {
+    display: flex;
+    align-items: baseline;
+    gap: $space-2;
+  }
+
   &__query {
     @include focus-ring;
 

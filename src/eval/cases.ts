@@ -1,5 +1,4 @@
 export type Check = 'first' | 'top3' | 'top10' | 'nothing'
-export type Split = 'tuning' | 'holdout'
 
 /** `kind:name`. A bare name, as some `forbidden` cells have, stands for every kind. */
 export type ItemKey = string
@@ -13,12 +12,10 @@ export interface EvalCase {
   ok: ItemKey[]
   forbidden: ItemKey[]
   source: string
-  split: Split
   note: string
 }
 
 const CHECKS: readonly Check[] = ['first', 'top3', 'top10', 'nothing']
-const SPLITS: readonly Split[] = ['tuning', 'holdout']
 const COLUMNS = [
   'id',
   'query',
@@ -28,7 +25,6 @@ const COLUMNS = [
   'ok',
   'forbidden',
   'source',
-  'split',
   'note',
 ] as const
 
@@ -84,12 +80,8 @@ export function parseCases(text: string): EvalCase[] {
         (cells[column.get(name) ?? -1] ?? '').trim()
       const line = at + 2
       const check = cell('check') as Check
-      const split = cell('split') as Split
       if (!CHECKS.includes(check)) {
         throw new Error(`cases.csv line ${line}: unknown check "${check}"`)
-      }
-      if (!SPLITS.includes(split)) {
-        throw new Error(`cases.csv line ${line}: unknown split "${split}"`)
       }
       return {
         id: cell('id') || String(line - 1),
@@ -100,7 +92,6 @@ export function parseCases(text: string): EvalCase[] {
         ok: items(cell('ok')),
         forbidden: items(cell('forbidden')),
         source: cell('source'),
-        split,
         note: cell('note'),
       }
     })

@@ -1,186 +1,186 @@
-id,query,category,check,best,ok,forbidden,source,split,note
-1,bulba,name,first,pokemon:bulbasaur,,,prd,tuning,
-2,pikachoo,name,first,pokemon:pikachu,,,prd,tuning,
-3,saur,name,top3,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur,,,prd,tuning,
-4,blaaastoiise,name,first,pokemon:blastoise,,,real user,tuning,fixed with the 40% rule
-5,blastoise,name,first,pokemon:blastoise,pokemon:squirtle pokemon:wartortle,,real user,tuning,
-6,charizrd,name,first,pokemon:charizard,,,coach,holdout,
-7,pikahcu,name,first,pokemon:pikachu,,,coach,holdout,two letters swapped
-8,jiggly,name,first,pokemon:jigglypuff,pokemon:wigglytuff,,coach,holdout,
-9,gyrados,name,first,pokemon:gyarados,,,coach,holdout,common misspelling
-10,mewtoo,name,first,pokemon:mewtwo,,,coach,holdout,
-11,mew,name,first,pokemon:mew,,,coach,holdout,exact short name must beat Mewtwo
-12,mr mime,name,first,pokemon:mr-mime,,,coach,holdout,
-13,mr. mime,name,first,pokemon:mr-mime,,,coach,holdout,
-14,nidoran,name,top3,pokemon:nidoran-f pokemon:nidoran-m,pokemon:nidorina pokemon:nidorino,,coach,holdout,
-15,farfetchd,name,first,pokemon:farfetchd,,,coach,holdout,
-16,eve,name,first,pokemon:eevee,,,coach,holdout,"partial recall, 3 letters"
-17,dragonit,name,first,pokemon:dragonite,,,coach,holdout,
-18,thunderbolt,move name,first,move:thunderbolt,,,coach,holdout,
-19,thunder bolt,move name,first,move:thunderbolt,,,coach,holdout,split word
-20,solarbeam,move name,first,move:solar-beam,,,coach,holdout,old spelling
-21,swift swim,ability name,first,ability:swift-swim,,,coach,holdout,
-22,3,number,first,pokemon:venusaur,,,real user,tuning,
-23,#25,number,first,pokemon:pikachu,,,coach,holdout,
-24,pokemon 150,number,first,pokemon:mewtwo,,,coach,holdout,
-25,number 1,number,first,pokemon:bulbasaur,,,coach,holdout,
-26,mouse,category,top3,pokemon:pikachu pokemon:raichu,pokemon:rattata pokemon:raticate pokemon:sandshrew pokemon:sandslash,,real user,holdout,"the user expected Pikachu; ""Mouse Pokémon"" is in the data (genus) but not searched"
-27,electric mouse,category,first,pokemon:pikachu,pokemon:raichu,,coach,holdout,
-28,the mouse pokemon,category,top3,pokemon:pikachu pokemon:raichu,pokemon:rattata pokemon:raticate pokemon:sandshrew pokemon:sandslash,,coach,holdout,
-29,fire horse,category,top3,pokemon:ponyta pokemon:rapidash,,,coach,holdout,
-30,fox pokemon,category,top3,pokemon:vulpix pokemon:ninetales,,,coach,holdout,
-31,duck,category,top3,pokemon:psyduck pokemon:golduck,pokemon:farfetchd,,coach,holdout,
-32,bat,category,top3,pokemon:zubat pokemon:golbat,,,coach,holdout,
-33,turtle,category,top3,pokemon:squirtle pokemon:wartortle pokemon:blastoise,,,coach,holdout,
-34,fossil,lore,top3,pokemon:omanyte pokemon:kabuto,pokemon:omastar pokemon:kabutops pokemon:aerodactyl,,coach,holdout,
-35,mutate,lore,first,pokemon:eevee,,,real user,holdout,"the user expected Eevee, from its description"
-36,pokemon that sleeps all the time,lore,first,pokemon:snorlax,,,coach,holdout,
-37,hides in shadows,lore,first,pokemon:gengar,,,coach,holdout,
-38,causes lightning storms,lore,top3,pokemon:pikachu,pokemon:jolteon pokemon:zapdos,,coach,holdout,
-39,green,appearance,top10,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:caterpie pokemon:metapod pokemon:bellsprout pokemon:weepinbell pokemon:victreebel pokemon:scyther,,,prd,tuning,
-40,gren,appearance,top10,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:caterpie pokemon:metapod pokemon:bellsprout pokemon:weepinbell pokemon:victreebel pokemon:scyther,,,coach,holdout,typo
-41,yellow mouse,appearance,first,pokemon:pikachu,pokemon:raichu pokemon:sandshrew,,coach,holdout,
-42,pink balloon,appearance,first,pokemon:jigglypuff,pokemon:wigglytuff,,coach,holdout,
-43,purple ghost,appearance,top3,pokemon:gastly pokemon:haunter pokemon:gengar,,,coach,holdout,
-44,blue turtle,appearance,top3,pokemon:squirtle pokemon:wartortle pokemon:blastoise,,,coach,holdout,
-45,pink pokemon,appearance,top10,pokemon:clefairy pokemon:clefable pokemon:jigglypuff pokemon:wigglytuff pokemon:slowpoke pokemon:slowbro pokemon:exeggcute pokemon:lickitung pokemon:chansey pokemon:mr-mime pokemon:porygon pokemon:mew,,,coach,holdout,
-46,lives in caves,appearance,top10,pokemon:zubat pokemon:golbat pokemon:diglett pokemon:dugtrio pokemon:gastly pokemon:haunter pokemon:gengar pokemon:onix,,,coach,holdout,
-47,sea pokemon,appearance,top10,pokemon:tentacool pokemon:tentacruel pokemon:seel pokemon:dewgong pokemon:shellder pokemon:cloyster pokemon:horsea pokemon:seadra pokemon:staryu pokemon:starmie pokemon:lapras pokemon:omanyte pokemon:omastar pokemon:kabuto pokemon:kabutops,,,coach,holdout,
-48,found in the forest,appearance,top10,pokemon:caterpie pokemon:metapod pokemon:butterfree pokemon:weedle pokemon:kakuna pokemon:beedrill pokemon:pidgey pokemon:pidgeotto pokemon:pidgeot pokemon:pikachu pokemon:raichu pokemon:paras pokemon:parasect pokemon:venonat pokemon:venomoth pokemon:bellsprout pokemon:weepinbell pokemon:victreebel pokemon:exeggcute pokemon:exeggutor pokemon:pinsir,,,coach,holdout,
-49,pokemon with wings,appearance,top10,pokemon:pidgey pokemon:pidgeotto pokemon:pidgeot pokemon:spearow pokemon:fearow pokemon:zubat pokemon:golbat pokemon:farfetchd pokemon:aerodactyl pokemon:articuno pokemon:zapdos pokemon:moltres,,,coach,holdout,
-50,evolution of pikachu,family,first,pokemon:raichu,pokemon:pikachu,,real user,holdout,"Raichu first, Pikachu after"
-51,i want the evolution of pikachu,family,first,pokemon:raichu,pokemon:pikachu,,real user,tuning,
-52,what does charmander evolve into,family,first,pokemon:charmeleon,pokemon:charizard,,coach,holdout,
-53,evolutions of eevee,family,top3,pokemon:vaporeon pokemon:jolteon pokemon:flareon,,,coach,holdout,
-54,eevee evolutions,family,top3,pokemon:vaporeon pokemon:jolteon pokemon:flareon,,,coach,holdout,
-55,final evolution of bulbasaur,family,first,pokemon:venusaur,pokemon:ivysaur,,coach,holdout,
-56,what evolves into raichu,family,first,pokemon:pikachu,,,coach,holdout,
-57,pre evolution of gyarados,family,first,pokemon:magikarp,,,coach,holdout,
-58,fast electric,stats,first,pokemon:electrode,pokemon:jolteon pokemon:raichu,,prd,tuning,
-59,the fastest pokemon,stats,first,pokemon:electrode,,,real user,tuning,
-60,fastest,stats,first,pokemon:electrode,,,coach,holdout,
-61,slowest pokemon,stats,first,pokemon:slowpoke,,,coach,holdout,
-62,heaviest pokemon,stats,first,pokemon:snorlax,,,coach,holdout,
-63,lightest pokemon,stats,first,pokemon:gastly,,,coach,holdout,
-64,tallest pokemon,stats,first,pokemon:onix,,,coach,holdout,
-65,strongest pokemon,stats,first,pokemon:mewtwo,,,coach,holdout,
-66,high hp,stats,first,pokemon:chansey,pokemon:snorlax pokemon:wigglytuff pokemon:lapras pokemon:vaporeon,,real user,tuning,
-67,low speed,stats,first,pokemon:slowpoke,,,real user,tuning,
-68,highest attack,stats,first,pokemon:dragonite,,,coach,holdout,
-69,best special attack,stats,first,pokemon:mewtwo,,,coach,holdout,
-70,tankiest pokemon,stats,first,pokemon:chansey,,,coach,holdout,
-71,speed over 100,stats,top10,pokemon:pidgeot pokemon:raichu pokemon:dugtrio pokemon:persian pokemon:kadabra pokemon:alakazam pokemon:rapidash pokemon:dodrio pokemon:gengar pokemon:electrode pokemon:starmie pokemon:scyther pokemon:electabuzz pokemon:tauros pokemon:jolteon pokemon:aerodactyl pokemon:mewtwo,,,coach,holdout,
-72,attack above 120,stats,top10,pokemon:machamp pokemon:kingler pokemon:rhydon pokemon:pinsir pokemon:gyarados pokemon:flareon pokemon:dragonite,,,coach,holdout,
-73,electric speed over 100,stats,top3,pokemon:raichu pokemon:electrode pokemon:electabuzz pokemon:jolteon,,,coach,holdout,
-74,fire pokemon with high attack,stats,first,pokemon:flareon,,,coach,holdout,
-75,90kg,units,top3,pokemon:seel pokemon:charizard,pokemon:tauros pokemon:blastoise pokemon:rapidash,,real user,holdout,kg not read
-76,heavier than 200 kg,units,top10,pokemon:golem pokemon:onix pokemon:gyarados pokemon:lapras pokemon:snorlax pokemon:dragonite,,,coach,holdout,
-77,taller than 2 m,units,top10,pokemon:arbok pokemon:onix pokemon:kangaskhan pokemon:gyarados pokemon:lapras pokemon:snorlax pokemon:dragonair pokemon:dragonite,,,coach,holdout,
-78,faster than pikachu,units,top10,pokemon:charizard pokemon:pidgeot pokemon:raticate pokemon:fearow pokemon:raichu pokemon:ninetales pokemon:diglett pokemon:dugtrio pokemon:persian pokemon:primeape pokemon:arcanine pokemon:kadabra pokemon:alakazam pokemon:tentacruel pokemon:rapidash pokemon:dodrio pokemon:haunter pokemon:gengar pokemon:voltorb pokemon:electrode pokemon:starmie pokemon:scyther pokemon:jynx pokemon:electabuzz pokemon:magmar pokemon:tauros pokemon:jolteon pokemon:aerodactyl pokemon:zapdos pokemon:mewtwo pokemon:mew,,,coach,holdout,
-79,fight,type,top10,pokemon:mankey pokemon:primeape pokemon:poliwrath pokemon:machop pokemon:machoke pokemon:machamp pokemon:hitmonlee pokemon:hitmonchan,,,real user,tuning,
-80,fighting pokemon,type,top10,pokemon:mankey pokemon:primeape pokemon:poliwrath pokemon:machop pokemon:machoke pokemon:machamp pokemon:hitmonlee pokemon:hitmonchan,,,coach,holdout,
-81,ghost,type,top3,pokemon:gastly pokemon:haunter pokemon:gengar,,,coach,holdout,
-82,dragon type,type,top3,pokemon:dratini pokemon:dragonair pokemon:dragonite,,,coach,holdout,
-83,fire flying,type,top3,pokemon:charizard pokemon:moltres,,,coach,holdout,
-84,water psychic,type,top3,pokemon:slowpoke pokemon:slowbro pokemon:starmie,,,coach,holdout,
-85,grass poison,type,top10,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:oddish pokemon:gloom pokemon:vileplume pokemon:bellsprout pokemon:weepinbell pokemon:victreebel,,,coach,holdout,
-86,electirc,type,top10,pokemon:pikachu pokemon:raichu pokemon:magnemite pokemon:magneton pokemon:voltorb pokemon:electrode pokemon:electabuzz pokemon:jolteon pokemon:zapdos,,,coach,holdout,typo
-87,legendary,type,top10,pokemon:articuno pokemon:zapdos pokemon:moltres pokemon:mewtwo,pokemon:mew,,coach,holdout,
-88,legendary birds,type,top3,pokemon:articuno pokemon:zapdos pokemon:moltres,,,coach,holdout,
-89,starter pokemon,type,top10,pokemon:bulbasaur pokemon:charmander pokemon:squirtle,,,coach,holdout,not in the data: a real user phrase
-90,put my opponent to sleep,effect,top3,move:sing move:sleep-powder move:hypnosis move:lovely-kiss move:spore,ability:effect-spore,insomnia vital-spirit rest,prd,tuning,
-91,make the enemy doze off,effect,top3,move:sing move:sleep-powder move:hypnosis move:lovely-kiss move:spore,,insomnia vital-spirit rest,coach,tuning,
-92,make it fall asleep,effect,top3,move:sing move:sleep-powder move:hypnosis move:lovely-kiss move:spore,,insomnia vital-spirit rest,coach,tuning,
-93,knock it out with a lullaby,effect,first,move:sing,move:sleep-powder move:hypnosis move:lovely-kiss move:spore,,coach,holdout,indirect wording
-94,paralyze the enemy,effect,top3,move:thunder-wave move:stun-spore move:glare,move:body-slam move:thunderbolt move:lick,,coach,tuning,
-95,poison the opponent,effect,top3,move:toxic move:poison-powder move:poison-gas,move:poison-sting move:sludge,,coach,holdout,
-96,badly poison,effect,first,move:toxic,,,coach,holdout,
-97,confuse the target,effect,top3,move:supersonic move:confuse-ray,,,coach,holdout,
-98,set the foe on fire,effect,top3,move:ember move:flamethrower move:fire-blast,,,coach,holdout,
-99,freeze the enemy,effect,top3,move:ice-beam move:blizzard move:ice-punch,,,coach,holdout,
-100,make it flinch,effect,top10,move:bite move:headbutt move:stomp,,,coach,holdout,
-101,restore my HP,effect,top3,move:recover move:soft-boiled,move:rest,,coach,holdout,
-102,heal myself,effect,top3,move:recover move:soft-boiled,move:rest,,coach,holdout,
-103,one hit KO,effect,top3,move:fissure move:guillotine move:horn-drill,,,coach,holdout,
-104,move that never misses,effect,first,move:swift,,,coach,holdout,
-105,always goes first,effect,first,move:quick-attack,,,coach,holdout,
-106,raise my attack,effect,top3,move:swords-dance move:sharpen move:meditate,,,coach,holdout,
-107,escape from battle,effect,top3,move:teleport,move:whirlwind move:roar,,coach,holdout,
-108,explode,effect,top3,move:self-destruct move:explosion,,,coach,holdout,
-109,immune to sleep,effect,top3,ability:insomnia ability:vital-spirit,,,coach,holdout,
-110,can't be paralyzed,effect,first,ability:limber,,,coach,holdout,
-111,prevent poison,effect,first,ability:immunity,,,coach,holdout,
-112,pokemon that paralyzes the enemy,effect,top10,pokemon:pikachu pokemon:raichu,,,coach,tuning,
-113,pokemon that burns,effect,top10,pokemon:charmander pokemon:vulpix pokemon:growlithe pokemon:ponyta pokemon:magmar,,,coach,tuning,
-114,who can learn surf,learnset,top10,pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:pikachu pokemon:nidoqueen pokemon:nidoking pokemon:psyduck pokemon:golduck pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:tentacool pokemon:tentacruel pokemon:slowpoke pokemon:slowbro pokemon:seel pokemon:dewgong pokemon:shellder pokemon:cloyster pokemon:krabby pokemon:kingler pokemon:lickitung pokemon:rhydon pokemon:kangaskhan pokemon:horsea pokemon:seadra pokemon:goldeen pokemon:seaking pokemon:staryu pokemon:starmie pokemon:gyarados pokemon:lapras pokemon:vaporeon pokemon:omanyte pokemon:omastar pokemon:kabuto pokemon:kabutops pokemon:snorlax pokemon:dratini pokemon:dragonair pokemon:dragonite pokemon:mew,,,coach,holdout,reverse lookup: move → Pokémon
-115,pokemon that learn thunderbolt,learnset,top10,pokemon:rattata pokemon:raticate pokemon:pikachu pokemon:raichu pokemon:nidoran-f pokemon:nidorina pokemon:nidoqueen pokemon:nidoran-m pokemon:nidorino pokemon:nidoking pokemon:clefairy pokemon:clefable pokemon:jigglypuff pokemon:wigglytuff pokemon:meowth pokemon:persian pokemon:mankey pokemon:primeape pokemon:magnemite pokemon:magneton pokemon:grimer pokemon:muk pokemon:gastly pokemon:haunter pokemon:gengar pokemon:voltorb pokemon:electrode pokemon:lickitung pokemon:koffing pokemon:weezing pokemon:rhyhorn pokemon:rhydon pokemon:chansey pokemon:kangaskhan pokemon:staryu pokemon:starmie pokemon:mr-mime pokemon:electabuzz pokemon:tauros pokemon:gyarados pokemon:lapras pokemon:jolteon pokemon:porygon pokemon:snorlax pokemon:zapdos pokemon:dratini pokemon:dragonair pokemon:dragonite pokemon:mewtwo pokemon:mew,,,coach,holdout,
-116,rain team,weather,top10,ability:swift-swim ability:rain-dish,move:thunder move:solar-beam ability:hydration ability:dry-skin,,prd,tuning,
-117,sun team,weather,top10,ability:drought ability:chlorophyll,ability:solar-power move:solar-beam move:growth,,prd,tuning,
-118,heal in the rain,weather,first,ability:rain-dish,ability:hydration ability:dry-skin,,coach,tuning,
-119,best pokemon for a rain team,weather,top10,pokemon:psyduck pokemon:golduck pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:horsea pokemon:goldeen pokemon:seaking pokemon:magikarp pokemon:omanyte pokemon:omastar pokemon:kabuto pokemon:kabutops,pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:tentacool pokemon:tentacruel,,coach,holdout,
-120,faster in the sun,weather,first,ability:chlorophyll,,,coach,holdout,
-121,sandstorm,weather,top10,ability:sand-veil,,,coach,holdout,
-122,electric not flying,negation,top10,pokemon:pikachu pokemon:raichu pokemon:magnemite pokemon:magneton pokemon:voltorb pokemon:electrode pokemon:electabuzz pokemon:jolteon,,zapdos,coach,holdout,
-123,fire but not flying,negation,top10,pokemon:charmander pokemon:charmeleon pokemon:vulpix pokemon:ninetales pokemon:growlithe pokemon:arcanine pokemon:ponyta pokemon:rapidash pokemon:magmar pokemon:flareon,,charizard moltres,coach,holdout,
-124,water without ice,negation,top10,pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:psyduck pokemon:golduck pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:tentacool pokemon:tentacruel pokemon:slowpoke pokemon:slowbro pokemon:seel pokemon:shellder pokemon:krabby pokemon:kingler pokemon:horsea pokemon:seadra pokemon:goldeen pokemon:seaking pokemon:staryu pokemon:starmie pokemon:magikarp pokemon:gyarados pokemon:vaporeon pokemon:omanyte pokemon:omastar pokemon:kabuto pokemon:kabutops,,dewgong cloyster lapras,coach,holdout,"""without"" not supported"
-125,pokemon that can not fall asleep,negation,top3,ability:insomnia ability:vital-spirit,,,coach,holdout,"""not"" inside a sentence"
-126,i want a fast electric pokemon,sentence,first,pokemon:electrode,pokemon:jolteon pokemon:raichu,,coach,holdout,
-127,show me all the grass pokemon,sentence,top10,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:oddish pokemon:gloom pokemon:vileplume pokemon:paras pokemon:parasect pokemon:bellsprout pokemon:weepinbell pokemon:victreebel pokemon:exeggcute pokemon:exeggutor pokemon:tangela,,,coach,holdout,
-128,which pokemon is the strongest,sentence,first,pokemon:mewtwo,,,coach,holdout,
-129,what type is pikachu,sentence,first,pokemon:pikachu,,,coach,holdout,
-130,a cute pink pokemon that sings,sentence,first,pokemon:jigglypuff,pokemon:wigglytuff pokemon:clefairy,,coach,holdout,
-131,good pokemon against water types,sentence,top10,pokemon:pikachu pokemon:raichu pokemon:magnemite pokemon:magneton pokemon:voltorb pokemon:electrode pokemon:electabuzz pokemon:jolteon pokemon:zapdos pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:oddish pokemon:gloom pokemon:vileplume pokemon:paras pokemon:parasect pokemon:bellsprout pokemon:weepinbell pokemon:victreebel pokemon:exeggcute pokemon:exeggutor pokemon:tangela,,,coach,holdout,no type chart in the data
-132,fire & flying,web: GO syntax,top3,pokemon:charizard pokemon:moltres,,,web pattern,holdout,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet)
-133,dragon & flying,web: GO syntax,first,pokemon:dragonite,,,web pattern,holdout,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet)
-134,"fire, water",web: GO syntax,top10,pokemon:charmander pokemon:charmeleon pokemon:charizard pokemon:vulpix pokemon:ninetales pokemon:growlithe pokemon:arcanine pokemon:ponyta pokemon:rapidash pokemon:magmar pokemon:flareon pokemon:moltres pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:psyduck pokemon:golduck pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:tentacool pokemon:tentacruel pokemon:slowpoke pokemon:slowbro pokemon:seel pokemon:dewgong pokemon:shellder pokemon:cloyster pokemon:krabby pokemon:kingler pokemon:horsea pokemon:seadra pokemon:goldeen pokemon:seaking pokemon:staryu pokemon:starmie pokemon:magikarp pokemon:gyarados pokemon:lapras pokemon:vaporeon pokemon:omanyte pokemon:omastar pokemon:kabuto pokemon:kabutops,,,web pattern,holdout,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet); comma = or
-135,1-9,web: GO syntax,top10,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:charmander pokemon:charmeleon pokemon:charizard pokemon:squirtle pokemon:wartortle pokemon:blastoise,,,web pattern,holdout,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet); Pokédex range
-136,25,web: GO syntax,first,pokemon:pikachu,,,web pattern,holdout,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet)
-137,+charmander,web: GO syntax,top3,pokemon:charmander pokemon:charmeleon pokemon:charizard,,,web pattern,holdout,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet); + = whole family
-138,@surf,web: GO syntax,top10,pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:pikachu pokemon:nidoqueen pokemon:nidoking pokemon:psyduck pokemon:golduck pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:tentacool pokemon:tentacruel pokemon:slowpoke pokemon:slowbro pokemon:seel pokemon:dewgong pokemon:shellder pokemon:cloyster pokemon:krabby pokemon:kingler pokemon:lickitung pokemon:rhydon pokemon:kangaskhan pokemon:horsea pokemon:seadra pokemon:goldeen pokemon:seaking pokemon:staryu pokemon:starmie pokemon:gyarados pokemon:lapras pokemon:vaporeon pokemon:omanyte pokemon:omastar pokemon:kabuto pokemon:kabutops pokemon:snorlax pokemon:dratini pokemon:dragonair pokemon:dragonite pokemon:mew,,,web pattern,holdout,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet); @ = has this move
-139,@thunderbolt,web: GO syntax,top10,pokemon:rattata pokemon:raticate pokemon:pikachu pokemon:raichu pokemon:nidoran-f pokemon:nidorina pokemon:nidoqueen pokemon:nidoran-m pokemon:nidorino pokemon:nidoking pokemon:clefairy pokemon:clefable pokemon:jigglypuff pokemon:wigglytuff pokemon:meowth pokemon:persian pokemon:mankey pokemon:primeape pokemon:magnemite pokemon:magneton pokemon:grimer pokemon:muk pokemon:gastly pokemon:haunter pokemon:gengar pokemon:voltorb pokemon:electrode pokemon:lickitung pokemon:koffing pokemon:weezing pokemon:rhyhorn pokemon:rhydon pokemon:chansey pokemon:kangaskhan pokemon:staryu pokemon:starmie pokemon:mr-mime pokemon:electabuzz pokemon:tauros pokemon:gyarados pokemon:lapras pokemon:jolteon pokemon:porygon pokemon:snorlax pokemon:zapdos pokemon:dratini pokemon:dragonair pokemon:dragonite pokemon:mewtwo pokemon:mew,,,web pattern,holdout,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet)
-140,mythical,web: GO syntax,first,pokemon:mew,,,web pattern,holdout,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet)
-141,!flying,web: GO syntax,top10,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:charmander pokemon:charmeleon pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:caterpie pokemon:metapod,,charizard butterfree pidgey pidgeotto pidgeot spearow fearow zubat golbat farfetchd doduo dodrio scyther gyarados aerodactyl articuno zapdos moltres dragonite,web pattern,holdout,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet); ! = not
-142,water & !ice,web: GO syntax,top10,pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:psyduck pokemon:golduck pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:tentacool pokemon:tentacruel pokemon:slowpoke pokemon:slowbro pokemon:seel pokemon:shellder pokemon:krabby pokemon:kingler pokemon:horsea pokemon:seadra pokemon:goldeen pokemon:seaking pokemon:staryu pokemon:starmie pokemon:magikarp pokemon:gyarados pokemon:vaporeon pokemon:omanyte pokemon:omastar pokemon:kabuto pokemon:kabutops,,dewgong cloyster lapras,web pattern,holdout,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet)
-143,legendary & flying,web: GO syntax,top3,pokemon:articuno pokemon:zapdos pokemon:moltres,,,web pattern,holdout,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet)
-144,every pokemon with intimidate,web: Q&A,top10,pokemon:ekans pokemon:arbok pokemon:growlithe pokemon:arcanine pokemon:tauros pokemon:gyarados,ability:intimidate,,web pattern,holdout,question shape from PokéBase Q&A (pokemondb.net/pokebase)
-145,which pokemon have levitate,web: Q&A,top10,pokemon:gastly pokemon:haunter pokemon:koffing pokemon:weezing,ability:levitate,,web pattern,holdout,question shape from PokéBase Q&A (pokemondb.net/pokebase)
-146,what abilities does snorlax have,web: Q&A,first,pokemon:snorlax,ability:gluttony ability:immunity ability:thick-fat,,web pattern,holdout,question shape from PokéBase Q&A (pokemondb.net/pokebase)
-147,what does sleep powder do,web: Q&A,first,move:sleep-powder,,,web pattern,holdout,question shape from PokéBase Q&A (pokemondb.net/pokebase)
-148,is gengar a ghost type,web: Q&A,first,pokemon:gengar,,,web pattern,holdout,question shape from PokéBase Q&A (pokemondb.net/pokebase)
-149,best electric type,web: Q&A,first,pokemon:zapdos,,,web pattern,holdout,question shape from PokéBase Q&A (pokemondb.net/pokebase); best = highest base total
-150,strongest water pokemon,web: Q&A,first,pokemon:gyarados,,,web pattern,holdout,question shape from PokéBase Q&A (pokemondb.net/pokebase)
-151,fastest psychic type,web: Q&A,first,pokemon:mewtwo,,,web pattern,holdout,question shape from PokéBase Q&A (pokemondb.net/pokebase)
-152,which pokemon has the highest defense,web: Q&A,first,pokemon:cloyster,,,web pattern,holdout,question shape from PokéBase Q&A (pokemondb.net/pokebase)
-153,best counter for gyarados,web: Q&A,top10,pokemon:pikachu pokemon:raichu pokemon:magnemite pokemon:magneton pokemon:voltorb pokemon:electrode pokemon:electabuzz pokemon:jolteon pokemon:zapdos,,,web pattern,holdout,"question shape from PokéBase Q&A (pokemondb.net/pokebase); needs a type chart, which the data doesn't have"
-154,what moves can pikachu learn,web: Q&A,first,pokemon:pikachu,move:agility move:bide move:body-slam move:double-edge move:double-team move:flash move:growl move:light-screen move:mega-kick move:mega-punch move:mimic move:pay-day move:quick-attack move:rage move:reflect move:rest move:seismic-toss move:skull-bash move:slam move:submission move:substitute move:surf move:swift move:tail-whip move:take-down move:thunder move:thunder-shock move:thunder-wave move:thunderbolt move:toxic,,web pattern,holdout,question shape from PokéBase Q&A (pokemondb.net/pokebase)
-155,which pokemon learn hypnosis,web: Q&A,top10,pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:gastly pokemon:haunter pokemon:gengar pokemon:drowzee pokemon:hypno pokemon:exeggcute pokemon:exeggutor,move:hypnosis,,web pattern,holdout,question shape from PokéBase Q&A (pokemondb.net/pokebase)
-156,orange lizard with a flame on its tail,web: identify,first,pokemon:charmander,pokemon:charmeleon pokemon:charizard,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-157,turtle with water cannons,web: identify,first,pokemon:blastoise,,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-158,plant bulb on its back,web: identify,first,pokemon:bulbasaur,pokemon:ivysaur pokemon:venusaur,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-159,pink egg pokemon,web: identify,first,pokemon:chansey,,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-160,giant sleeping pokemon blocking the road,web: identify,first,pokemon:snorlax,,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-161,cat with a coin on its head,web: identify,first,pokemon:meowth,,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-162,giant rock snake,web: identify,first,pokemon:onix,,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-163,yellow duck with a headache,web: identify,first,pokemon:psyduck,,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-164,starfish,web: identify,top3,pokemon:staryu pokemon:starmie,,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-165,jellyfish,web: identify,top3,pokemon:tentacool pokemon:tentacruel,,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-166,fish that only splashes,web: identify,first,pokemon:magikarp,,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-167,purple blob that transforms,web: identify,first,pokemon:ditto,,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-168,psychic that bends spoons,web: identify,top3,pokemon:kadabra pokemon:alakazam,pokemon:abra,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-169,pokemon created in a lab,web: identify,first,pokemon:mewtwo,,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-170,fire dog,web: identify,top3,pokemon:growlithe pokemon:arcanine,,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-171,four arms fighting pokemon,web: identify,first,pokemon:machamp,,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-172,bird with three heads,web: identify,first,pokemon:dodrio,,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-173,duck holding a leek,web: identify,first,pokemon:farfetchd,,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-174,angry sea serpent,web: identify,first,pokemon:gyarados,,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-175,magnet pokemon,web: identify,top3,pokemon:magnemite pokemon:magneton,,,web pattern,holdout,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-176,spaghetti,noise,nothing,,,,prd,tuning,
-177,pizza,noise,nothing,,,,coach,tuning,
-178,hello,noise,nothing,,,,coach,tuning,
-179,best car,noise,nothing,,,,coach,tuning,
-180,weather in Paris,noise,nothing,,,,coach,tuning,
-181,stock market,noise,nothing,,,,coach,holdout,
-182,my homework,noise,nothing,,,,coach,holdout,
-183,football scores,noise,nothing,,,,coach,holdout,
-184,asdfgh,noise,nothing,,,,coach,holdout,
-185,how to cook pasta,noise,nothing,,,,coach,holdout,
+id,query,category,check,best,ok,forbidden,source,note
+1,bulba,name,first,pokemon:bulbasaur,,,prd,
+2,pikachoo,name,first,pokemon:pikachu,,,prd,
+3,saur,name,top3,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur,,,prd,
+4,blaaastoiise,name,first,pokemon:blastoise,,,real user,fixed with the 40% rule
+5,blastoise,name,first,pokemon:blastoise,pokemon:squirtle pokemon:wartortle,,real user,
+6,charizrd,name,first,pokemon:charizard,,,drafted,
+7,pikahcu,name,first,pokemon:pikachu,,,drafted,two letters swapped
+8,jiggly,name,first,pokemon:jigglypuff,pokemon:wigglytuff,,drafted,
+9,gyrados,name,first,pokemon:gyarados,,,drafted,common misspelling
+10,mewtoo,name,first,pokemon:mewtwo,,,drafted,
+11,mew,name,first,pokemon:mew,,,drafted,exact short name must beat Mewtwo
+12,mr mime,name,first,pokemon:mr-mime,,,drafted,
+13,mr. mime,name,first,pokemon:mr-mime,,,drafted,
+14,nidoran,name,top3,pokemon:nidoran-f pokemon:nidoran-m,pokemon:nidorina pokemon:nidorino,,drafted,
+15,farfetchd,name,first,pokemon:farfetchd,,,drafted,
+16,eve,name,first,pokemon:eevee,,,drafted,"partial recall, 3 letters"
+17,dragonit,name,first,pokemon:dragonite,,,drafted,
+18,thunderbolt,move name,first,move:thunderbolt,,,drafted,
+19,thunder bolt,move name,first,move:thunderbolt,,,drafted,split word
+20,solarbeam,move name,first,move:solar-beam,,,drafted,old spelling
+21,swift swim,ability name,first,ability:swift-swim,,,drafted,
+22,3,number,first,pokemon:venusaur,,,real user,
+23,#25,number,first,pokemon:pikachu,,,drafted,
+24,pokemon 150,number,first,pokemon:mewtwo,,,drafted,
+25,number 1,number,first,pokemon:bulbasaur,,,drafted,
+26,mouse,category,top3,pokemon:pikachu pokemon:raichu,pokemon:rattata pokemon:raticate pokemon:sandshrew pokemon:sandslash,,real user,"the user expected Pikachu; ""Mouse Pokémon"" is in the data (genus) but not searched"
+27,electric mouse,category,first,pokemon:pikachu,pokemon:raichu,,drafted,
+28,the mouse pokemon,category,top3,pokemon:pikachu pokemon:raichu,pokemon:rattata pokemon:raticate pokemon:sandshrew pokemon:sandslash,,drafted,
+29,fire horse,category,top3,pokemon:ponyta pokemon:rapidash,,,drafted,
+30,fox pokemon,category,top3,pokemon:vulpix pokemon:ninetales,,,drafted,
+31,duck,category,top3,pokemon:psyduck pokemon:golduck,pokemon:farfetchd,,drafted,
+32,bat,category,top3,pokemon:zubat pokemon:golbat,,,drafted,
+33,turtle,category,top3,pokemon:squirtle pokemon:wartortle pokemon:blastoise,,,drafted,
+34,fossil,lore,top3,pokemon:omanyte pokemon:kabuto,pokemon:omastar pokemon:kabutops pokemon:aerodactyl,,drafted,
+35,mutate,lore,first,pokemon:eevee,,,real user,"the user expected Eevee, from its description"
+36,pokemon that sleeps all the time,lore,first,pokemon:snorlax,,,drafted,
+37,hides in shadows,lore,first,pokemon:gengar,,,drafted,
+38,causes lightning storms,lore,top3,pokemon:pikachu,pokemon:jolteon pokemon:zapdos,,drafted,
+39,green,appearance,top10,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:caterpie pokemon:metapod pokemon:bellsprout pokemon:weepinbell pokemon:victreebel pokemon:scyther,,,prd,
+40,gren,appearance,top10,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:caterpie pokemon:metapod pokemon:bellsprout pokemon:weepinbell pokemon:victreebel pokemon:scyther,,,drafted,typo
+41,yellow mouse,appearance,first,pokemon:pikachu,pokemon:raichu pokemon:sandshrew,,drafted,
+42,pink balloon,appearance,first,pokemon:jigglypuff,pokemon:wigglytuff,,drafted,
+43,purple ghost,appearance,top3,pokemon:gastly pokemon:haunter pokemon:gengar,,,drafted,
+44,blue turtle,appearance,top3,pokemon:squirtle pokemon:wartortle pokemon:blastoise,,,drafted,
+45,pink pokemon,appearance,top10,pokemon:clefairy pokemon:clefable pokemon:jigglypuff pokemon:wigglytuff pokemon:slowpoke pokemon:slowbro pokemon:exeggcute pokemon:lickitung pokemon:chansey pokemon:mr-mime pokemon:porygon pokemon:mew,,,drafted,
+46,lives in caves,appearance,top10,pokemon:zubat pokemon:golbat pokemon:diglett pokemon:dugtrio pokemon:gastly pokemon:haunter pokemon:gengar pokemon:onix,,,drafted,
+47,sea pokemon,appearance,top10,pokemon:tentacool pokemon:tentacruel pokemon:seel pokemon:dewgong pokemon:shellder pokemon:cloyster pokemon:horsea pokemon:seadra pokemon:staryu pokemon:starmie pokemon:lapras pokemon:omanyte pokemon:omastar pokemon:kabuto pokemon:kabutops,,,drafted,
+48,found in the forest,appearance,top10,pokemon:caterpie pokemon:metapod pokemon:butterfree pokemon:weedle pokemon:kakuna pokemon:beedrill pokemon:pidgey pokemon:pidgeotto pokemon:pidgeot pokemon:pikachu pokemon:raichu pokemon:paras pokemon:parasect pokemon:venonat pokemon:venomoth pokemon:bellsprout pokemon:weepinbell pokemon:victreebel pokemon:exeggcute pokemon:exeggutor pokemon:pinsir,,,drafted,
+49,pokemon with wings,appearance,top10,pokemon:pidgey pokemon:pidgeotto pokemon:pidgeot pokemon:spearow pokemon:fearow pokemon:zubat pokemon:golbat pokemon:farfetchd pokemon:aerodactyl pokemon:articuno pokemon:zapdos pokemon:moltres,,,drafted,
+50,evolution of pikachu,family,first,pokemon:raichu,pokemon:pikachu,,real user,"Raichu first, Pikachu after"
+51,i want the evolution of pikachu,family,first,pokemon:raichu,pokemon:pikachu,,real user,
+52,what does charmander evolve into,family,first,pokemon:charmeleon,pokemon:charizard,,drafted,
+53,evolutions of eevee,family,top3,pokemon:vaporeon pokemon:jolteon pokemon:flareon,,,drafted,
+54,eevee evolutions,family,top3,pokemon:vaporeon pokemon:jolteon pokemon:flareon,,,drafted,
+55,final evolution of bulbasaur,family,first,pokemon:venusaur,pokemon:ivysaur,,drafted,
+56,what evolves into raichu,family,first,pokemon:pikachu,,,drafted,
+57,pre evolution of gyarados,family,first,pokemon:magikarp,,,drafted,
+58,fast electric,stats,first,pokemon:electrode,pokemon:jolteon pokemon:raichu,,prd,
+59,the fastest pokemon,stats,first,pokemon:electrode,,,real user,
+60,fastest,stats,first,pokemon:electrode,,,drafted,
+61,slowest pokemon,stats,first,pokemon:slowpoke,,,drafted,
+62,heaviest pokemon,stats,first,pokemon:snorlax,,,drafted,
+63,lightest pokemon,stats,first,pokemon:gastly,,,drafted,
+64,tallest pokemon,stats,first,pokemon:onix,,,drafted,
+65,strongest pokemon,stats,first,pokemon:mewtwo,,,drafted,
+66,high hp,stats,first,pokemon:chansey,pokemon:snorlax pokemon:wigglytuff pokemon:lapras pokemon:vaporeon,,real user,
+67,low speed,stats,first,pokemon:slowpoke,,,real user,
+68,highest attack,stats,first,pokemon:dragonite,,,drafted,
+69,best special attack,stats,first,pokemon:mewtwo,,,drafted,
+70,tankiest pokemon,stats,first,pokemon:chansey,,,drafted,
+71,speed over 100,stats,top10,pokemon:pidgeot pokemon:raichu pokemon:dugtrio pokemon:persian pokemon:kadabra pokemon:alakazam pokemon:rapidash pokemon:dodrio pokemon:gengar pokemon:electrode pokemon:starmie pokemon:scyther pokemon:electabuzz pokemon:tauros pokemon:jolteon pokemon:aerodactyl pokemon:mewtwo,,,drafted,
+72,attack above 120,stats,top10,pokemon:machamp pokemon:kingler pokemon:rhydon pokemon:pinsir pokemon:gyarados pokemon:flareon pokemon:dragonite,,,drafted,
+73,electric speed over 100,stats,top3,pokemon:raichu pokemon:electrode pokemon:electabuzz pokemon:jolteon,,,drafted,
+74,fire pokemon with high attack,stats,first,pokemon:flareon,,,drafted,
+75,90kg,units,top3,pokemon:seel pokemon:charizard,pokemon:tauros pokemon:blastoise pokemon:rapidash,,real user,kg not read
+76,heavier than 200 kg,units,top10,pokemon:golem pokemon:onix pokemon:gyarados pokemon:lapras pokemon:snorlax pokemon:dragonite,,,drafted,
+77,taller than 2 m,units,top10,pokemon:arbok pokemon:onix pokemon:kangaskhan pokemon:gyarados pokemon:lapras pokemon:snorlax pokemon:dragonair pokemon:dragonite,,,drafted,
+78,faster than pikachu,units,top10,pokemon:charizard pokemon:pidgeot pokemon:raticate pokemon:fearow pokemon:raichu pokemon:ninetales pokemon:diglett pokemon:dugtrio pokemon:persian pokemon:primeape pokemon:arcanine pokemon:kadabra pokemon:alakazam pokemon:tentacruel pokemon:rapidash pokemon:dodrio pokemon:haunter pokemon:gengar pokemon:voltorb pokemon:electrode pokemon:starmie pokemon:scyther pokemon:jynx pokemon:electabuzz pokemon:magmar pokemon:tauros pokemon:jolteon pokemon:aerodactyl pokemon:zapdos pokemon:mewtwo pokemon:mew,,,drafted,
+79,fight,type,top10,pokemon:mankey pokemon:primeape pokemon:poliwrath pokemon:machop pokemon:machoke pokemon:machamp pokemon:hitmonlee pokemon:hitmonchan,,,real user,
+80,fighting pokemon,type,top10,pokemon:mankey pokemon:primeape pokemon:poliwrath pokemon:machop pokemon:machoke pokemon:machamp pokemon:hitmonlee pokemon:hitmonchan,,,drafted,
+81,ghost,type,top3,pokemon:gastly pokemon:haunter pokemon:gengar,,,drafted,
+82,dragon type,type,top3,pokemon:dratini pokemon:dragonair pokemon:dragonite,,,drafted,
+83,fire flying,type,top3,pokemon:charizard pokemon:moltres,,,drafted,
+84,water psychic,type,top3,pokemon:slowpoke pokemon:slowbro pokemon:starmie,,,drafted,
+85,grass poison,type,top10,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:oddish pokemon:gloom pokemon:vileplume pokemon:bellsprout pokemon:weepinbell pokemon:victreebel,,,drafted,
+86,electirc,type,top10,pokemon:pikachu pokemon:raichu pokemon:magnemite pokemon:magneton pokemon:voltorb pokemon:electrode pokemon:electabuzz pokemon:jolteon pokemon:zapdos,,,drafted,typo
+87,legendary,type,top10,pokemon:articuno pokemon:zapdos pokemon:moltres pokemon:mewtwo,pokemon:mew,,drafted,
+88,legendary birds,type,top3,pokemon:articuno pokemon:zapdos pokemon:moltres,,,drafted,
+89,starter pokemon,type,top10,pokemon:bulbasaur pokemon:charmander pokemon:squirtle,,,drafted,not in the data: a real user phrase
+90,put my opponent to sleep,effect,top3,move:sing move:sleep-powder move:hypnosis move:lovely-kiss move:spore,ability:effect-spore,insomnia vital-spirit rest,prd,
+91,make the enemy doze off,effect,top3,move:sing move:sleep-powder move:hypnosis move:lovely-kiss move:spore,,insomnia vital-spirit rest,drafted,
+92,make it fall asleep,effect,top3,move:sing move:sleep-powder move:hypnosis move:lovely-kiss move:spore,,insomnia vital-spirit rest,drafted,
+93,knock it out with a lullaby,effect,first,move:sing,move:sleep-powder move:hypnosis move:lovely-kiss move:spore,,drafted,indirect wording
+94,paralyze the enemy,effect,top3,move:thunder-wave move:stun-spore move:glare,move:body-slam move:thunderbolt move:lick,,drafted,
+95,poison the opponent,effect,top3,move:toxic move:poison-powder move:poison-gas,move:poison-sting move:sludge,,drafted,
+96,badly poison,effect,first,move:toxic,,,drafted,
+97,confuse the target,effect,top3,move:supersonic move:confuse-ray,,,drafted,
+98,set the foe on fire,effect,top3,move:ember move:flamethrower move:fire-blast,,,drafted,
+99,freeze the enemy,effect,top3,move:ice-beam move:blizzard move:ice-punch,,,drafted,
+100,make it flinch,effect,top10,move:bite move:headbutt move:stomp,,,drafted,
+101,restore my HP,effect,top3,move:recover move:soft-boiled,move:rest,,drafted,
+102,heal myself,effect,top3,move:recover move:soft-boiled,move:rest,,drafted,
+103,one hit KO,effect,top3,move:fissure move:guillotine move:horn-drill,,,drafted,
+104,move that never misses,effect,first,move:swift,,,drafted,
+105,always goes first,effect,first,move:quick-attack,,,drafted,
+106,raise my attack,effect,top3,move:swords-dance move:sharpen move:meditate,,,drafted,
+107,escape from battle,effect,top3,move:teleport,move:whirlwind move:roar,,drafted,
+108,explode,effect,top3,move:self-destruct move:explosion,,,drafted,
+109,immune to sleep,effect,top3,ability:insomnia ability:vital-spirit,,,drafted,
+110,can't be paralyzed,effect,first,ability:limber,,,drafted,
+111,prevent poison,effect,first,ability:immunity,,,drafted,
+112,pokemon that paralyzes the enemy,effect,top10,pokemon:pikachu pokemon:raichu,,,drafted,
+113,pokemon that burns,effect,top10,pokemon:charmander pokemon:vulpix pokemon:growlithe pokemon:ponyta pokemon:magmar,,,drafted,
+114,who can learn surf,learnset,top10,pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:pikachu pokemon:nidoqueen pokemon:nidoking pokemon:psyduck pokemon:golduck pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:tentacool pokemon:tentacruel pokemon:slowpoke pokemon:slowbro pokemon:seel pokemon:dewgong pokemon:shellder pokemon:cloyster pokemon:krabby pokemon:kingler pokemon:lickitung pokemon:rhydon pokemon:kangaskhan pokemon:horsea pokemon:seadra pokemon:goldeen pokemon:seaking pokemon:staryu pokemon:starmie pokemon:gyarados pokemon:lapras pokemon:vaporeon pokemon:omanyte pokemon:omastar pokemon:kabuto pokemon:kabutops pokemon:snorlax pokemon:dratini pokemon:dragonair pokemon:dragonite pokemon:mew,,,drafted,reverse lookup: move → Pokémon
+115,pokemon that learn thunderbolt,learnset,top10,pokemon:rattata pokemon:raticate pokemon:pikachu pokemon:raichu pokemon:nidoran-f pokemon:nidorina pokemon:nidoqueen pokemon:nidoran-m pokemon:nidorino pokemon:nidoking pokemon:clefairy pokemon:clefable pokemon:jigglypuff pokemon:wigglytuff pokemon:meowth pokemon:persian pokemon:mankey pokemon:primeape pokemon:magnemite pokemon:magneton pokemon:grimer pokemon:muk pokemon:gastly pokemon:haunter pokemon:gengar pokemon:voltorb pokemon:electrode pokemon:lickitung pokemon:koffing pokemon:weezing pokemon:rhyhorn pokemon:rhydon pokemon:chansey pokemon:kangaskhan pokemon:staryu pokemon:starmie pokemon:mr-mime pokemon:electabuzz pokemon:tauros pokemon:gyarados pokemon:lapras pokemon:jolteon pokemon:porygon pokemon:snorlax pokemon:zapdos pokemon:dratini pokemon:dragonair pokemon:dragonite pokemon:mewtwo pokemon:mew,,,drafted,
+116,rain team,weather,top10,ability:swift-swim ability:rain-dish,move:thunder move:solar-beam ability:hydration ability:dry-skin,,prd,
+117,sun team,weather,top10,ability:drought ability:chlorophyll,ability:solar-power move:solar-beam move:growth,,prd,
+118,heal in the rain,weather,first,ability:rain-dish,ability:hydration ability:dry-skin,,drafted,
+119,best pokemon for a rain team,weather,top10,pokemon:psyduck pokemon:golduck pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:horsea pokemon:goldeen pokemon:seaking pokemon:magikarp pokemon:omanyte pokemon:omastar pokemon:kabuto pokemon:kabutops,pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:tentacool pokemon:tentacruel,,drafted,
+120,faster in the sun,weather,first,ability:chlorophyll,,,drafted,
+121,sandstorm,weather,top10,ability:sand-veil,,,drafted,
+122,electric not flying,negation,top10,pokemon:pikachu pokemon:raichu pokemon:magnemite pokemon:magneton pokemon:voltorb pokemon:electrode pokemon:electabuzz pokemon:jolteon,,zapdos,drafted,
+123,fire but not flying,negation,top10,pokemon:charmander pokemon:charmeleon pokemon:vulpix pokemon:ninetales pokemon:growlithe pokemon:arcanine pokemon:ponyta pokemon:rapidash pokemon:magmar pokemon:flareon,,charizard moltres,drafted,
+124,water without ice,negation,top10,pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:psyduck pokemon:golduck pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:tentacool pokemon:tentacruel pokemon:slowpoke pokemon:slowbro pokemon:seel pokemon:shellder pokemon:krabby pokemon:kingler pokemon:horsea pokemon:seadra pokemon:goldeen pokemon:seaking pokemon:staryu pokemon:starmie pokemon:magikarp pokemon:gyarados pokemon:vaporeon pokemon:omanyte pokemon:omastar pokemon:kabuto pokemon:kabutops,,dewgong cloyster lapras,drafted,"""without"" not supported"
+125,pokemon that can not fall asleep,negation,top3,ability:insomnia ability:vital-spirit,,,drafted,"""not"" inside a sentence"
+126,i want a fast electric pokemon,sentence,first,pokemon:electrode,pokemon:jolteon pokemon:raichu,,drafted,
+127,show me all the grass pokemon,sentence,top10,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:oddish pokemon:gloom pokemon:vileplume pokemon:paras pokemon:parasect pokemon:bellsprout pokemon:weepinbell pokemon:victreebel pokemon:exeggcute pokemon:exeggutor pokemon:tangela,,,drafted,
+128,which pokemon is the strongest,sentence,first,pokemon:mewtwo,,,drafted,
+129,what type is pikachu,sentence,first,pokemon:pikachu,,,drafted,
+130,a cute pink pokemon that sings,sentence,first,pokemon:jigglypuff,pokemon:wigglytuff pokemon:clefairy,,drafted,
+131,good pokemon against water types,sentence,top10,pokemon:pikachu pokemon:raichu pokemon:magnemite pokemon:magneton pokemon:voltorb pokemon:electrode pokemon:electabuzz pokemon:jolteon pokemon:zapdos pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:oddish pokemon:gloom pokemon:vileplume pokemon:paras pokemon:parasect pokemon:bellsprout pokemon:weepinbell pokemon:victreebel pokemon:exeggcute pokemon:exeggutor pokemon:tangela,,,drafted,no type chart in the data
+132,fire & flying,web: GO syntax,top3,pokemon:charizard pokemon:moltres,,,web pattern,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet)
+133,dragon & flying,web: GO syntax,first,pokemon:dragonite,,,web pattern,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet)
+134,"fire, water",web: GO syntax,top10,pokemon:charmander pokemon:charmeleon pokemon:charizard pokemon:vulpix pokemon:ninetales pokemon:growlithe pokemon:arcanine pokemon:ponyta pokemon:rapidash pokemon:magmar pokemon:flareon pokemon:moltres pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:psyduck pokemon:golduck pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:tentacool pokemon:tentacruel pokemon:slowpoke pokemon:slowbro pokemon:seel pokemon:dewgong pokemon:shellder pokemon:cloyster pokemon:krabby pokemon:kingler pokemon:horsea pokemon:seadra pokemon:goldeen pokemon:seaking pokemon:staryu pokemon:starmie pokemon:magikarp pokemon:gyarados pokemon:lapras pokemon:vaporeon pokemon:omanyte pokemon:omastar pokemon:kabuto pokemon:kabutops,,,web pattern,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet); comma = or
+135,1-9,web: GO syntax,top10,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:charmander pokemon:charmeleon pokemon:charizard pokemon:squirtle pokemon:wartortle pokemon:blastoise,,,web pattern,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet); Pokédex range
+136,25,web: GO syntax,first,pokemon:pikachu,,,web pattern,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet)
+137,+charmander,web: GO syntax,top3,pokemon:charmander pokemon:charmeleon pokemon:charizard,,,web pattern,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet); + = whole family
+138,@surf,web: GO syntax,top10,pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:pikachu pokemon:nidoqueen pokemon:nidoking pokemon:psyduck pokemon:golduck pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:tentacool pokemon:tentacruel pokemon:slowpoke pokemon:slowbro pokemon:seel pokemon:dewgong pokemon:shellder pokemon:cloyster pokemon:krabby pokemon:kingler pokemon:lickitung pokemon:rhydon pokemon:kangaskhan pokemon:horsea pokemon:seadra pokemon:goldeen pokemon:seaking pokemon:staryu pokemon:starmie pokemon:gyarados pokemon:lapras pokemon:vaporeon pokemon:omanyte pokemon:omastar pokemon:kabuto pokemon:kabutops pokemon:snorlax pokemon:dratini pokemon:dragonair pokemon:dragonite pokemon:mew,,,web pattern,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet); @ = has this move
+139,@thunderbolt,web: GO syntax,top10,pokemon:rattata pokemon:raticate pokemon:pikachu pokemon:raichu pokemon:nidoran-f pokemon:nidorina pokemon:nidoqueen pokemon:nidoran-m pokemon:nidorino pokemon:nidoking pokemon:clefairy pokemon:clefable pokemon:jigglypuff pokemon:wigglytuff pokemon:meowth pokemon:persian pokemon:mankey pokemon:primeape pokemon:magnemite pokemon:magneton pokemon:grimer pokemon:muk pokemon:gastly pokemon:haunter pokemon:gengar pokemon:voltorb pokemon:electrode pokemon:lickitung pokemon:koffing pokemon:weezing pokemon:rhyhorn pokemon:rhydon pokemon:chansey pokemon:kangaskhan pokemon:staryu pokemon:starmie pokemon:mr-mime pokemon:electabuzz pokemon:tauros pokemon:gyarados pokemon:lapras pokemon:jolteon pokemon:porygon pokemon:snorlax pokemon:zapdos pokemon:dratini pokemon:dragonair pokemon:dragonite pokemon:mewtwo pokemon:mew,,,web pattern,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet)
+140,mythical,web: GO syntax,first,pokemon:mew,,,web pattern,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet)
+141,!flying,web: GO syntax,top10,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:charmander pokemon:charmeleon pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:caterpie pokemon:metapod,,charizard butterfree pidgey pidgeotto pidgeot spearow fearow zubat golbat farfetchd doduo dodrio scyther gyarados aerodactyl articuno zapdos moltres dragonite,web pattern,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet); ! = not
+142,water & !ice,web: GO syntax,top10,pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:psyduck pokemon:golduck pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:tentacool pokemon:tentacruel pokemon:slowpoke pokemon:slowbro pokemon:seel pokemon:shellder pokemon:krabby pokemon:kingler pokemon:horsea pokemon:seadra pokemon:goldeen pokemon:seaking pokemon:staryu pokemon:starmie pokemon:magikarp pokemon:gyarados pokemon:vaporeon pokemon:omanyte pokemon:omastar pokemon:kabuto pokemon:kabutops,,dewgong cloyster lapras,web pattern,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet)
+143,legendary & flying,web: GO syntax,top3,pokemon:articuno pokemon:zapdos pokemon:moltres,,,web pattern,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet)
+144,every pokemon with intimidate,web: Q&A,top10,pokemon:ekans pokemon:arbok pokemon:growlithe pokemon:arcanine pokemon:tauros pokemon:gyarados,ability:intimidate,,web pattern,question shape from PokéBase Q&A (pokemondb.net/pokebase)
+145,which pokemon have levitate,web: Q&A,top10,pokemon:gastly pokemon:haunter pokemon:koffing pokemon:weezing,ability:levitate,,web pattern,question shape from PokéBase Q&A (pokemondb.net/pokebase)
+146,what abilities does snorlax have,web: Q&A,first,pokemon:snorlax,ability:gluttony ability:immunity ability:thick-fat,,web pattern,question shape from PokéBase Q&A (pokemondb.net/pokebase)
+147,what does sleep powder do,web: Q&A,first,move:sleep-powder,,,web pattern,question shape from PokéBase Q&A (pokemondb.net/pokebase)
+148,is gengar a ghost type,web: Q&A,first,pokemon:gengar,,,web pattern,question shape from PokéBase Q&A (pokemondb.net/pokebase)
+149,best electric type,web: Q&A,first,pokemon:zapdos,,,web pattern,question shape from PokéBase Q&A (pokemondb.net/pokebase); best = highest base total
+150,strongest water pokemon,web: Q&A,first,pokemon:gyarados,,,web pattern,question shape from PokéBase Q&A (pokemondb.net/pokebase)
+151,fastest psychic type,web: Q&A,first,pokemon:mewtwo,,,web pattern,question shape from PokéBase Q&A (pokemondb.net/pokebase)
+152,which pokemon has the highest defense,web: Q&A,first,pokemon:cloyster,,,web pattern,question shape from PokéBase Q&A (pokemondb.net/pokebase)
+153,best counter for gyarados,web: Q&A,top10,pokemon:pikachu pokemon:raichu pokemon:magnemite pokemon:magneton pokemon:voltorb pokemon:electrode pokemon:electabuzz pokemon:jolteon pokemon:zapdos,,,web pattern,"question shape from PokéBase Q&A (pokemondb.net/pokebase); needs a type chart, which the data doesn't have"
+154,what moves can pikachu learn,web: Q&A,first,pokemon:pikachu,move:agility move:bide move:body-slam move:double-edge move:double-team move:flash move:growl move:light-screen move:mega-kick move:mega-punch move:mimic move:pay-day move:quick-attack move:rage move:reflect move:rest move:seismic-toss move:skull-bash move:slam move:submission move:substitute move:surf move:swift move:tail-whip move:take-down move:thunder move:thunder-shock move:thunder-wave move:thunderbolt move:toxic,,web pattern,question shape from PokéBase Q&A (pokemondb.net/pokebase)
+155,which pokemon learn hypnosis,web: Q&A,top10,pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:gastly pokemon:haunter pokemon:gengar pokemon:drowzee pokemon:hypno pokemon:exeggcute pokemon:exeggutor,move:hypnosis,,web pattern,question shape from PokéBase Q&A (pokemondb.net/pokebase)
+156,orange lizard with a flame on its tail,web: identify,first,pokemon:charmander,pokemon:charmeleon pokemon:charizard,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+157,turtle with water cannons,web: identify,first,pokemon:blastoise,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+158,plant bulb on its back,web: identify,first,pokemon:bulbasaur,pokemon:ivysaur pokemon:venusaur,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+159,pink egg pokemon,web: identify,first,pokemon:chansey,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+160,giant sleeping pokemon blocking the road,web: identify,first,pokemon:snorlax,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+161,cat with a coin on its head,web: identify,first,pokemon:meowth,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+162,giant rock snake,web: identify,first,pokemon:onix,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+163,yellow duck with a headache,web: identify,first,pokemon:psyduck,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+164,starfish,web: identify,top3,pokemon:staryu pokemon:starmie,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+165,jellyfish,web: identify,top3,pokemon:tentacool pokemon:tentacruel,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+166,fish that only splashes,web: identify,first,pokemon:magikarp,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+167,purple blob that transforms,web: identify,first,pokemon:ditto,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+168,psychic that bends spoons,web: identify,top3,pokemon:kadabra pokemon:alakazam,pokemon:abra,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+169,pokemon created in a lab,web: identify,first,pokemon:mewtwo,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+170,fire dog,web: identify,top3,pokemon:growlithe pokemon:arcanine,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+171,four arms fighting pokemon,web: identify,first,pokemon:machamp,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+172,bird with three heads,web: identify,first,pokemon:dodrio,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+173,duck holding a leek,web: identify,first,pokemon:farfetchd,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+174,angry sea serpent,web: identify,first,pokemon:gyarados,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+175,magnet pokemon,web: identify,top3,pokemon:magnemite pokemon:magneton,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+176,spaghetti,noise,nothing,,,,prd,
+177,pizza,noise,nothing,,,,drafted,
+178,hello,noise,nothing,,,,drafted,
+179,best car,noise,nothing,,,,drafted,
+180,weather in Paris,noise,nothing,,,,drafted,
+181,stock market,noise,nothing,,,,drafted,
+182,my homework,noise,nothing,,,,drafted,
+183,football scores,noise,nothing,,,,drafted,
+184,asdfgh,noise,nothing,,,,drafted,
+185,how to cook pasta,noise,nothing,,,,drafted,

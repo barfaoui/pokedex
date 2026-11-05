@@ -1,0 +1,41 @@
+@use 'styles/tokens' as *;
+@use 'styles/typography' as Typography;
+@use 'styles/mixins' as *;
+
+.summary-table {
+  @include pixel-border($ink, $pixel * 0.5);
+
+  border-collapse: collapse;
+  background: $surface;
+
+  &__caption {
+    @include Typography.small-display;
+
+    padding: $space-2 0;
+    text-align: left;
+  }
+
+  &__head {
+    @include Typography.tiny-display;
+
+    padding: $space-2 $space-3;
+    border-bottom: $bevel-edge solid $ink;
+    text-align: right;
+
+    &:first-child {
+      text-align: left;
+    }
+  }
+
+  &__label {
+    padding: $space-1 $space-3;
+    font-weight: 400;
+    text-align: left;
+  }
+
+  &__value {
+    padding: $space-1 $space-3;
+    text-align: right;
+    white-space: nowrap;
+  }
+}

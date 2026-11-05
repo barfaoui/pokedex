@@ -3,9 +3,8 @@ import type { EvalCase } from '@/eval/cases'
 import { ms } from '@/eval/format'
 import type { CaseRun } from '@/eval/run'
 import { CaseTable } from '../CaseTable/CaseTable'
-import { EngineCards } from '../EngineCards/EngineCards'
+import { SummaryTable } from '../SummaryTable/SummaryTable'
 import { FilterSelect } from '../FilterSelect/FilterSelect'
-import { Glossary } from '../Glossary/Glossary'
 import { LiveSearch } from '../LiveSearch/LiveSearch'
 import { CASES, ENGINES, UNAVAILABLE } from '../page-engines'
 import { useEvalRun, type RunStatus } from '../useEvalRun'
@@ -13,7 +12,6 @@ import './EvalPage.scss'
 
 interface Filters {
   category: string
-  split: string
   source: string
   failingOnly: boolean
 }
@@ -22,7 +20,6 @@ interface Filters {
 const ALL = ''
 const NO_FILTERS: Filters = {
   category: ALL,
-  split: ALL,
   source: ALL,
   failingOnly: false,
 }
@@ -107,12 +104,6 @@ export function EvalPage() {
             onChange={(value) => setFilter('category', value)}
           />
           <FilterSelect
-            label="Split"
-            value={filters.split}
-            options={distinct(CASES.map((c) => c.split))}
-            onChange={(value) => setFilter('split', value)}
-          />
-          <FilterSelect
             label="Source"
             value={filters.source}
             options={distinct(CASES.map((c) => c.source))}
@@ -131,14 +122,8 @@ export function EvalPage() {
         </fieldset>
       </div>
 
-      <Glossary />
-
       {shownEngines.length > 0 && (
-        <EngineCards
-          engines={shownEngines}
-          runs={filteredRuns}
-          split={filters.split}
-        />
+        <SummaryTable engines={shownEngines} runs={filteredRuns} />
       )}
 
       <LiveSearch engines={selectedEngines} />
@@ -155,7 +140,6 @@ function matchesFilters(
 ): boolean {
   return (
     (filters.category === ALL || c.category === filters.category) &&
-    (filters.split === ALL || c.split === filters.split) &&
     (filters.source === ALL || c.source === filters.source) &&
     (!filters.failingOnly ||
       runs.some((run) => run.evalCase.id === c.id && !run.score.passed))

@@ -12,7 +12,6 @@ function evalCase(fields: Partial<EvalCase>): EvalCase {
     ok: [],
     forbidden: [],
     source: 'coach',
-    split: 'holdout',
     note: '',
     ...fields,
   }
