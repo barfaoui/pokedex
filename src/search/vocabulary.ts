@@ -15,14 +15,6 @@ export const STAT_WORDS = new Map<string, StatCriterion>([
   ['total', 'total'],
 ])
 
-// "high hp", "low speed", "most attack", "least special defense": a stat to sort by.
-const STAT_SORT_QUALIFIERS = new Map<string, Sort['direction']>([
-  ['high', 'desc'],
-  ['most', 'desc'],
-  ['low', 'asc'],
-  ['least', 'asc'],
-])
-
 export const SORT_WORDS = new Map<string, Omit<Sort, 'word'>>([
   ['fast', { attribute: 'speed', direction: 'desc' }],
   ['fastest', { attribute: 'speed', direction: 'desc' }],
@@ -39,7 +31,14 @@ export const SORT_WORDS = new Map<string, Omit<Sort, 'word'>>([
   ['tallest', { attribute: 'height', direction: 'desc' }],
   ['shortest', { attribute: 'height', direction: 'asc' }],
   ['tanky', { attribute: 'hpAndDefense', direction: 'desc' }],
-  ...[...STAT_SORT_QUALIFIERS].flatMap(([qualifier, direction]) =>
+  ...(
+    [
+      ['high', 'desc'],
+      ['most', 'desc'],
+      ['low', 'asc'],
+      ['least', 'asc'],
+    ] as const
+  ).flatMap(([qualifier, direction]) =>
     [...STAT_WORDS].map(
       ([stat, attribute]) =>
         [`${qualifier} ${stat}`, { attribute, direction }] as const,

@@ -110,10 +110,17 @@ function matchingResults(
 
 /** A lone sort word: its name matches first, then every other Pokémon, each listed once. */
 function sortWordResults(sort: Sort, pokedex: PokedexIndex): SearchResult[] {
-  const nameMatches = matchingResults(
-    { parts: [{ kind: 'word', text: sort.word }], normalizedQuery: sort.word },
-    pokedex,
-  )
+  // "slow" can mean Slowpoke, but a phrase is never a name: "most attack" would be read as a
+  // typo of Horn Attack.
+  const nameMatches = sort.word.includes(' ')
+    ? []
+    : matchingResults(
+        {
+          parts: [{ kind: 'word', text: sort.word }],
+          normalizedQuery: sort.word,
+        },
+        pokedex,
+      )
   const found = new Set(nameMatches.map((result) => result.item.name))
   return [...nameMatches, ...listedItems(pokedex, ['pokemon'], found)]
 }
