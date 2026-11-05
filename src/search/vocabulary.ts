@@ -37,12 +37,18 @@ export const SORT_WORDS = new Map<string, Omit<Sort, 'word'>>([
   ['tallest', { attribute: 'height', direction: 'desc' }],
   ['shortest', { attribute: 'height', direction: 'asc' }],
   ['tanky', { attribute: 'hpAndDefense', direction: 'desc' }],
+  ['tankiest', { attribute: 'hpAndDefense', direction: 'desc' }],
   ...(
     [
       ['high', 'desc'],
+      ['highest', 'desc'],
       ['most', 'desc'],
+      ['best', 'desc'],
+      ['greatest', 'desc'],
       ['low', 'asc'],
+      ['lowest', 'asc'],
       ['least', 'asc'],
+      ['worst', 'asc'],
     ] as const
   ).flatMap(([qualifier, direction]) =>
     [...STAT_WORDS].map(
