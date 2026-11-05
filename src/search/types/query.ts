@@ -13,10 +13,9 @@ export interface ParsedQuery {
   sort?: Sort
   /** Every word typed, normalised, before filler words are dropped ("double team"). */
   normalizedQuery: string
-  /** The kinds of result the query names ("pokemon that…"), ranked first. */
   kinds?: ResultKind[]
-  /** The words after each "not" / "no", one list per segment; set whenever a negation is typed. */
   excluded?: string[][]
+  family?: boolean
 }
 
 export type QueryPart = WordPart | StatPart
@@ -27,6 +26,7 @@ export interface WordPart {
   type?: { value: PokemonType; score: number }
   descriptor?: Descriptor
   concept?: ConceptId
+  number?: number
 }
 
 export type Descriptor =
@@ -51,5 +51,4 @@ export interface Sort {
   direction: 'asc' | 'desc'
 }
 
-export type SortAttribute =
-  'speed' | 'attack' | 'total' | 'weight' | 'height' | 'hpAndDefense'
+export type SortAttribute = StatCriterion | 'weight' | 'height' | 'hpAndDefense'

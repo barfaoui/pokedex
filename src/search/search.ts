@@ -59,10 +59,15 @@ export function queryExclusions(
 
 /**
  * The text semantic search embeds: the query without its "not" / "no" segments, or '' when
- * nothing is left to search ("not electric"). A query without a negation goes as typed.
+ * nothing is left to search: a lone negation ("not electric") or a lone sort word ("the fastest
+ * pokemon"), whose listed Pokémon would otherwise look weak enough to call the model.
+ * A query without a negation goes as typed.
  */
 export function semanticQueryOf(query: string): string {
   const parsed = parseQuery(query)
+  if (!parsed.parts.length) {
+    return ''
+  }
   return parsed.excluded ? parsed.normalizedQuery : query
 }
 
@@ -100,15 +105,22 @@ function matchingResults(
         : result,
     )
     .filter((result) => result.score > 0)
-  return withEvolutionFamilies(results, pokedex)
+  return withEvolutionFamilies(results, pokedex, parsed.family)
 }
 
 /** A lone sort word: its name matches first, then every other Pokémon, each listed once. */
 function sortWordResults(sort: Sort, pokedex: PokedexIndex): SearchResult[] {
-  const nameMatches = matchingResults(
-    { parts: [{ kind: 'word', text: sort.word }], normalizedQuery: sort.word },
-    pokedex,
-  )
+  // "slow" can mean Slowpoke, but a phrase is never a name: "most attack" would be read as a
+  // typo of Horn Attack.
+  const nameMatches = sort.word.includes(' ')
+    ? []
+    : matchingResults(
+        {
+          parts: [{ kind: 'word', text: sort.word }],
+          normalizedQuery: sort.word,
+        },
+        pokedex,
+      )
   const found = new Set(nameMatches.map((result) => result.item.name))
   return [...nameMatches, ...listedItems(pokedex, ['pokemon'], found)]
 }

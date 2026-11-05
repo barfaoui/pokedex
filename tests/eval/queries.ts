@@ -29,6 +29,9 @@ export interface EvalQuery {
   seen?: string
 }
 
+// Queries that failed when people tried the app, fixed since: they shaped the fix.
+const USER_TESTING = 'from user testing'
+
 const SLEEP_MOVES: Key[] = [
   'move:sing',
   'move:sleep-powder',
@@ -214,6 +217,66 @@ const probeTuning: EvalQuery[] = [
     },
     seen: 'used to design the kind words',
   },
+  {
+    query: 'the fastest pokemon',
+    group: 'probe-tuning',
+    expect: { type: 'first', key: 'pokemon:electrode' },
+    seen: USER_TESTING,
+  },
+  {
+    query: 'fight',
+    group: 'probe-tuning',
+    expect: {
+      type: 'includes',
+      keys: [
+        'pokemon:mankey',
+        'pokemon:primeape',
+        'pokemon:poliwrath',
+        'pokemon:machop',
+        'pokemon:machoke',
+        'pokemon:machamp',
+        'pokemon:hitmonlee',
+        'pokemon:hitmonchan',
+      ],
+    },
+    seen: USER_TESTING,
+  },
+  {
+    query: 'elec',
+    group: 'probe-tuning',
+    expect: {
+      type: 'includes',
+      keys: ['pokemon:pikachu', 'pokemon:raichu', 'pokemon:jolteon'],
+    },
+    seen: USER_TESTING,
+  },
+  {
+    query: 'show me the fastest pokemon',
+    group: 'probe-tuning',
+    expect: { type: 'first', key: 'pokemon:electrode' },
+    seen: USER_TESTING,
+  },
+  {
+    query: 'evolution of charmander',
+    group: 'probe-tuning',
+    expect: {
+      type: 'includes',
+      keys: ['pokemon:charmander', 'pokemon:charmeleon', 'pokemon:charizard'],
+    },
+    seen: USER_TESTING,
+  },
+  {
+    query: 'blaaastoiise',
+    group: 'probe-tuning',
+    expect: { type: 'first', key: 'pokemon:blastoise' },
+    seen: USER_TESTING,
+  },
+  {
+    query: '3',
+    group: 'probe-tuning',
+    expect: { type: 'first', key: 'pokemon:venusaur' },
+    seen: USER_TESTING,
+  },
   { query: 'pizza', group: 'probe-tuning', expect: { type: 'nothing' } },
   { query: 'hello', group: 'probe-tuning', expect: { type: 'nothing' } },
   { query: 'best car', group: 'probe-tuning', expect: { type: 'nothing' } },
@@ -250,6 +313,11 @@ const probeHoldout: EvalQuery[] = [
       type: 'includes',
       keys: ['move:supersonic', 'move:confuse-ray'],
     },
+  },
+  {
+    query: 'mutate',
+    group: 'probe-holdout',
+    expect: { type: 'includes', keys: ['pokemon:eevee'] },
   },
   {
     query: 'stock market',

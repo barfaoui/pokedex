@@ -34,3 +34,18 @@ describe('short words', () => {
     expect(search('ab').map((r) => r.item.name)).toContain('abra')
   })
 })
+
+describe('Pokédex numbers', () => {
+  it('"3" → Venusaur, an exact match, and no other Pokémon by number', () => {
+    const results = search('3')
+    expect(results[0]).toMatchObject({
+      item: { name: 'venusaur' },
+      score: 1,
+      matched: [{ field: 'number', value: 3 }],
+    })
+    const byNumber = results.filter((r) =>
+      r.matched.some((m) => m.field === 'number'),
+    )
+    expect(byNumber).toHaveLength(1)
+  })
+})

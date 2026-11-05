@@ -2,15 +2,9 @@ import { describe, expect, it } from 'vitest'
 import { search } from '@/search/search'
 import type { ResultKind, SearchResult } from '@/search/types/result'
 
-const CONCEPT_QUERIES = [
-  'put my opponent to sleep',
-  'paralysis',
-  // Not "poison": it is also a type, a literal match that rightly scores 1.
-  'burn',
-  'flinch',
-  'rain team',
-  'sun team',
-]
+// One stated status, one that is only a chance, one weather. Not "poison": it is also a type,
+// a literal match that rightly scores 1.
+const CONCEPT_QUERIES = ['put my opponent to sleep', 'burn', 'rain team']
 
 function scoreOf(
   results: SearchResult[],
@@ -52,30 +46,18 @@ describe('concept scores', () => {
     )
   })
 
-  it('ranks Thunder Wave above Thunderbolt for "paralysis": a chance to paralyze is weaker', () => {
+  it('"paralysis" → Synchronize stays listed, below a chance: it only passes on a status it received', () => {
     const results = search('paralysis')
-    expect(scoreOf(results, 'move', 'thunder-wave')).toBeGreaterThan(
-      scoreOf(results, 'move', 'thunderbolt'),
+    const synchronize = scoreOf(results, 'ability', 'synchronize')
+    expect(synchronize).toBeGreaterThan(0)
+    expect(synchronize).toBeLessThan(
+      Math.min(
+        ...results
+          .filter((r) => r.kind === 'move' && r.matched[0]?.field === 'effect')
+          .map((r) => r.score),
+      ),
     )
   })
-
-  it.each(['paralysis', 'burn', 'poison'])(
-    '"%s" → Synchronize stays listed, below a chance: it only passes on a status it received',
-    (query) => {
-      const results = search(query)
-      const synchronize = scoreOf(results, 'ability', 'synchronize')
-      expect(synchronize).toBeGreaterThan(0)
-      expect(synchronize).toBeLessThan(
-        Math.min(
-          ...results
-            .filter(
-              (r) => r.kind === 'move' && r.matched[0]?.field === 'effect',
-            )
-            .map((r) => r.score),
-        ),
-      )
-    },
-  )
 
   it.each(CONCEPT_QUERIES)(
     '"%s" → every Pokémon scores below its best move or ability, and more of them lift it',

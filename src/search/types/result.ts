@@ -40,6 +40,7 @@ export const MATCH_FIELDS = [
   'height',
   'weight',
   'total',
+  'number',
   'evolutionOf',
   'evolvesInto',
   ...STAT_NAMES,

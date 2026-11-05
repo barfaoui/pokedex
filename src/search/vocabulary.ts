@@ -5,17 +5,6 @@ import { normalize } from '../text/normalize'
 import type { Comparison, Descriptor, Sort, StatCriterion } from './types/query'
 import type { ResultKind } from './types/result'
 
-export const SORT_WORDS = new Map<string, Omit<Sort, 'word'>>([
-  ['fast', { attribute: 'speed', direction: 'desc' }],
-  ['slow', { attribute: 'speed', direction: 'asc' }],
-  ['strong', { attribute: 'attack', direction: 'desc' }],
-  ['strongest', { attribute: 'total', direction: 'desc' }],
-  ['best', { attribute: 'total', direction: 'desc' }],
-  ['heavy', { attribute: 'weight', direction: 'desc' }],
-  ['tall', { attribute: 'height', direction: 'desc' }],
-  ['tanky', { attribute: 'hpAndDefense', direction: 'desc' }],
-])
-
 export const STAT_WORDS = new Map<string, StatCriterion>([
   ['hp', 'hp'],
   ['attack', 'attack'],
@@ -24,6 +13,37 @@ export const STAT_WORDS = new Map<string, StatCriterion>([
   ['special defense', 'special-defense'],
   ['speed', 'speed'],
   ['total', 'total'],
+])
+
+export const SORT_WORDS = new Map<string, Omit<Sort, 'word'>>([
+  ['fast', { attribute: 'speed', direction: 'desc' }],
+  ['fastest', { attribute: 'speed', direction: 'desc' }],
+  ['slow', { attribute: 'speed', direction: 'asc' }],
+  ['slowest', { attribute: 'speed', direction: 'asc' }],
+  ['strong', { attribute: 'attack', direction: 'desc' }],
+  ['strongest', { attribute: 'total', direction: 'desc' }],
+  ['weakest', { attribute: 'total', direction: 'asc' }],
+  ['best', { attribute: 'total', direction: 'desc' }],
+  ['heavy', { attribute: 'weight', direction: 'desc' }],
+  ['heaviest', { attribute: 'weight', direction: 'desc' }],
+  ['lightest', { attribute: 'weight', direction: 'asc' }],
+  ['tall', { attribute: 'height', direction: 'desc' }],
+  ['tallest', { attribute: 'height', direction: 'desc' }],
+  ['shortest', { attribute: 'height', direction: 'asc' }],
+  ['tanky', { attribute: 'hpAndDefense', direction: 'desc' }],
+  ...(
+    [
+      ['high', 'desc'],
+      ['most', 'desc'],
+      ['low', 'asc'],
+      ['least', 'asc'],
+    ] as const
+  ).flatMap(([qualifier, direction]) =>
+    [...STAT_WORDS].map(
+      ([stat, attribute]) =>
+        [`${qualifier} ${stat}`, { attribute, direction }] as const,
+    ),
+  ),
 ])
 
 // The parser rewrites >, <, >= and <= into these words before normalising.
@@ -73,11 +93,14 @@ export const KIND_WORDS = new Map<string, ResultKind>([
   ['abilities', 'ability'],
 ])
 
-// "Something that can paralyze" asks for an ability, unless a kind is named ("pokemon that can…").
 export const ABILITY_HINT = 'can'
+export const FAMILY_WORDS = new Set([
+  'evolution',
+  'evolutions',
+  'evolve',
+  'evolves',
+])
 
-// "electric not flying": what follows is removed from the results, up to "and" or the end.
-// Only these two: "without" and "except" are a documented limit.
 export const NEGATING_WORDS = new Set(['not', 'no'])
 export const SEGMENT_END_WORD = 'and'
 
@@ -136,11 +159,13 @@ export const FILLER_WORDS = new Set([
   'can',
   'want',
   'i',
+  'of',
+  'show',
+  'me',
+  'find',
   'something',
-  // Connect parts without meaning anything: "fire but not flying".
   'and',
   'but',
-  // "team" doesn't filter: grouping results stays in the UI.
   'team',
   'teams',
 ])

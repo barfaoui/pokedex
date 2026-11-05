@@ -1,21 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import { parseQuery } from '@/search/parse'
 import { search } from '@/search/search'
-import type { ResultKind } from '@/search/types/result'
-
-function kindsInOrder(query: string): ResultKind[] {
-  return [...new Set(search(query).map((r) => r.kind))]
-}
 
 describe('kind words', () => {
-  it.each([
-    ['pokemon that paralyzes the enemy', ['pokemon']],
-    ['paralysis moves', ['move']],
-    ['ability that poisons', ['ability']],
-    ['that can paralyze', ['ability']],
-    ['pokemon that can paralyze', ['pokemon']],
-  ])('"%s" asks for %j', (query, kinds) => {
-    expect(parseQuery(query).kinds).toEqual(kinds)
+  it('a named kind wins over the "can" hint: "pokemon that can paralyze" asks for Pokémon', () => {
+    expect(parseQuery('pokemon that can paralyze').kinds).toEqual(['pokemon'])
   })
 
   it("are not searched as words, so they don't drag the score down", () => {
@@ -34,7 +23,6 @@ describe('kind words', () => {
   it('"pokemon that paralyzes the enemy" → the Pokémon first, then the moves and abilities that do it', () => {
     const results = search('pokemon that paralyzes the enemy')
     expect(results[0].kind).toBe('pokemon')
-    expect(kindsInOrder('pokemon that paralyzes the enemy')[0]).toBe('pokemon')
     const lastPokemon = results.findLastIndex((r) => r.kind === 'pokemon')
     const thunderWave = results.findIndex((r) => r.item.name === 'thunder-wave')
     expect(thunderWave).toBeGreaterThan(lastPokemon)

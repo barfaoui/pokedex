@@ -1,4 +1,4 @@
-import { editDistance, typoLimit } from '../typo'
+import { typoScore } from '../typo'
 
 const MIN_ANYWHERE_LENGTH = 3
 const MIN_SHORT_PREFIX_LENGTH = 3
@@ -25,9 +25,4 @@ export function nameScore(
     return 0.5 + 0.3 * cover
   }
   return typoScore(part, name)
-}
-
-function typoScore(part: string, name: string): number {
-  const changes = editDistance(part, name)
-  return changes <= typoLimit(name.length) ? 1 - changes / name.length : 0
 }

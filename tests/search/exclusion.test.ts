@@ -14,12 +14,6 @@ function pokemonWithout(type: string): string[] {
 }
 
 describe('excluding with "not" / "no"', () => {
-  it('"electric not flying" → no Zapdos, Pikachu still there', () => {
-    const found = names(search('electric not flying'))
-    expect(found).not.toContain('zapdos')
-    expect(found).toContain('pikachu')
-  })
-
   it('"fire but not flying" → no Charizard or Moltres, Charmander still there', () => {
     const found = names(search('fire but not flying'))
     expect(found).not.toContain('charizard')
@@ -27,11 +21,10 @@ describe('excluding with "not" / "no"', () => {
     expect(found).toContain('charmander')
   })
 
-  it('removes, without lowering the rest: "electric not flying" keeps Pikachu at 1', () => {
-    const pikachu = search('electric not flying').find(
-      (r) => r.item.name === 'pikachu',
-    )
-    expect(pikachu?.score).toBe(1)
+  it('"electric not flying" → no Zapdos, and Pikachu keeps its score of 1: removed, not scored down', () => {
+    const results = search('electric not flying')
+    expect(names(results)).not.toContain('zapdos')
+    expect(results.find((r) => r.item.name === 'pikachu')?.score).toBe(1)
   })
 
   it('"not electric" → every Pokémon but the Electric types, in Pokédex order', () => {

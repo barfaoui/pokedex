@@ -6,12 +6,6 @@ import type { Match, SearchResult } from './types/result'
 /** The attribute a sort word sorts by, as shown on a Pokémon result (hp and defense for "tanky"). */
 export function sortMatches(sort: Sort, pokemon: Pokemon): Match[] {
   switch (sort.attribute) {
-    case 'speed':
-    case 'attack':
-    case 'total':
-      return [
-        { field: sort.attribute, value: statValue(pokemon, sort.attribute) },
-      ]
     case 'weight':
       return [{ field: 'weight', value: pokemon.weightKg }]
     case 'height':
@@ -20,6 +14,10 @@ export function sortMatches(sort: Sort, pokemon: Pokemon): Match[] {
       return [
         { field: 'hp', value: pokemon.stats.hp },
         { field: 'defense', value: pokemon.stats.defense },
+      ]
+    default:
+      return [
+        { field: sort.attribute, value: statValue(pokemon, sort.attribute) },
       ]
   }
 }

@@ -2,7 +2,9 @@ import type { PokedexIndex, Pokemon } from '../data/types/model'
 import type { Match, SearchResult } from './types/result'
 
 // A family member is related to what was asked, not what was asked: well below the Pokémon itself.
+// Unless the family is what was asked ("evolution of charmander"): then it ranks with it.
 const FAMILY_WEIGHT = 0.6
+const ASKED_FAMILY_WEIGHT = 1
 
 type PokemonResult = Extract<SearchResult, { kind: 'pokemon' }>
 
@@ -15,7 +17,9 @@ type PokemonResult = Extract<SearchResult, { kind: 'pokemon' }>
 export function withEvolutionFamilies(
   results: SearchResult[],
   pokedex: PokedexIndex,
+  asked = false,
 ): SearchResult[] {
+  const weight = asked ? ASKED_FAMILY_WEIGHT : FAMILY_WEIGHT
   const found = new Set(
     results.filter((r) => r.kind === 'pokemon').map((r) => r.item.name),
   )
@@ -25,7 +29,11 @@ export function withEvolutionFamilies(
     if (result.kind !== 'pokemon' || !isNameMatch(result)) {
       continue
     }
-    for (const relative of relativesOf(result.item, result.score, pokedex)) {
+    for (const relative of relativesOf(
+      result.item,
+      result.score * weight,
+      pokedex,
+    )) {
       const name = relative.item.name
       const current = family.get(name)
       if (!found.has(name) && (!current || relative.score > current.score)) {
@@ -58,7 +66,7 @@ function relativesOf(
           {
             kind: 'pokemon',
             item,
-            score: score * FAMILY_WEIGHT,
+            score,
             matched: [{ field, value: pokemon.name }],
           },
         ]

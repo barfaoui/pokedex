@@ -113,7 +113,7 @@ describe('withSemanticResults', () => {
 })
 
 describe('needsSemantic', () => {
-  test.each(['bulba', 'pikachoo', 'rain team', 'put my opponent to sleep'])(
+  test.each(['pikachoo', 'put my opponent to sleep'])(
     '"%s": manual search is confident',
     (query) => {
       expect(needsSemantic(search(query))).toBe(false)

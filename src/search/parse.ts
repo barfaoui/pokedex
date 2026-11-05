@@ -7,6 +7,7 @@ import {
   COMPARISON_WORDS,
   CONCEPT_WORDS,
   DESCRIPTORS,
+  FAMILY_WORDS,
   FILLER_WORDS,
   KIND_WORDS,
   NEGATING_WORDS,
@@ -33,8 +34,13 @@ export function parseQuery(query: string): ParsedQuery {
   // search: a lone negation, listing the named kind.
   const lone = !!excluded && !searched.some(isSearched)
   const typed = lone ? [] : searched
-  const asked = typed.filter((word) => !KIND_WORDS.has(word))
+  const asked = typed.filter(
+    (word) => !KIND_WORDS.has(word) && !FAMILY_WORDS.has(word),
+  )
   const words = withoutFiller(asked.length ? asked : typed)
+  // A lone family word ("evolution") is searched as a word, it names no one's family.
+  const family =
+    asked.length > 0 && typed.some((word) => FAMILY_WORDS.has(word))
   const kinds = kindsOf(searched)
   const parsed: ParsedQuery = {
     parts: [],
@@ -42,13 +48,17 @@ export function parseQuery(query: string): ParsedQuery {
     // A lone kind word ("pokemon") is searched as a word, it has nothing to rank.
     ...(kinds.length && (lone || words.some(isSearched)) && { kinds }),
     ...(excluded && { excluded }),
+    ...(family && { family }),
   }
   let i = 0
   while (i < words.length) {
-    const sort = SORT_WORDS.get(words[i])
+    const sort = readPhrase(SORT_WORDS, words, i)
     if (sort && !parsed.sort) {
-      parsed.sort = { word: words[i], ...sort }
-      i += 1
+      parsed.sort = {
+        word: words.slice(i, i + sort.length).join(' '),
+        ...sort.value,
+      }
+      i += sort.length
       continue
     }
     const part = readStatCondition(words, i) ?? readWord(words, i)
@@ -152,6 +162,7 @@ function readWord(words: string[], start: number): Read<WordPart> {
   const text = words.slice(start, start + length).join(' ')
   const type = matchType(text)
   const concept = CONCEPT_WORDS.get(text)
+  const number = /^\d+$/.test(text) ? Number(text) : undefined
   return {
     value: {
       kind: 'word',
@@ -159,18 +170,20 @@ function readWord(words: string[], start: number): Read<WordPart> {
       ...(type && { type }),
       ...(descriptor && { descriptor: descriptor.value }),
       ...(concept && { concept }),
+      ...(number !== undefined && { number }),
     },
     length,
   }
 }
 
-/** Tries two-word phrases first, so "special attack" wins over "special". */
+/** Tries longer phrases first, so "special attack" wins over "special". */
 export function readPhrase<T>(
   phrases: Map<string, T>,
   words: string[],
   start: number,
 ): Read<T> | undefined {
-  for (const length of [2, 1]) {
+  // Three words for "high special attack".
+  for (const length of [3, 2, 1]) {
     if (start + length > words.length) {
       continue
     }

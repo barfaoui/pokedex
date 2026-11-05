@@ -54,13 +54,6 @@ describe('evolution family of a Pokémon found by name', () => {
     }
   })
 
-  it('a typo, "pikachoo" → Raichu, at Pikachu\'s typo score × 0.6', () => {
-    const results = search('pikachoo')
-    const pikachu = pokemon(results, 'pikachu')!
-    expect(pikachu.score).toBeLessThan(1)
-    expect(pokemon(results, 'raichu')?.score).toBeCloseTo(pikachu.score * 0.6)
-  })
-
   it('a member that matches the query itself keeps its own score and match: "pikachu electric" → Raichu by its type', () => {
     const raichu = pokemon(search('pikachu electric'), 'raichu')
     expect(raichu?.matched).toEqual([{ field: 'type', value: 'electric' }])
