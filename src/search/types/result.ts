@@ -35,6 +35,7 @@ export const MATCH_FIELDS = [
   'color',
   'shape',
   'habitat',
+  'genus',
   'description',
   'effect',
   'height',

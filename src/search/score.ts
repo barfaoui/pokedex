@@ -1,5 +1,6 @@
 import type { PokedexIndex } from '../data/types/model'
 import { matchConcept } from './match/concept'
+import { genusScore } from './match/genus'
 import { nameScore } from './match/name'
 import { statValue } from './stat-value'
 import type { ParsedQuery, QueryPart, StatPart, WordPart } from './types/query'
@@ -76,6 +77,7 @@ function scoreWord(
     }),
     scoreType(part, searchable),
     scoreDescriptor(part, searchable),
+    scoreGenus(part, searchable),
     scoreNumber(part, searchable),
     learners ? scoreLearned(part, searchable, pokedex) : NO_MATCH,
   ].reduce((best, candidate) =>
@@ -163,6 +165,17 @@ function scoreLearned(
   )
   return ability
     ? { score: 1, matched: [{ field: 'ability', value: ability }] }
+    : NO_MATCH
+}
+
+/** A concept word ("freeze") is read as the effect, never as a category ("Freeze Pokémon"). */
+function scoreGenus(part: WordPart, searchable: SearchableItem): Scored {
+  if (part.concept || searchable.kind !== 'pokemon') {
+    return NO_MATCH
+  }
+  const score = genusScore(part.text, searchable.item.genus)
+  return score > 0
+    ? { score, matched: [{ field: 'genus', value: searchable.item.genus }] }
     : NO_MATCH
 }
 
