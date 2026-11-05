@@ -61,6 +61,10 @@ export function describeMatch(match: Match): MatchLine | undefined {
       }
     case 'genus':
       return { kind: 'text', label: String(value) }
+    case 'legendary':
+      return { kind: 'text', label: 'Legendary' }
+    case 'mythical':
+      return { kind: 'text', label: 'Mythical' }
     case 'move':
     case 'ability':
       return withDetail(displayName(String(value)), match.detail)

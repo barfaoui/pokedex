@@ -36,6 +36,8 @@ export const MATCH_FIELDS = [
   'shape',
   'habitat',
   'genus',
+  'legendary',
+  'mythical',
   'description',
   'effect',
   'height',

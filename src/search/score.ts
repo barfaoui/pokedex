@@ -4,6 +4,7 @@ import { genusScore } from './match/genus'
 import { nameScore } from './match/name'
 import { statValue } from './stat-value'
 import type { ParsedQuery, QueryPart, StatPart, WordPart } from './types/query'
+import { RARITY_WORDS } from './vocabulary'
 import type { Scored, SearchableItem } from './types/result'
 
 // A missed stat condition keeps a score for how close it was, unless the value is under half the threshold.
@@ -78,6 +79,7 @@ function scoreWord(
     scoreType(part, searchable),
     scoreDescriptor(part, searchable),
     scoreGenus(part, searchable),
+    scoreRarity(part, searchable),
     scoreNumber(part, searchable),
     learners ? scoreLearned(part, searchable, pokedex) : NO_MATCH,
   ].reduce((best, candidate) =>
@@ -176,6 +178,20 @@ function scoreGenus(part: WordPart, searchable: SearchableItem): Scored {
   const score = genusScore(part.text, searchable.item.genus)
   return score > 0
     ? { score, matched: [{ field: 'genus', value: searchable.item.genus }] }
+    : NO_MATCH
+}
+
+function scoreRarity(part: WordPart, searchable: SearchableItem): Scored {
+  const rarity = RARITY_WORDS.get(part.text)
+  if (!rarity || searchable.kind !== 'pokemon') {
+    return NO_MATCH
+  }
+  const flagged =
+    rarity === 'legendary'
+      ? searchable.item.isLegendary
+      : searchable.item.isMythical
+  return flagged
+    ? { score: 1, matched: [{ field: rarity, value: rarity }] }
     : NO_MATCH
 }
 
