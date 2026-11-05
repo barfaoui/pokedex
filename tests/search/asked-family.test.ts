@@ -37,3 +37,16 @@ describe('which way a family query points', () => {
     expect(first('final evolution of caterpie')).toBe('butterfree')
   })
 })
+
+describe('question words', () => {
+  it('"is", "are", "does", "do" and "what" are filler: "what is pikachu" → Pikachu as an exact match', () => {
+    expect(search('what is pikachu')[0]).toMatchObject({
+      item: { name: 'pikachu' },
+      score: 1,
+    })
+  })
+
+  it('"who" asks for a Pokémon, like "pokemon": "who paralyzes" ranks Pokémon first', () => {
+    expect(search('who paralyzes')[0]?.kind).toBe('pokemon')
+  })
+})

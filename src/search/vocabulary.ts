@@ -99,6 +99,8 @@ export const CONCEPT_WORDS = new Map<string, ConceptId>(
 export const KIND_WORDS = new Map<string, ResultKind>([
   ['pokemon', 'pokemon'],
   ['pokemons', 'pokemon'],
+  // "who can learn surf" asks for a Pokémon
+  ['who', 'pokemon'],
   ['move', 'move'],
   ['moves', 'move'],
   ['ability', 'ability'],
@@ -198,6 +200,13 @@ export const FILLER_WORDS = new Set([
   'them',
   'that',
   'which',
+  // Question words only make a question: "what" leaves the kind to the noun after it
+  'what',
+  'is',
+  'are',
+  'does',
+  'do',
+  'did',
   'with',
   'can',
   'want',
