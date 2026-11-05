@@ -24,8 +24,8 @@ export function CaseTable({ cases, engines, runs }: CaseTableProps) {
   return (
     <table className="case-table">
       <caption className="case-table__caption">
-        {cases.length} cases · click a query for every result with its score
-        and what it matched on
+        {cases.length} cases · click a query for every result with its score and
+        what it matched on
       </caption>
       <thead>
         <tr>

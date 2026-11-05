@@ -1,10 +1,7 @@
 import csv from '../../../tests/eval/cases.csv?raw'
 import { parseCases } from '@/eval/cases'
 import type { SemanticSearch } from '@/eval/engines/engine'
-import {
-  availableEngines,
-  ENGINE_DEFINITIONS,
-} from '@/eval/engines/engines'
+import { availableEngines, ENGINE_DEFINITIONS } from '@/eval/engines/engines'
 import {
   modelStatus,
   onModelStatus,

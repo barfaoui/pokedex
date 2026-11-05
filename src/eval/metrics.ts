@@ -46,9 +46,7 @@ export function gradeOf(evalCase: EvalCase, resultKey: string): Grade {
 
 /** `ranked`: `kind:name` keys, best first. */
 export function scoreCase(evalCase: EvalCase, ranked: string[]): CaseScore {
-  const forbiddenFound = ranked.filter((key) =>
-    isAny(key, evalCase.forbidden),
-  )
+  const forbiddenFound = ranked.filter((key) => isAny(key, evalCase.forbidden))
   const failures = forbiddenFound.length
     ? [`forbidden: ${forbiddenFound.join(', ')}`]
     : []

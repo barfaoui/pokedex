@@ -15,9 +15,7 @@ import { semanticResults, withQueryDirection } from '@/search/semantic/semantic'
 const root = new URL('../../', import.meta.url)
 
 export function loadCases(): EvalCase[] {
-  return parseCases(
-    readFileSync(new URL('tests/eval/cases.csv', root), 'utf8'),
-  )
+  return parseCases(readFileSync(new URL('tests/eval/cases.csv', root), 'utf8'))
 }
 
 /** A typo in cases.csv would otherwise show up as a miss of the search. */

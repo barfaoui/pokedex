@@ -25,7 +25,9 @@ export function formatReport(
 ): string {
   const lines: string[] = []
   const push = (...more: string[]) => lines.push(...more)
-  const cases = [...new Map(runs.map((r) => [r.evalCase.id, r.evalCase])).values()]
+  const cases = [
+    ...new Map(runs.map((r) => [r.evalCase.id, r.evalCase])).values(),
+  ]
 
   push(
     `# Search evaluation · ${stamp(context.date)}`,
