@@ -2,6 +2,7 @@ import type { EvalCase } from '@/eval/cases'
 import type { AvailableEngine } from '@/eval/engines/engines'
 import { itemLabel, ms } from '@/eval/format'
 import type { CaseRun } from '@/eval/run'
+import { NOT_MEASURED } from '@/eval/summary-rows'
 import { AppLink } from '../AppLink/AppLink'
 import { RankedList } from '../RankedList/RankedList'
 import './CaseRow.scss'
@@ -90,7 +91,7 @@ export function CaseRow({
                 {run && (
                   <>
                     <span className="case-row__meta">
-                      {ms(run.ms)}
+                      {engine.notMeasured ? NOT_MEASURED : ms(run.ms)}
                       {run.score.failures.length > 0 &&
                         ` · ${run.score.failures.join('; ')}`}
                     </span>

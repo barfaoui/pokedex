@@ -1,0 +1,186 @@
+id,query,results
+1,bulba,pokemon:bulbasaur
+2,pikachoo,pokemon:pikachu
+3,saur,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur
+4,blaaastoiise,pokemon:blastoise
+5,blastoise,pokemon:blastoise
+6,charizrd,pokemon:charizard
+7,pikahcu,pokemon:pikachu
+8,jiggly,pokemon:jigglypuff
+9,gyrados,pokemon:gyarados
+10,mewtoo,pokemon:mewtwo
+11,mew,pokemon:mew pokemon:mewtwo
+12,mr mime,pokemon:mr-mime
+13,mr. mime,pokemon:mr-mime
+14,nidoran,pokemon:nidoran-f pokemon:nidoran-m
+15,farfetchd,pokemon:farfetchd
+16,eve,pokemon:eevee
+17,dragonit,pokemon:dragonite
+18,thunderbolt,move:thunderbolt
+19,thunder bolt,move:thunderbolt
+20,solarbeam,move:solar-beam
+21,swift swim,ability:swift-swim
+22,3,pokemon:venusaur
+23,#25,pokemon:pikachu
+24,pokemon 150,pokemon:mewtwo
+25,number 1,pokemon:bulbasaur
+26,mouse,pokemon:pikachu pokemon:raichu pokemon:rattata pokemon:raticate pokemon:sandshrew pokemon:sandslash
+27,electric mouse,pokemon:pikachu pokemon:raichu
+28,the mouse pokemon,pokemon:pikachu pokemon:raichu pokemon:rattata pokemon:raticate pokemon:sandshrew pokemon:sandslash
+29,fire horse,pokemon:ponyta pokemon:rapidash
+30,fox pokemon,pokemon:vulpix pokemon:ninetales
+31,duck,pokemon:psyduck pokemon:golduck pokemon:farfetchd
+32,bat,pokemon:zubat pokemon:golbat
+33,turtle,pokemon:squirtle pokemon:wartortle pokemon:blastoise
+34,fossil,pokemon:aerodactyl pokemon:omanyte pokemon:kabuto pokemon:omastar pokemon:kabutops
+35,mutate,pokemon:eevee pokemon:mewtwo
+36,pokemon that sleeps all the time,pokemon:snorlax
+37,hides in shadows,pokemon:gengar
+38,causes lightning storms,pokemon:pikachu pokemon:zapdos
+39,green,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:caterpie pokemon:metapod pokemon:bellsprout pokemon:weepinbell pokemon:victreebel pokemon:scyther
+40,gren,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:caterpie pokemon:metapod pokemon:bellsprout pokemon:weepinbell pokemon:victreebel pokemon:scyther
+41,yellow mouse,pokemon:pikachu pokemon:raichu pokemon:sandshrew pokemon:sandslash
+42,pink balloon,pokemon:jigglypuff pokemon:wigglytuff
+43,purple ghost,pokemon:gengar pokemon:haunter pokemon:gastly
+44,blue turtle,pokemon:squirtle pokemon:wartortle pokemon:blastoise
+45,pink pokemon,pokemon:clefairy pokemon:clefable pokemon:jigglypuff pokemon:wigglytuff pokemon:slowpoke pokemon:slowbro pokemon:exeggcute pokemon:lickitung pokemon:chansey pokemon:mr-mime
+46,lives in caves,pokemon:zubat pokemon:golbat pokemon:diglett pokemon:dugtrio pokemon:gastly pokemon:haunter pokemon:gengar pokemon:onix
+47,sea pokemon,pokemon:seel pokemon:dewgong pokemon:tentacool pokemon:tentacruel pokemon:shellder pokemon:cloyster pokemon:horsea pokemon:seadra pokemon:staryu pokemon:starmie
+48,found in the forest,pokemon:weedle pokemon:pidgey pokemon:caterpie pokemon:metapod pokemon:butterfree pokemon:kakuna pokemon:beedrill pokemon:pidgeotto pokemon:pidgeot pokemon:pikachu
+49,pokemon with wings,pokemon:pidgey pokemon:pidgeotto pokemon:pidgeot pokemon:spearow pokemon:fearow pokemon:zubat pokemon:golbat pokemon:farfetchd pokemon:aerodactyl pokemon:articuno
+50,evolution of pikachu,pokemon:raichu
+51,i want the evolution of pikachu,pokemon:raichu
+52,what does charmander evolve into,pokemon:charmeleon pokemon:charizard
+53,evolutions of eevee,pokemon:vaporeon pokemon:jolteon pokemon:flareon
+54,eevee evolutions,pokemon:vaporeon pokemon:jolteon pokemon:flareon
+55,final evolution of bulbasaur,pokemon:venusaur
+56,what evolves into raichu,pokemon:pikachu
+57,pre evolution of gyarados,pokemon:magikarp
+58,fast electric,pokemon:electrode pokemon:jolteon pokemon:raichu pokemon:electabuzz pokemon:voltorb pokemon:zapdos pokemon:pikachu pokemon:magneton pokemon:magnemite
+59,the fastest pokemon,pokemon:electrode pokemon:jolteon pokemon:aerodactyl pokemon:mewtwo pokemon:dugtrio pokemon:alakazam pokemon:persian pokemon:starmie pokemon:raichu pokemon:dodrio
+60,fastest,pokemon:electrode pokemon:jolteon pokemon:aerodactyl pokemon:mewtwo pokemon:dugtrio pokemon:alakazam pokemon:persian pokemon:starmie pokemon:raichu pokemon:dodrio
+61,slowest pokemon,pokemon:slowpoke pokemon:jigglypuff pokemon:geodude pokemon:paras pokemon:grimer pokemon:rhyhorn pokemon:metapod pokemon:oddish pokemon:parasect pokemon:slowbro
+62,heaviest pokemon,pokemon:snorlax pokemon:golem pokemon:gyarados pokemon:lapras pokemon:onix pokemon:dragonite pokemon:arcanine pokemon:cloyster pokemon:machamp pokemon:mewtwo
+63,lightest pokemon,pokemon:gastly pokemon:haunter pokemon:diglett pokemon:koffing pokemon:pidgey pokemon:spearow pokemon:exeggcute pokemon:caterpie pokemon:weedle pokemon:dratini
+64,tallest pokemon,pokemon:onix pokemon:gyarados pokemon:dragonair pokemon:arbok pokemon:lapras pokemon:kangaskhan pokemon:dragonite pokemon:snorlax pokemon:venusaur pokemon:ekans
+65,strongest pokemon,pokemon:mewtwo pokemon:dragonite pokemon:mew pokemon:articuno pokemon:zapdos pokemon:moltres pokemon:arcanine pokemon:gyarados pokemon:snorlax pokemon:lapras
+66,high hp,pokemon:chansey pokemon:snorlax pokemon:wigglytuff pokemon:lapras pokemon:vaporeon pokemon:jigglypuff pokemon:mewtwo pokemon:muk pokemon:rhydon pokemon:kangaskhan
+67,low speed,pokemon:slowpoke pokemon:jigglypuff pokemon:geodude pokemon:paras pokemon:grimer pokemon:rhyhorn pokemon:metapod pokemon:oddish pokemon:parasect pokemon:slowbro
+68,highest attack,pokemon:dragonite pokemon:machamp pokemon:kingler pokemon:rhydon pokemon:flareon pokemon:pinsir pokemon:gyarados pokemon:golem pokemon:hitmonlee pokemon:kabutops
+69,best special attack,pokemon:mewtwo pokemon:alakazam pokemon:gengar pokemon:exeggutor pokemon:zapdos pokemon:moltres pokemon:kadabra pokemon:magneton pokemon:haunter pokemon:jynx
+70,tankiest pokemon,pokemon:chansey pokemon:snorlax pokemon:articuno pokemon:lapras pokemon:mew pokemon:mewtwo pokemon:dragonite pokemon:slowbro pokemon:vaporeon pokemon:blastoise
+71,speed over 100,pokemon:electrode pokemon:jolteon pokemon:aerodactyl pokemon:mewtwo pokemon:dugtrio pokemon:alakazam pokemon:persian pokemon:starmie pokemon:raichu pokemon:dodrio
+72,attack above 120,pokemon:dragonite pokemon:machamp pokemon:kingler pokemon:rhydon pokemon:flareon pokemon:pinsir pokemon:gyarados
+73,electric speed over 100,pokemon:electrode pokemon:jolteon pokemon:raichu pokemon:electabuzz
+74,fire pokemon with high attack,pokemon:flareon pokemon:arcanine pokemon:rapidash pokemon:moltres pokemon:magmar pokemon:ponyta pokemon:charizard
+75,90kg,pokemon:seel pokemon:charizard pokemon:tauros pokemon:blastoise pokemon:dodrio
+76,heavier than 200 kg,pokemon:snorlax pokemon:golem pokemon:gyarados pokemon:lapras pokemon:onix pokemon:dragonite
+77,taller than 2 m,pokemon:onix pokemon:gyarados pokemon:dragonair pokemon:arbok pokemon:lapras pokemon:kangaskhan pokemon:dragonite pokemon:snorlax
+78,faster than pikachu,pokemon:electrode pokemon:jolteon pokemon:aerodactyl pokemon:mewtwo pokemon:dugtrio pokemon:alakazam pokemon:persian pokemon:starmie pokemon:raichu pokemon:dodrio
+79,fight,pokemon:mankey pokemon:primeape pokemon:machop pokemon:machoke pokemon:machamp pokemon:hitmonlee pokemon:hitmonchan pokemon:poliwrath
+80,fighting pokemon,pokemon:mankey pokemon:primeape pokemon:machop pokemon:machoke pokemon:machamp pokemon:hitmonlee pokemon:hitmonchan pokemon:poliwrath
+81,ghost,pokemon:gastly pokemon:haunter pokemon:gengar
+82,dragon type,pokemon:dratini pokemon:dragonair pokemon:dragonite
+83,fire flying,pokemon:charizard pokemon:moltres
+84,water psychic,pokemon:slowpoke pokemon:slowbro pokemon:starmie
+85,grass poison,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:oddish pokemon:gloom pokemon:vileplume pokemon:bellsprout pokemon:weepinbell pokemon:victreebel
+86,electirc,pokemon:pikachu pokemon:raichu pokemon:magnemite pokemon:magneton pokemon:voltorb pokemon:electrode pokemon:electabuzz pokemon:jolteon pokemon:zapdos
+87,legendary,pokemon:articuno pokemon:zapdos pokemon:moltres pokemon:mewtwo
+88,legendary birds,pokemon:articuno pokemon:zapdos pokemon:moltres
+89,starter pokemon,pokemon:bulbasaur pokemon:charmander pokemon:squirtle pokemon:pikachu
+90,put my opponent to sleep,move:spore move:sleep-powder move:lovely-kiss move:hypnosis move:sing
+91,make the enemy doze off,move:spore move:sleep-powder move:lovely-kiss move:hypnosis move:sing
+92,make it fall asleep,move:spore move:sleep-powder move:lovely-kiss move:hypnosis move:sing
+93,knock it out with a lullaby,move:sing move:hypnosis move:lovely-kiss move:sleep-powder move:spore
+94,paralyze the enemy,move:thunder-wave move:glare move:stun-spore move:body-slam move:thunderbolt move:thunder move:lick move:thunder-shock move:thunder-punch
+95,poison the opponent,move:poison-powder move:poison-gas move:toxic move:sludge move:smog move:poison-sting move:twineedle
+96,badly poison,move:toxic
+97,confuse the target,move:confuse-ray move:supersonic move:psybeam move:confusion move:dizzy-punch
+98,set the foe on fire,move:flamethrower move:fire-blast move:ember move:fire-punch move:tri-attack
+99,freeze the enemy,move:ice-beam move:blizzard move:ice-punch move:tri-attack
+100,make it flinch,move:headbutt move:bite move:stomp move:rock-slide move:rolling-kick move:sky-attack move:waterfall move:hyper-fang move:bone-club ability:stench
+101,restore my HP,move:recover move:soft-boiled move:rest move:mega-drain move:absorb move:leech-life move:leech-seed move:dream-eater
+102,heal myself,move:recover move:soft-boiled move:rest move:mega-drain move:absorb move:leech-life move:leech-seed move:dream-eater
+103,one hit KO,move:fissure move:horn-drill move:guillotine
+104,move that never misses,move:swift ability:no-guard
+105,always goes first,move:quick-attack
+106,raise my attack,move:swords-dance move:meditate move:sharpen move:growth move:rage
+107,escape from battle,move:teleport ability:run-away move:whirlwind move:roar
+108,explode,move:explosion move:self-destruct pokemon:electrode pokemon:koffing
+109,immune to sleep,ability:insomnia ability:vital-spirit pokemon:drowzee pokemon:hypno pokemon:electabuzz pokemon:magmar pokemon:mankey pokemon:primeape
+110,can't be paralyzed,ability:limber pokemon:persian pokemon:hitmonlee pokemon:ditto
+111,prevent poison,ability:immunity pokemon:snorlax
+112,pokemon that paralyzes the enemy,pokemon:pikachu pokemon:raichu pokemon:electabuzz pokemon:zapdos pokemon:electrode pokemon:voltorb pokemon:arbok pokemon:ekans pokemon:jolteon pokemon:magneton
+113,pokemon that burns,pokemon:ponyta pokemon:rapidash pokemon:magmar pokemon:moltres
+114,who can learn surf,pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:pikachu pokemon:psyduck pokemon:golduck pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:lapras
+115,pokemon that learn thunderbolt,pokemon:pikachu pokemon:raichu pokemon:magnemite pokemon:magneton pokemon:voltorb pokemon:electrode pokemon:electabuzz pokemon:jolteon pokemon:zapdos pokemon:mewtwo
+116,rain team,ability:swift-swim ability:rain-dish ability:hydration pokemon:kabutops pokemon:omastar pokemon:golduck pokemon:poliwrath pokemon:seaking pokemon:blastoise pokemon:lapras
+117,sun team,ability:drought ability:chlorophyll ability:solar-power pokemon:ninetales pokemon:venusaur pokemon:charizard pokemon:vileplume pokemon:victreebel pokemon:exeggutor move:solar-beam
+118,heal in the rain,ability:rain-dish ability:hydration ability:dry-skin
+119,best pokemon for a rain team,pokemon:kabutops pokemon:omastar pokemon:golduck pokemon:poliwrath pokemon:seaking pokemon:blastoise pokemon:tentacruel pokemon:lapras pokemon:vaporeon
+120,faster in the sun,ability:chlorophyll pokemon:venusaur pokemon:victreebel pokemon:vileplume pokemon:exeggutor pokemon:tangela pokemon:ivysaur pokemon:weepinbell pokemon:gloom pokemon:bulbasaur
+121,sandstorm,ability:sand-veil ability:sand-rush ability:sand-force pokemon:sandslash pokemon:sandshrew pokemon:dugtrio pokemon:diglett pokemon:golem
+122,electric not flying,pokemon:pikachu pokemon:raichu pokemon:magnemite pokemon:magneton pokemon:voltorb pokemon:electrode pokemon:electabuzz pokemon:jolteon
+123,fire but not flying,pokemon:charmander pokemon:charmeleon pokemon:vulpix pokemon:ninetales pokemon:growlithe pokemon:arcanine pokemon:ponyta pokemon:rapidash pokemon:magmar pokemon:flareon
+124,water without ice,pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:psyduck pokemon:golduck pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:tentacool pokemon:tentacruel
+125,pokemon that can not fall asleep,pokemon:drowzee pokemon:hypno pokemon:electabuzz pokemon:magmar pokemon:mankey pokemon:primeape ability:insomnia ability:vital-spirit
+126,i want a fast electric pokemon,pokemon:electrode pokemon:jolteon pokemon:raichu pokemon:electabuzz pokemon:voltorb pokemon:zapdos pokemon:pikachu pokemon:magneton pokemon:magnemite
+127,show me all the grass pokemon,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:oddish pokemon:gloom pokemon:vileplume pokemon:paras pokemon:parasect pokemon:bellsprout pokemon:weepinbell
+128,which pokemon is the strongest,pokemon:mewtwo pokemon:dragonite pokemon:mew pokemon:articuno pokemon:zapdos pokemon:moltres pokemon:arcanine pokemon:gyarados pokemon:snorlax pokemon:lapras
+129,what type is pikachu,pokemon:pikachu
+130,a cute pink pokemon that sings,pokemon:jigglypuff pokemon:wigglytuff pokemon:clefairy pokemon:clefable pokemon:chansey
+131,good pokemon against water types,pokemon:zapdos pokemon:jolteon pokemon:raichu pokemon:electabuzz pokemon:electrode pokemon:magneton pokemon:exeggutor pokemon:venusaur pokemon:vileplume pokemon:victreebel
+132,fire & flying,pokemon:charizard pokemon:moltres
+133,dragon & flying,pokemon:dragonite
+134,"fire, water",pokemon:charmander pokemon:squirtle pokemon:charmeleon pokemon:wartortle pokemon:charizard pokemon:blastoise pokemon:vulpix pokemon:psyduck pokemon:ninetales pokemon:golduck
+135,1-9,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:charmander pokemon:charmeleon pokemon:charizard pokemon:squirtle pokemon:wartortle pokemon:blastoise
+136,25,pokemon:pikachu
+137,+charmander,pokemon:charmander
+138,@surf,move:surf
+139,@thunderbolt,move:thunderbolt
+140,mythical,pokemon:mew
+141,!flying,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:charmander pokemon:charmeleon pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:caterpie pokemon:metapod
+142,water & !ice,pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:psyduck pokemon:golduck pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:tentacool pokemon:tentacruel
+143,legendary & flying,pokemon:articuno pokemon:zapdos pokemon:moltres
+144,every pokemon with intimidate,pokemon:ekans pokemon:arbok pokemon:growlithe pokemon:arcanine pokemon:gyarados pokemon:tauros ability:intimidate
+145,which pokemon have levitate,pokemon:gastly pokemon:haunter pokemon:koffing pokemon:weezing ability:levitate
+146,what abilities does snorlax have,ability:immunity ability:thick-fat ability:gluttony
+147,what does sleep powder do,move:sleep-powder
+148,is gengar a ghost type,pokemon:gengar
+149,best electric type,pokemon:zapdos pokemon:jolteon pokemon:electrode pokemon:electabuzz pokemon:raichu pokemon:magneton pokemon:voltorb pokemon:magnemite pokemon:pikachu
+150,strongest water pokemon,pokemon:gyarados pokemon:lapras pokemon:blastoise pokemon:cloyster pokemon:vaporeon pokemon:starmie pokemon:tentacruel pokemon:poliwrath pokemon:golduck pokemon:kabutops
+151,fastest psychic type,pokemon:mewtwo pokemon:alakazam pokemon:starmie pokemon:kadabra pokemon:mew pokemon:jynx pokemon:abra pokemon:mr-mime pokemon:hypno pokemon:exeggutor
+152,which pokemon has the highest defense,pokemon:cloyster pokemon:onix pokemon:golem pokemon:omastar pokemon:rhydon pokemon:weezing pokemon:graveler pokemon:kingler pokemon:tangela pokemon:sandslash
+153,best counter for gyarados,pokemon:zapdos pokemon:jolteon pokemon:raichu pokemon:electabuzz pokemon:electrode pokemon:magneton pokemon:pikachu
+154,what moves can pikachu learn,move:thunderbolt move:thunder move:thunder-shock move:thunder-wave move:quick-attack move:agility move:surf move:swift move:body-slam move:seismic-toss
+155,which pokemon learn hypnosis,pokemon:drowzee pokemon:hypno pokemon:gastly pokemon:haunter pokemon:gengar pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:exeggcute pokemon:exeggutor
+156,orange lizard with a flame on its tail,pokemon:charmander pokemon:charmeleon pokemon:charizard
+157,turtle with water cannons,pokemon:blastoise pokemon:wartortle pokemon:squirtle
+158,plant bulb on its back,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur
+159,pink egg pokemon,pokemon:chansey pokemon:exeggcute
+160,giant sleeping pokemon blocking the road,pokemon:snorlax
+161,cat with a coin on its head,pokemon:meowth pokemon:persian
+162,giant rock snake,pokemon:onix
+163,yellow duck with a headache,pokemon:psyduck
+164,starfish,pokemon:staryu pokemon:starmie
+165,jellyfish,pokemon:tentacool pokemon:tentacruel
+166,fish that only splashes,pokemon:magikarp move:splash
+167,purple blob that transforms,pokemon:ditto move:transform
+168,psychic that bends spoons,pokemon:alakazam pokemon:kadabra pokemon:abra
+169,pokemon created in a lab,pokemon:mewtwo pokemon:porygon
+170,fire dog,pokemon:growlithe pokemon:arcanine
+171,four arms fighting pokemon,pokemon:machamp
+172,bird with three heads,pokemon:dodrio
+173,duck holding a leek,pokemon:farfetchd
+174,angry sea serpent,pokemon:gyarados
+175,magnet pokemon,pokemon:magnemite pokemon:magneton ability:magnet-pull
+176,spaghetti,
+177,pizza,
+178,hello,
+179,best car,
+180,weather in Paris,
+181,stock market,
+182,my homework,
+183,football scores,
+184,asdfgh,
+185,how to cook pasta,

@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react'
 import type { AvailableEngine } from '@/eval/engines/engines'
 import { ms } from '@/eval/format'
+import { NOT_MEASURED } from '@/eval/summary-rows'
 import type { SearchResult } from '@/search/types/result'
 import { AppLink } from '../AppLink/AppLink'
 import { RankedList } from '../RankedList/RankedList'
@@ -59,7 +60,8 @@ export function LiveSearch({ engines }: LiveSearchProps) {
           {answers.map((answer) => (
             <div key={answer.engine.id} className="live-search__answer">
               <h2 className="live-search__engine">
-                {answer.engine.name} · {ms(answer.ms)}
+                {answer.engine.name} ·{' '}
+                {answer.engine.notMeasured ? NOT_MEASURED : ms(answer.ms)}
               </h2>
               <RankedList results={answer.results} query={asked} />
             </div>

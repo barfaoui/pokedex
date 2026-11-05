@@ -8,6 +8,10 @@ export interface Engine {
   search: (query: string) => Promise<RankedResults>
   /** Euros billed so far (an engine billed in dollars converts); local engines leave it out. */
   spentEur?: () => number
+  /** Set by an engine that reads its answers instead of computing them: why latency and cost aren't measured. */
+  notMeasured?: string
+  /** Keys it answered that the data doesn't hold, left out of its results. */
+  invented?: (query: string) => string[]
 }
 
 /** One model, loaded once, shared by every engine. */

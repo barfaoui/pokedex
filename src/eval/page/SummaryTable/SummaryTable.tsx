@@ -1,7 +1,7 @@
 import type { AvailableEngine } from '@/eval/engines/engines'
 import { summarize } from '@/eval/metrics'
 import type { CaseRun } from '@/eval/run'
-import { SUMMARY_ROWS } from '@/eval/summary-rows'
+import { SUMMARY_ROWS, summaryCell } from '@/eval/summary-rows'
 import './SummaryTable.scss'
 
 interface SummaryTableProps {
@@ -38,7 +38,7 @@ export function SummaryTable({ engines, runs }: SummaryTableProps) {
             </th>
             {summaries.map((summary, at) => (
               <td key={engines[at].id} className="summary-table__value">
-                {summary.cases ? row.value(summary) : '—'}
+                {summary.cases ? summaryCell(row, summary, engines[at]) : '—'}
               </td>
             ))}
           </tr>

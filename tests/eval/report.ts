@@ -3,8 +3,9 @@ import type { AvailableEngine } from '@/eval/engines/engines'
 import { gradeOf, groupRuns, summarize, type GroupBy } from '@/eval/metrics'
 import { keyOf, type CaseRun } from '@/eval/run'
 import { decimal, itemLabel, ms, percent } from '@/eval/format'
-import { SUMMARY_ROWS } from '@/eval/summary-rows'
+import { SUMMARY_ROWS, summaryCell } from '@/eval/summary-rows'
 import { MODEL_DTYPE, MODEL_ID } from '@/search/semantic/model'
+import { llmSection } from './llm-section'
 
 export interface Context {
   date: Date
@@ -46,6 +47,9 @@ export function formatReport(
     '',
     '**Timings are measured in Node on this machine, not in the browser.** In the app the model runs in a web worker on WebAssembly: expect it slower there. Open eval.html in `npm run dev` for browser timings.',
     '',
+    ...engines.flatMap((e) =>
+      e.notMeasured ? [`**${e.name}:** ${e.notMeasured}`, ''] : [],
+    ),
     '## Summary',
     '',
   )
@@ -58,13 +62,14 @@ export function formatReport(
     `| --- | ${engines.map(() => '---:').join(' | ')} |`,
     ...SUMMARY_ROWS.map(
       (row) =>
-        `| ${row.label} | ${summaries.map((s) => row.value(s)).join(' | ')} |`,
+        `| ${row.label} | ${summaries.map((s, at) => summaryCell(row, s, engines[at])).join(' | ')} |`,
     ),
     '',
   )
 
   push(...groupSection('category', 'By category', engines, runs))
   push(...groupSection('source', 'By source', engines, runs))
+  push(...llmSection(engines, runs))
   push(...failingSection(engines, runs))
 
   return lines.join('\n')
