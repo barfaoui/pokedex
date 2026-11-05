@@ -24,3 +24,13 @@ describe('a type by the start of its name', () => {
     expect(fighting.every((r) => r.score < 1)).toBe(true)
   })
 })
+
+describe('a colour, shape or habitat matched loosely, like a type', () => {
+  it('"purpel" → the purple Pokémon, none shown as an exact match', () => {
+    const purple = search('purpel').filter(
+      (r) => r.kind === 'pokemon' && r.item.color === 'purple',
+    )
+    expect(purple.length).toBeGreaterThan(0)
+    expect(purple.every((r) => r.score < 1)).toBe(true)
+  })
+})

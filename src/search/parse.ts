@@ -1,3 +1,4 @@
+import { matchDescriptor } from './match/descriptor'
 import { matchType } from './match/type'
 import { normalize } from '../text/normalize'
 import type { ParsedQuery, StatPart, WordPart } from './types/query'
@@ -157,9 +158,12 @@ function readStatCondition(
  * type and descriptor it may mean. Its text is still matched against names.
  */
 function readWord(words: string[], start: number): Read<WordPart> {
-  const descriptor = readPhrase(DESCRIPTORS, words, start)
-  const length = descriptor?.length ?? 1
+  const phrase = readPhrase(DESCRIPTORS, words, start)
+  const length = phrase?.length ?? 1
   const text = words.slice(start, start + length).join(' ')
+  const descriptor = phrase
+    ? { value: phrase.value, score: 1 }
+    : matchDescriptor(text)
   const type = matchType(text)
   const concept = CONCEPT_WORDS.get(text)
   const number = /^\d+$/.test(text) ? Number(text) : undefined
@@ -168,7 +172,7 @@ function readWord(words: string[], start: number): Read<WordPart> {
       kind: 'word',
       text,
       ...(type && { type }),
-      ...(descriptor && { descriptor: descriptor.value }),
+      ...(descriptor && { descriptor }),
       ...(concept && { concept }),
       ...(number !== undefined && { number }),
     },

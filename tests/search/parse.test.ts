@@ -48,7 +48,7 @@ describe('parseQuery', () => {
   it('keeps only the first sort word as the sort', () => {
     const parsed = parseQuery('fast heavy')
     expect(parsed.sort?.word).toBe('fast')
-    expect(parsed.parts).toEqual([{ kind: 'word', text: 'heavy' }])
+    expect(parsed.parts).toMatchObject([{ kind: 'word', text: 'heavy' }])
   })
 
   it.each([
@@ -58,8 +58,24 @@ describe('parseQuery', () => {
     'reads the descriptor "%s", two-word ones included',
     (query, descriptor) => {
       expect(parseQuery(query).parts).toEqual([
-        { kind: 'word', text: query, descriptor },
+        {
+          kind: 'word',
+          text: query,
+          descriptor: { value: descriptor, score: 1 },
+        },
       ])
+    },
+  )
+
+  it.each([
+    ['gren', { field: 'color', value: 'green' }],
+    ['mount', { field: 'habitat', value: 'mountain' }],
+  ])(
+    'reads "%s" as a close descriptor (a typo or its start), scored below 1',
+    (query, value) => {
+      const [part] = parseQuery(query).parts
+      expect(part).toMatchObject({ descriptor: { value } })
+      expect(part.kind === 'word' && part.descriptor?.score).toBeLessThan(1)
     },
   )
 

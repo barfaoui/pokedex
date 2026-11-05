@@ -24,7 +24,7 @@ export interface WordPart {
   kind: 'word'
   text: string
   type?: { value: PokemonType; score: number }
-  descriptor?: Descriptor
+  descriptor?: { value: Descriptor; score: number }
   concept?: ConceptId
   number?: number
 }

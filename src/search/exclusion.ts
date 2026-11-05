@@ -2,6 +2,7 @@ import type { PokedexIndex, PokemonType } from '../data/types/model'
 import { tagOf } from './concepts/dictionary'
 import type { ConceptId } from './concepts/types'
 import { isWantedDirection } from './match/concept'
+import { matchDescriptor } from './match/descriptor'
 import { matchType } from './match/type'
 import { readPhrase } from './parse'
 import type { Descriptor, ParsedQuery } from './types/query'
@@ -41,7 +42,11 @@ export function exclusionsOf(
       const descriptor = readPhrase(DESCRIPTORS, segment, i)
       const length = descriptor?.length ?? 1
       const word = segment.slice(i, i + length).join(' ')
-      const found = rulesFor(word, descriptor?.value, pokedex)
+      const found = rulesFor(
+        word,
+        descriptor?.value ?? matchDescriptor(word)?.value,
+        pokedex,
+      )
       if (found.length) {
         rules.push(...found)
       } else {

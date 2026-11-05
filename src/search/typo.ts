@@ -25,9 +25,21 @@ export function editDistance(a: string, b: string): number {
 
 const TYPO_RATIO = 0.4
 
+const MIN_PREFIX_LENGTH = 4
+const PREFIX_SCORE = 0.95
+
 export function typoScore(word: string, target: string): number {
   const changes = editDistance(word, target)
   return changes <= Math.floor(target.length * TYPO_RATIO)
     ? 1 - changes / target.length
     : 0
+}
+
+/** How close a word is to a vocabulary word (a type, a colour…): exact, its start, or a typo. */
+export function closeScore(word: string, target: string): number {
+  const prefix =
+    word.length >= MIN_PREFIX_LENGTH && target.startsWith(word)
+      ? PREFIX_SCORE
+      : 0
+  return Math.max(typoScore(word, target), prefix)
 }

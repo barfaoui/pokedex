@@ -137,8 +137,8 @@ function scoreDescriptor(part: WordPart, searchable: SearchableItem): Scored {
   if (!descriptor || searchable.kind !== 'pokemon') {
     return NO_MATCH
   }
-  return searchable.item[descriptor.field] === descriptor.value
-    ? { score: 1, matched: [descriptor] }
+  return searchable.item[descriptor.value.field] === descriptor.value.value
+    ? { score: descriptor.score, matched: [descriptor.value] }
     : NO_MATCH
 }
 
