@@ -76,3 +76,29 @@ describe('excluding with "not" / "no"', () => {
     expect(semanticQueryOf('make it fall asleep')).toBe('make it fall asleep')
   })
 })
+
+describe('other ways to write a negation', () => {
+  const pokemonOf = (query: string) =>
+    search(query).flatMap((r) => (r.kind === 'pokemon' ? [r.item] : []))
+
+  it('"grass without poison" excludes like "not": no Poison type left', () => {
+    const found = pokemonOf('grass without poison')
+    expect(found.length).toBeGreaterThan(0)
+    expect(found.some((p) => p.types.includes('poison'))).toBe(false)
+  })
+
+  it('"grass except poison" does the same', () => {
+    const found = pokemonOf('grass except poison')
+    expect(found.length).toBeGreaterThan(0)
+    expect(found.some((p) => p.types.includes('poison'))).toBe(false)
+  })
+
+  it('Pokémon GO syntax: "grass & !poison", and "!water" alone lists every other Pokémon', () => {
+    const grass = pokemonOf('grass & !poison')
+    expect(grass.length).toBeGreaterThan(0)
+    expect(grass.some((p) => p.types.includes('poison'))).toBe(false)
+    const notWater = pokemonOf('!water')
+    expect(notWater.length).toBeGreaterThan(100)
+    expect(notWater.some((p) => p.types.includes('water'))).toBe(false)
+  })
+})

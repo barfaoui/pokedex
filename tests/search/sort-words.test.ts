@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { index } from '@/data/dataset'
 import { search, semanticQueryOf } from '@/search/search'
 import type { MatchField } from '@/search/types/result'
 
@@ -33,5 +34,31 @@ describe('superlatives and "high / low / most / least + stat"', () => {
     expect(results[0].item.name).toBe('electrode')
     expect(results.every((r) => r.kind === 'pokemon')).toBe(true)
     expect(semanticQueryOf('the fastest pokemon')).toBe('')
+  })
+})
+
+describe('superlatives sort by the stat they name', () => {
+  const pokemon = [...index.pokemon.values()]
+  const top = (query: string) => {
+    const first = search(query)[0]
+    return first?.kind === 'pokemon' ? first.item : undefined
+  }
+
+  it('"highest speed" → the fastest Pokémon first', () => {
+    const fastest = Math.max(...pokemon.map((p) => p.stats.speed))
+    expect(top('highest speed')?.stats.speed).toBe(fastest)
+  })
+
+  it('"lowest hp" → the Pokémon with the least HP first', () => {
+    const lowest = Math.min(...pokemon.map((p) => p.stats.hp))
+    expect(top('lowest hp')?.stats.hp).toBe(lowest)
+  })
+
+  it('"tankiest" sorts like "tanky": HP plus defense', () => {
+    const tankiest = Math.max(
+      ...pokemon.map((p) => p.stats.hp + p.stats.defense),
+    )
+    const first = top('tankiest')
+    expect(first && first.stats.hp + first.stats.defense).toBe(tankiest)
   })
 })

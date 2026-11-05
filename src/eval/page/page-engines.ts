@@ -12,7 +12,7 @@ export const CASES = parseCases(csv)
 
 let semantic: SemanticSearch | undefined
 
-/** The app's own worker and client: one model for the whole visit, as in the app. */
+/** The app's own worker and client, so the model loads once, as in the app. */
 function browserSemantic(): SemanticSearch {
   const start = performance.now()
   const client = semanticClient()

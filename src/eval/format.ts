@@ -18,7 +18,6 @@ export function ms(value: number): string {
       : `${value.toFixed(2)} ms`
 }
 
-/** `pikachu`, `sing (move)`: the kind only where a name alone is ambiguous. */
 export function itemLabel(item: string): string {
   if (!item.includes(':')) {
     return item

@@ -10,10 +10,10 @@ export interface Engine {
   spentEur?: () => number
 }
 
-/** The app's search by meaning, alone: one model, loaded once, shared by every engine. */
+/** One model, loaded once, shared by every engine. */
 export interface SemanticSearch {
   search: (query: string) => Promise<SearchResult[]>
-  /** Resolves with the model's load time once it can answer. */
+  /** The model's load time, in ms. */
   ready: () => Promise<number>
 }
 

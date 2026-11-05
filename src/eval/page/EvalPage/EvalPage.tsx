@@ -16,7 +16,6 @@ interface Filters {
   failingOnly: boolean
 }
 
-/** FilterSelect's value for no filter. */
 const ALL = ''
 const NO_FILTERS: Filters = {
   category: ALL,

@@ -10,11 +10,8 @@ const GAIN = { best: 2, ok: 1 }
 
 export interface CaseScore {
   passed: boolean
-  /** Why it failed, in words; empty when it passed. */
   failures: string[]
-  /** 1-based; null when no best item came back, or none is expected. */
   firstBestRank: number | null
-  /** The four below are null for `nothing` cases: no right answer to rank. */
   hitAt1: number | null
   recallAt10: number | null
   reciprocalRank: number | null

@@ -1,20 +1,31 @@
 import { matchDescriptor } from './match/descriptor'
 import { matchType } from './match/type'
 import { normalize } from '../text/normalize'
-import type { ParsedQuery, StatPart, WordPart } from './types/query'
+import type {
+  FamilyDirection,
+  ParsedQuery,
+  StatPart,
+  WordPart,
+} from './types/query'
 import type { ResultKind } from './types/result'
 import {
   ABILITY_HINT,
+  COMPARATIVE_WORDS,
   COMPARISON_WORDS,
   CONCEPT_WORDS,
   DESCRIPTORS,
+  FAMILY_DIRECTION_WORDS,
+  FAMILY_INTO_WORD,
   FAMILY_WORDS,
   FILLER_WORDS,
+  HAVE_WORDS,
   KIND_WORDS,
+  LEARN_WORDS,
   NEGATING_WORDS,
   SEGMENT_END_WORD,
   SORT_WORDS,
   STAT_WORDS,
+  UNITS,
 } from './vocabulary'
 
 interface Read<T> {
@@ -25,20 +36,30 @@ interface Read<T> {
 /** Only the first sort word sorts; later ones are kept as words. */
 export function parseQuery(query: string): ParsedQuery {
   const { searched, excluded } = splitExclusions(
-    normalize(spellOutOperators(query)).split(' ').filter(Boolean),
+    normalize(spellOutOperators(query))
+      .split(' ')
+      .filter(Boolean)
+      .flatMap(splitUnit),
   )
   // With a negation, filler and kind words alone ("pokemon not electric") have nothing to
   // search: a lone negation, listing the named kind.
   const lone = !!excluded && !searched.some(isSearched)
   const typed = lone ? [] : searched
+  const hasFamilyWord = typed.some((word) => FAMILY_WORDS.has(word))
+  const named = kindsOf(searched)
+  const learners = asksForLearners(typed, named)
   const asked = typed.filter(
-    (word) => !KIND_WORDS.has(word) && !FAMILY_WORDS.has(word),
+    (word) =>
+      !KIND_WORDS.has(word) &&
+      !FAMILY_WORDS.has(word) &&
+      !(hasFamilyWord && isFamilyDirectionWord(word)) &&
+      !(learners && (LEARN_WORDS.has(word) || HAVE_WORDS.has(word))),
   )
   const words = withoutFiller(asked.length ? asked : typed)
   // A lone family word ("evolution") is searched as a word, it names no one's family.
   const family =
-    asked.length > 0 && typed.some((word) => FAMILY_WORDS.has(word))
-  const kinds = kindsOf(searched)
+    asked.length > 0 && hasFamilyWord ? familyDirection(typed) : undefined
+  const kinds: ResultKind[] = learners && !named.length ? ['pokemon'] : named
   const parsed: ParsedQuery = {
     parts: [],
     normalizedQuery: typed.join(' '),
@@ -46,6 +67,7 @@ export function parseQuery(query: string): ParsedQuery {
     ...(kinds.length && (lone || words.some(isSearched)) && { kinds }),
     ...(excluded && { excluded }),
     ...(family && { family }),
+    ...(learners && { learners }),
   }
   let i = 0
   while (i < words.length) {
@@ -94,6 +116,31 @@ export function splitExclusions(typed: string[]): {
   return { searched, ...(excluded && { excluded }) }
 }
 
+/** Not when the query names another kind: "what moves can pikachu learn" asks for moves. */
+function asksForLearners(typed: string[], named: ResultKind[]): boolean {
+  const forPokemon = !named.length || named.includes('pokemon')
+  return (
+    (forPokemon && typed.some((word) => LEARN_WORDS.has(word))) ||
+    (named.includes('pokemon') && typed.some((word) => HAVE_WORDS.has(word)))
+  )
+}
+
+function isFamilyDirectionWord(word: string): boolean {
+  return FAMILY_DIRECTION_WORDS.has(word) || word === FAMILY_INTO_WORD
+}
+
+function familyDirection(typed: string[]): FamilyDirection {
+  const stated = typed.flatMap((word) => FAMILY_DIRECTION_WORDS.get(word) ?? [])
+  if (stated.length) {
+    return stated[0]
+  }
+  const into = typed.indexOf(FAMILY_INTO_WORD)
+  const named = typed
+    .slice(into + 1)
+    .some((word) => isSearched(word) && !FAMILY_WORDS.has(word))
+  return into >= 0 && named ? 'earlier' : 'later'
+}
+
 function kindsOf(typed: string[]): ResultKind[] {
   const named = [
     ...new Set(typed.flatMap((word) => KIND_WORDS.get(word) ?? [])),
@@ -115,36 +162,60 @@ function withoutFiller(words: string[]): string[] {
 }
 
 function spellOutOperators(query: string): string {
-  return query
-    .replace(/>=/g, ' atleast ')
-    .replace(/<=/g, ' atmost ')
-    .replace(/>/g, ' over ')
-    .replace(/</g, ' under ')
+  return (
+    query
+      .replace(/>=/g, ' atleast ')
+      .replace(/<=/g, ' atmost ')
+      .replace(/>/g, ' over ')
+      .replace(/</g, ' under ')
+      // Pokémon GO search syntax: "@surf", "water & !ice"
+      .replace(/@/g, ' learns ')
+      .replace(/!/g, ' not ')
+      .replace(/&/g, ' and ')
+  )
+}
+
+const NUMBER = /^\d+(?:\.\d+)?$/
+
+function splitUnit(word: string): string[] {
+  const glued = /^(\d+(?:\.\d+)?)([a-z]+)$/.exec(word)
+  return glued && UNITS.has(glued[2]) ? [glued[1], glued[2]] : [word]
 }
 
 function readStatCondition(
   words: string[],
   start: number,
 ): Read<StatPart> | undefined {
-  const stat = readPhrase(STAT_WORDS, words, start)
-  const comparison =
-    stat && readPhrase(COMPARISON_WORDS, words, start + stat.length)
-  if (!stat || !comparison) {
+  const comparative = readPhrase(COMPARATIVE_WORDS, words, start)
+  const stat = comparative ? undefined : readPhrase(STAT_WORDS, words, start)
+  let at = start + (comparative?.length ?? stat?.length ?? 0)
+  const comparison = comparative
+    ? undefined
+    : readPhrase(COMPARISON_WORDS, words, at)
+  if (stat && !comparison) {
     return undefined
   }
-  const end = start + stat.length + comparison.length
-  const value = words[end]
-  if (!value || !/^\d+(?:\.\d+)?$/.test(value)) {
+  at += comparison?.length ?? 0
+  const number = words[at]
+  if (!number || !NUMBER.test(number)) {
+    return undefined
+  }
+  const named = comparative?.value.stat ?? stat?.value
+  const unit = UNITS.get(words[at + 1] ?? '')
+  const fits = unit && (!named || named === unit.stat)
+  const conditionStat = named ?? (fits ? unit.stat : undefined)
+  // A lone number is a Pokédex number ("pokemon 150"), never a condition.
+  if (!conditionStat) {
     return undefined
   }
   return {
     value: {
       kind: 'stat',
-      stat: stat.value,
-      comparison: comparison.value,
-      value: Number(value),
+      stat: conditionStat,
+      comparison: comparative?.value.comparison ?? comparison?.value ?? 'about',
+      value: Number(number) * (fits ? unit.factor : 1),
     },
-    length: end - start + 1,
+    length: at + (fits ? 2 : 1) - start,
   }
 }
 

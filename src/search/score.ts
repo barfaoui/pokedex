@@ -1,8 +1,16 @@
-import type { PokedexIndex } from '../data/types/model'
+import type { PokedexIndex, Pokemon } from '../data/types/model'
 import { matchConcept } from './match/concept'
+import { genusScore } from './match/genus'
 import { nameScore } from './match/name'
 import { statValue } from './stat-value'
-import type { ParsedQuery, QueryPart, StatPart, WordPart } from './types/query'
+import type {
+  ConditionStat,
+  ParsedQuery,
+  QueryPart,
+  StatPart,
+  WordPart,
+} from './types/query'
+import { RARITY_WORDS } from './vocabulary'
 import type { Scored, SearchableItem } from './types/result'
 
 // A missed stat condition keeps a score for how close it was, unless the value is under half the threshold.
@@ -19,7 +27,7 @@ export function scoreItem(
 ): Scored {
   const alone = query.parts.length === 1
   const parts = query.parts.map((part) =>
-    scorePart(part, searchable, pokedex, alone),
+    scorePart(part, searchable, pokedex, alone, !!query.learners),
   )
   const average = {
     score: parts.reduce((sum, part) => sum + part.score, 0) / parts.length,
@@ -34,10 +42,11 @@ function scorePart(
   searchable: SearchableItem,
   pokedex: PokedexIndex,
   alone: boolean,
+  learners: boolean,
 ): Scored {
   return part.kind === 'stat'
     ? scoreStat(part, searchable)
-    : scoreWord(part, searchable, pokedex, alone)
+    : scoreWord(part, searchable, pokedex, alone, learners)
 }
 
 /**
@@ -62,6 +71,7 @@ function scoreWord(
   searchable: SearchableItem,
   pokedex: PokedexIndex,
   alone: boolean,
+  learners: boolean,
 ): Scored {
   return [
     part.concept
@@ -74,7 +84,10 @@ function scoreWord(
     }),
     scoreType(part, searchable),
     scoreDescriptor(part, searchable),
+    scoreGenus(part, searchable),
+    scoreRarity(part, searchable),
     scoreNumber(part, searchable),
+    learners ? scoreLearned(part, searchable, pokedex) : NO_MATCH,
   ].reduce((best, candidate) =>
     candidate.score > best.score ? candidate : best,
   )
@@ -85,7 +98,7 @@ function scoreStat(part: StatPart, searchable: SearchableItem): Scored {
   if (searchable.kind !== 'pokemon') {
     return NO_MATCH
   }
-  const value = statValue(searchable.item, part.stat)
+  const value = conditionValue(searchable.item, part.stat)
   const score = isMet(part, value) ? 1 : nearMissScore(part, value)
   return score > 0
     ? { score, matched: [{ field: part.stat, value }] }
@@ -139,6 +152,66 @@ function scoreDescriptor(part: WordPart, searchable: SearchableItem): Scored {
     : NO_MATCH
 }
 
+/** Exact names only: "fire" must not bring every Pokémon that learns Fire Blast. */
+function scoreLearned(
+  part: WordPart,
+  searchable: SearchableItem,
+  pokedex: PokedexIndex,
+): Scored {
+  if (searchable.kind !== 'pokemon') {
+    return NO_MATCH
+  }
+  const { moves, abilities } = searchable.item
+  const move = moves.find(
+    (name) => pokedex.moves.get(name)?.searchName === part.text,
+  )
+  if (move) {
+    return { score: 1, matched: [{ field: 'move', value: move }] }
+  }
+  const ability = abilities.find(
+    (name) => pokedex.abilities.get(name)?.searchName === part.text,
+  )
+  return ability
+    ? { score: 1, matched: [{ field: 'ability', value: ability }] }
+    : NO_MATCH
+}
+
+/** A concept word ("freeze") is read as the effect, never as a category ("Freeze Pokémon"). */
+function scoreGenus(part: WordPart, searchable: SearchableItem): Scored {
+  if (part.concept || searchable.kind !== 'pokemon') {
+    return NO_MATCH
+  }
+  const score = genusScore(part.text, searchable.item.genus)
+  return score > 0
+    ? { score, matched: [{ field: 'genus', value: searchable.item.genus }] }
+    : NO_MATCH
+}
+
+function scoreRarity(part: WordPart, searchable: SearchableItem): Scored {
+  const rarity = RARITY_WORDS.get(part.text)
+  if (!rarity || searchable.kind !== 'pokemon') {
+    return NO_MATCH
+  }
+  const flagged =
+    rarity === 'legendary'
+      ? searchable.item.isLegendary
+      : searchable.item.isMythical
+  return flagged
+    ? { score: 1, matched: [{ field: rarity, value: rarity }] }
+    : NO_MATCH
+}
+
+function conditionValue(pokemon: Pokemon, stat: ConditionStat): number {
+  switch (stat) {
+    case 'weight':
+      return pokemon.weightKg
+    case 'height':
+      return pokemon.heightM
+    default:
+      return statValue(pokemon, stat)
+  }
+}
+
 function isMet({ comparison, value: threshold }: StatPart, value: number) {
   switch (comparison) {
     case 'over':
@@ -149,6 +222,8 @@ function isMet({ comparison, value: threshold }: StatPart, value: number) {
       return value < threshold
     case 'atMost':
       return value <= threshold
+    case 'about':
+      return value === threshold
   }
 }
 
@@ -157,6 +232,12 @@ function nearMissScore(
   value: number,
 ) {
   const wantsMore = comparison === 'over' || comparison === 'atLeast'
-  const ratio = wantsMore ? value / threshold : threshold / value
+  // Symmetric, so the closest measure ranks first whichever side it is on
+  const ratio =
+    comparison === 'about'
+      ? 1 - Math.abs(value - threshold) / threshold
+      : wantsMore
+        ? value / threshold
+        : threshold / value
   return ratio >= MIN_NEAR_MISS_RATIO ? NEAR_MISS_WEIGHT * ratio : 0
 }

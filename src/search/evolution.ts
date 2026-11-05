@@ -1,4 +1,5 @@
 import type { PokedexIndex, Pokemon } from '../data/types/model'
+import type { FamilyDirection } from './types/query'
 import type { Match, SearchResult } from './types/result'
 
 // A family member is related to what was asked, not what was asked: well below the Pokémon itself.
@@ -15,7 +16,7 @@ type PokemonResult = Extract<SearchResult, { kind: 'pokemon' }>
 export function withEvolutionFamilies(
   results: SearchResult[],
   pokedex: PokedexIndex,
-  asked = false,
+  asked?: FamilyDirection,
 ): SearchResult[] {
   const weight = asked ? ASKED_FAMILY_WEIGHT : FAMILY_WEIGHT
   const found = new Set(
@@ -31,6 +32,7 @@ export function withEvolutionFamilies(
       result.item,
       result.score * weight,
       pokedex,
+      asked ?? 'later',
     )) {
       const name = relative.item.name
       const current = family.get(name)
@@ -40,7 +42,10 @@ export function withEvolutionFamilies(
     }
   }
 
-  return [...results, ...family.values()]
+  // The final sort is stable: on equal scores, this order stands.
+  return asked
+    ? [...family.values(), ...results]
+    : [...results, ...family.values()]
 }
 
 function isNameMatch(result: SearchResult): boolean {
@@ -51,6 +56,7 @@ function relativesOf(
   pokemon: Pokemon,
   score: number,
   pokedex: PokedexIndex,
+  direction: FamilyDirection,
 ): PokemonResult[] {
   const stages = pokemon.evolution?.stages ?? []
   const stage = stages.findIndex((members) => members.includes(pokemon.name))
@@ -70,14 +76,21 @@ function relativesOf(
         ]
       : []
   }
-  return [
-    ...stages
-      .slice(0, stage)
-      .flat()
-      .flatMap((name) => relative(name, 'evolvesInto')),
-    ...stages
-      .slice(stage + 1)
-      .flat()
-      .flatMap((name) => relative(name, 'evolutionOf')),
-  ]
+  const earlier = stages
+    .slice(0, stage)
+    .reverse()
+    .flat()
+    .flatMap((name) => relative(name, 'evolvesInto'))
+  const later = stages
+    .slice(stage + 1)
+    .flat()
+    .flatMap((name) => relative(name, 'evolutionOf'))
+  switch (direction) {
+    case 'earlier':
+      return [...earlier, ...later]
+    case 'later':
+      return [...later, ...earlier]
+    case 'last':
+      return [...later.reverse(), ...earlier]
+  }
 }
