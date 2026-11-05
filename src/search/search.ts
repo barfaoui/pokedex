@@ -105,7 +105,7 @@ function matchingResults(
         : result,
     )
     .filter((result) => result.score > 0)
-  return withEvolutionFamilies(results, pokedex)
+  return withEvolutionFamilies(results, pokedex, parsed.family)
 }
 
 /** A lone sort word: its name matches first, then every other Pokémon, each listed once. */

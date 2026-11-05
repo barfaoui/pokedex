@@ -250,6 +250,21 @@ const probeTuning: EvalQuery[] = [
     },
     seen: USER_TESTING,
   },
+  {
+    query: 'show me the fastest pokemon',
+    group: 'probe-tuning',
+    expect: { type: 'first', key: 'pokemon:electrode' },
+    seen: USER_TESTING,
+  },
+  {
+    query: 'evolution of charmander',
+    group: 'probe-tuning',
+    expect: {
+      type: 'includes',
+      keys: ['pokemon:charmander', 'pokemon:charmeleon', 'pokemon:charizard'],
+    },
+    seen: USER_TESTING,
+  },
   { query: 'pizza', group: 'probe-tuning', expect: { type: 'nothing' } },
   { query: 'hello', group: 'probe-tuning', expect: { type: 'nothing' } },
   { query: 'best car', group: 'probe-tuning', expect: { type: 'nothing' } },

@@ -93,11 +93,14 @@ export const KIND_WORDS = new Map<string, ResultKind>([
   ['abilities', 'ability'],
 ])
 
-// "Something that can paralyze" asks for an ability, unless a kind is named ("pokemon that can…").
 export const ABILITY_HINT = 'can'
+export const FAMILY_WORDS = new Set([
+  'evolution',
+  'evolutions',
+  'evolve',
+  'evolves',
+])
 
-// "electric not flying": what follows is removed from the results, up to "and" or the end.
-// Only these two: "without" and "except" are a documented limit.
 export const NEGATING_WORDS = new Set(['not', 'no'])
 export const SEGMENT_END_WORD = 'and'
 
@@ -156,11 +159,13 @@ export const FILLER_WORDS = new Set([
   'can',
   'want',
   'i',
+  'of',
+  'show',
+  'me',
+  'find',
   'something',
-  // Connect parts without meaning anything: "fire but not flying".
   'and',
   'but',
-  // "team" doesn't filter: grouping results stays in the UI.
   'team',
   'teams',
 ])
