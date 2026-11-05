@@ -223,6 +223,33 @@ const probeTuning: EvalQuery[] = [
     expect: { type: 'first', key: 'pokemon:electrode' },
     seen: USER_TESTING,
   },
+  {
+    query: 'fight',
+    group: 'probe-tuning',
+    expect: {
+      type: 'includes',
+      keys: [
+        'pokemon:mankey',
+        'pokemon:primeape',
+        'pokemon:poliwrath',
+        'pokemon:machop',
+        'pokemon:machoke',
+        'pokemon:machamp',
+        'pokemon:hitmonlee',
+        'pokemon:hitmonchan',
+      ],
+    },
+    seen: USER_TESTING,
+  },
+  {
+    query: 'elec',
+    group: 'probe-tuning',
+    expect: {
+      type: 'includes',
+      keys: ['pokemon:pikachu', 'pokemon:raichu', 'pokemon:jolteon'],
+    },
+    seen: USER_TESTING,
+  },
   { query: 'pizza', group: 'probe-tuning', expect: { type: 'nothing' } },
   { query: 'hello', group: 'probe-tuning', expect: { type: 'nothing' } },
   { query: 'best car', group: 'probe-tuning', expect: { type: 'nothing' } },
