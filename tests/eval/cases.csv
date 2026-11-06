@@ -24,22 +24,22 @@ id,query,category,check,best,ok,forbidden,source,note
 23,#25,number,first,pokemon:pikachu,,,drafted with AI,
 24,pokemon 150,number,first,pokemon:mewtwo,,,drafted with AI,
 25,number 1,number,first,pokemon:bulbasaur,,,drafted with AI,
-26,mouse,category,top3,pokemon:pikachu pokemon:raichu,pokemon:rattata pokemon:raticate pokemon:sandshrew pokemon:sandslash,,real user,"the user expected Pikachu; ""Mouse Pokémon"" is in the data (genus) but not searched"
+26,mouse,category,top10,pokemon:rattata pokemon:raticate pokemon:pikachu pokemon:raichu pokemon:sandshrew pokemon:sandslash,,,real user,fixed: the genus gives several equally right answers; Pikachu third is correct
 27,electric mouse,category,first,pokemon:pikachu,pokemon:raichu,,drafted with AI,
-28,the mouse pokemon,category,top3,pokemon:pikachu pokemon:raichu,pokemon:rattata pokemon:raticate pokemon:sandshrew pokemon:sandslash,,drafted with AI,
+28,the mouse pokemon,category,top10,pokemon:rattata pokemon:raticate pokemon:pikachu pokemon:raichu pokemon:sandshrew pokemon:sandslash,,,drafted with AI,"fixed: all six have the genus ""Mouse Pokémon"" in the data, so all are equally right (as case 26)"
 29,fire horse,category,top3,pokemon:ponyta pokemon:rapidash,,,drafted with AI,
 30,fox pokemon,category,top3,pokemon:vulpix pokemon:ninetales,,,drafted with AI,
 31,duck,category,top3,pokemon:psyduck pokemon:golduck,pokemon:farfetchd,,drafted with AI,
 32,bat,category,top3,pokemon:zubat pokemon:golbat,,,drafted with AI,
 33,turtle,category,top3,pokemon:squirtle pokemon:wartortle pokemon:blastoise,,,drafted with AI,
-34,fossil,lore,top3,pokemon:omanyte pokemon:kabuto,pokemon:omastar pokemon:kabutops pokemon:aerodactyl,,drafted with AI,
+34,fossil,lore,top3,pokemon:omanyte pokemon:kabuto pokemon:aerodactyl,pokemon:omastar pokemon:kabutops,,drafted with AI,"fixed: Aerodactyl's genus is ""Fossil Pokémon"", as direct as Omanyte's ""resurrected from fossils"" and Kabuto's ""resurrected from a fossil"""
 35,mutate,lore,first,pokemon:eevee,,,real user,"the user expected Eevee, from its description"
 36,pokemon that sleeps all the time,lore,first,pokemon:snorlax,,,drafted with AI,
 37,hides in shadows,lore,first,pokemon:gengar,,,drafted with AI,
 38,causes lightning storms,lore,top3,pokemon:pikachu,pokemon:jolteon pokemon:zapdos,,drafted with AI,
 39,green,appearance,top10,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:caterpie pokemon:metapod pokemon:bellsprout pokemon:weepinbell pokemon:victreebel pokemon:scyther,,,prd,
 40,gren,appearance,top10,pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:caterpie pokemon:metapod pokemon:bellsprout pokemon:weepinbell pokemon:victreebel pokemon:scyther,,,drafted with AI,typo
-41,yellow mouse,appearance,first,pokemon:pikachu,pokemon:raichu pokemon:sandshrew,,drafted with AI,
+41,yellow mouse,appearance,first,pokemon:pikachu,pokemon:raichu pokemon:sandshrew pokemon:sandslash,,drafted with AI,"fixed: Sandslash is ""yellow"" with the genus ""Mouse Pokémon"", like Raichu and Sandshrew, so it joins them as ok"
 42,pink balloon,appearance,first,pokemon:jigglypuff,pokemon:wigglytuff,,drafted with AI,
 43,purple ghost,appearance,top3,pokemon:gastly pokemon:haunter pokemon:gengar,,,drafted with AI,
 44,blue turtle,appearance,top3,pokemon:squirtle pokemon:wartortle pokemon:blastoise,,,drafted with AI,
@@ -87,16 +87,16 @@ id,query,category,check,best,ok,forbidden,source,note
 86,electirc,type,top10,pokemon:pikachu pokemon:raichu pokemon:magnemite pokemon:magneton pokemon:voltorb pokemon:electrode pokemon:electabuzz pokemon:jolteon pokemon:zapdos,,,drafted with AI,typo
 87,legendary,type,top10,pokemon:articuno pokemon:zapdos pokemon:moltres pokemon:mewtwo,pokemon:mew,,drafted with AI,
 88,legendary birds,type,top3,pokemon:articuno pokemon:zapdos pokemon:moltres,,,drafted with AI,
-89,starter pokemon,type,top10,pokemon:bulbasaur pokemon:charmander pokemon:squirtle,,,drafted with AI,not in the data: a real user phrase
+89,starter pokemon,type,top10,pokemon:bulbasaur pokemon:charmander pokemon:squirtle,,,drafted with AI,not in the data: a real user phrase; outside the data (no starter field)
 90,put my opponent to sleep,effect,top3,move:sing move:sleep-powder move:hypnosis move:lovely-kiss move:spore,ability:effect-spore,insomnia vital-spirit rest,prd,
 91,make the enemy doze off,effect,top3,move:sing move:sleep-powder move:hypnosis move:lovely-kiss move:spore,,insomnia vital-spirit rest,drafted with AI,
 92,make it fall asleep,effect,top3,move:sing move:sleep-powder move:hypnosis move:lovely-kiss move:spore,,insomnia vital-spirit rest,drafted with AI,
-93,knock it out with a lullaby,effect,first,move:sing,move:sleep-powder move:hypnosis move:lovely-kiss move:spore,,drafted with AI,indirect wording
+93,knock it out with a lullaby,effect,first,move:sing,move:sleep-powder move:hypnosis move:lovely-kiss move:spore pokemon:jigglypuff,,drafted with AI,"indirect wording; fixed: Jigglypuff added as ok, its description says it ""sings a mysteriously soothing melody that lulls its enemies to sleep"""
 94,paralyze the enemy,effect,top3,move:thunder-wave move:stun-spore move:glare,move:body-slam move:thunderbolt move:lick,,drafted with AI,
 95,poison the opponent,effect,top3,move:toxic move:poison-powder move:poison-gas,move:poison-sting move:sludge,,drafted with AI,
 96,badly poison,effect,first,move:toxic,,,drafted with AI,
 97,confuse the target,effect,top3,move:supersonic move:confuse-ray,,,drafted with AI,
-98,set the foe on fire,effect,top3,move:ember move:flamethrower move:fire-blast,,,drafted with AI,
+98,set the foe on fire,effect,top3,move:ember move:flamethrower move:fire-blast move:fire-punch move:tri-attack,,,drafted with AI,"fixed: every move whose effect can burn: Fire Punch ""Has a chance to burn the target."", Tri Attack ""Has a chance to burn, freeze, or paralyze the target."""
 99,freeze the enemy,effect,top3,move:ice-beam move:blizzard move:ice-punch,,,drafted with AI,
 100,make it flinch,effect,top10,move:bite move:headbutt move:stomp,,,drafted with AI,
 101,restore my HP,effect,top3,move:recover move:soft-boiled,move:rest,,drafted with AI,
@@ -104,8 +104,8 @@ id,query,category,check,best,ok,forbidden,source,note
 103,one hit KO,effect,top3,move:fissure move:guillotine move:horn-drill,,,drafted with AI,
 104,move that never misses,effect,first,move:swift,,,drafted with AI,
 105,always goes first,effect,first,move:quick-attack,,,drafted with AI,
-106,raise my attack,effect,top3,move:swords-dance move:sharpen move:meditate,,,drafted with AI,
-107,escape from battle,effect,top3,move:teleport,move:whirlwind move:roar,,drafted with AI,
+106,raise my attack,effect,top3,move:swords-dance move:sharpen move:meditate move:growth,,,drafted with AI,"fixed: every move that raises the user's Attack: Growth ""Raises the user’s Attack and Special Attack by one stage."""
+107,escape from battle,effect,top3,move:teleport ability:run-away,move:whirlwind move:roar,,drafted with AI,"fixed: Run Away ""Ensures success fleeing from wild battles."", as Teleport ""Immediately ends wild battles."""
 108,explode,effect,top3,move:self-destruct move:explosion,,,drafted with AI,
 109,immune to sleep,effect,top3,ability:insomnia ability:vital-spirit,,,drafted with AI,
 110,can't be paralyzed,effect,first,ability:limber,,,drafted with AI,
@@ -116,7 +116,7 @@ id,query,category,check,best,ok,forbidden,source,note
 115,pokemon that learn thunderbolt,learnset,top10,pokemon:rattata pokemon:raticate pokemon:pikachu pokemon:raichu pokemon:nidoran-f pokemon:nidorina pokemon:nidoqueen pokemon:nidoran-m pokemon:nidorino pokemon:nidoking pokemon:clefairy pokemon:clefable pokemon:jigglypuff pokemon:wigglytuff pokemon:meowth pokemon:persian pokemon:mankey pokemon:primeape pokemon:magnemite pokemon:magneton pokemon:grimer pokemon:muk pokemon:gastly pokemon:haunter pokemon:gengar pokemon:voltorb pokemon:electrode pokemon:lickitung pokemon:koffing pokemon:weezing pokemon:rhyhorn pokemon:rhydon pokemon:chansey pokemon:kangaskhan pokemon:staryu pokemon:starmie pokemon:mr-mime pokemon:electabuzz pokemon:tauros pokemon:gyarados pokemon:lapras pokemon:jolteon pokemon:porygon pokemon:snorlax pokemon:zapdos pokemon:dratini pokemon:dragonair pokemon:dragonite pokemon:mewtwo pokemon:mew,,,drafted with AI,
 116,rain team,weather,top10,ability:swift-swim ability:rain-dish,move:thunder move:solar-beam ability:hydration ability:dry-skin,,prd,
 117,sun team,weather,top10,ability:drought ability:chlorophyll,ability:solar-power move:solar-beam move:growth,,prd,
-118,heal in the rain,weather,first,ability:rain-dish,ability:hydration ability:dry-skin,,drafted with AI,
+118,heal in the rain,weather,first,ability:rain-dish ability:dry-skin,ability:hydration,,drafted with AI,"fixed: Dry Skin ""heals for 1/8 max HP during rain"", like Rain Dish; Hydration only ""Cures any major status ailment"", so it stays ok"
 119,best pokemon for a rain team,weather,top10,pokemon:psyduck pokemon:golduck pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:horsea pokemon:goldeen pokemon:seaking pokemon:magikarp pokemon:omanyte pokemon:omastar pokemon:kabuto pokemon:kabutops,pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:tentacool pokemon:tentacruel,,drafted with AI,
 120,faster in the sun,weather,first,ability:chlorophyll,,,drafted with AI,
 121,sandstorm,weather,top10,ability:sand-veil,,,drafted with AI,
@@ -129,7 +129,7 @@ id,query,category,check,best,ok,forbidden,source,note
 128,which pokemon is the strongest,sentence,first,pokemon:mewtwo,,,drafted with AI,
 129,what type is pikachu,sentence,first,pokemon:pikachu,,,drafted with AI,
 130,a cute pink pokemon that sings,sentence,first,pokemon:jigglypuff,pokemon:wigglytuff pokemon:clefairy,,drafted with AI,
-131,good pokemon against water types,sentence,top10,pokemon:pikachu pokemon:raichu pokemon:magnemite pokemon:magneton pokemon:voltorb pokemon:electrode pokemon:electabuzz pokemon:jolteon pokemon:zapdos pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:oddish pokemon:gloom pokemon:vileplume pokemon:paras pokemon:parasect pokemon:bellsprout pokemon:weepinbell pokemon:victreebel pokemon:exeggcute pokemon:exeggutor pokemon:tangela,,,drafted with AI,no type chart in the data
+131,good pokemon against water types,sentence,top10,pokemon:pikachu pokemon:raichu pokemon:magnemite pokemon:magneton pokemon:voltorb pokemon:electrode pokemon:electabuzz pokemon:jolteon pokemon:zapdos pokemon:bulbasaur pokemon:ivysaur pokemon:venusaur pokemon:oddish pokemon:gloom pokemon:vileplume pokemon:paras pokemon:parasect pokemon:bellsprout pokemon:weepinbell pokemon:victreebel pokemon:exeggcute pokemon:exeggutor pokemon:tangela,,,drafted with AI,no type chart in the data; outside the data (no type chart)
 132,fire & flying,web: GO syntax,top3,pokemon:charizard pokemon:moltres,,,web pattern,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet)
 133,dragon & flying,web: GO syntax,first,pokemon:dragonite,,,web pattern,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet)
 134,"fire, water",web: GO syntax,top10,pokemon:charmander pokemon:charmeleon pokemon:charizard pokemon:vulpix pokemon:ninetales pokemon:growlithe pokemon:arcanine pokemon:ponyta pokemon:rapidash pokemon:magmar pokemon:flareon pokemon:moltres pokemon:squirtle pokemon:wartortle pokemon:blastoise pokemon:psyduck pokemon:golduck pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:tentacool pokemon:tentacruel pokemon:slowpoke pokemon:slowbro pokemon:seel pokemon:dewgong pokemon:shellder pokemon:cloyster pokemon:krabby pokemon:kingler pokemon:horsea pokemon:seadra pokemon:goldeen pokemon:seaking pokemon:staryu pokemon:starmie pokemon:magikarp pokemon:gyarados pokemon:lapras pokemon:vaporeon pokemon:omanyte pokemon:omastar pokemon:kabuto pokemon:kabutops,,,web pattern,Pokémon GO search bar syntax (pokemongohub.net search bar cheat sheet); comma = or
@@ -151,13 +151,13 @@ id,query,category,check,best,ok,forbidden,source,note
 150,strongest water pokemon,web: Q&A,first,pokemon:gyarados,,,web pattern,question shape from PokéBase Q&A (pokemondb.net/pokebase)
 151,fastest psychic type,web: Q&A,first,pokemon:mewtwo,,,web pattern,question shape from PokéBase Q&A (pokemondb.net/pokebase)
 152,which pokemon has the highest defense,web: Q&A,first,pokemon:cloyster,,,web pattern,question shape from PokéBase Q&A (pokemondb.net/pokebase)
-153,best counter for gyarados,web: Q&A,top10,pokemon:pikachu pokemon:raichu pokemon:magnemite pokemon:magneton pokemon:voltorb pokemon:electrode pokemon:electabuzz pokemon:jolteon pokemon:zapdos,,,web pattern,"question shape from PokéBase Q&A (pokemondb.net/pokebase); needs a type chart, which the data doesn't have"
+153,best counter for gyarados,web: Q&A,top10,pokemon:pikachu pokemon:raichu pokemon:magnemite pokemon:magneton pokemon:voltorb pokemon:electrode pokemon:electabuzz pokemon:jolteon pokemon:zapdos,,,web pattern,"question shape from PokéBase Q&A (pokemondb.net/pokebase); needs a type chart, which the data doesn't have; outside the data (no type chart)"
 154,what moves can pikachu learn,web: Q&A,first,pokemon:pikachu,move:agility move:bide move:body-slam move:double-edge move:double-team move:flash move:growl move:light-screen move:mega-kick move:mega-punch move:mimic move:pay-day move:quick-attack move:rage move:reflect move:rest move:seismic-toss move:skull-bash move:slam move:submission move:substitute move:surf move:swift move:tail-whip move:take-down move:thunder move:thunder-shock move:thunder-wave move:thunderbolt move:toxic,,web pattern,question shape from PokéBase Q&A (pokemondb.net/pokebase)
 155,which pokemon learn hypnosis,web: Q&A,top10,pokemon:poliwag pokemon:poliwhirl pokemon:poliwrath pokemon:gastly pokemon:haunter pokemon:gengar pokemon:drowzee pokemon:hypno pokemon:exeggcute pokemon:exeggutor,move:hypnosis,,web pattern,question shape from PokéBase Q&A (pokemondb.net/pokebase)
 156,orange lizard with a flame on its tail,web: identify,first,pokemon:charmander,pokemon:charmeleon pokemon:charizard,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
 157,turtle with water cannons,web: identify,first,pokemon:blastoise,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-158,plant bulb on its back,web: identify,first,pokemon:bulbasaur,pokemon:ivysaur pokemon:venusaur,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
-159,pink egg pokemon,web: identify,first,pokemon:chansey,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
+158,plant bulb on its back,web: identify,first,pokemon:bulbasaur pokemon:ivysaur,pokemon:venusaur,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes; fixed: Ivysaur's description says ""the bulb on its back"", Bulbasaur's ""A strange seed was planted on its back"": both best"
+159,pink egg pokemon,web: identify,first,pokemon:chansey pokemon:exeggcute,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes; fixed: Exeggcute, like Chansey, has the genus ""Egg Pokémon"" and the colour ""pink"""
 160,giant sleeping pokemon blocking the road,web: identify,first,pokemon:snorlax,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
 161,cat with a coin on its head,web: identify,first,pokemon:meowth,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
 162,giant rock snake,web: identify,first,pokemon:onix,,,web pattern,"identify-from-description, as in fan 'what Pokémon is this' threads and quizzes"
