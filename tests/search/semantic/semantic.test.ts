@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'vitest'
 import { needsSemantic, search } from '@/search/search'
+import { SEMANTIC_THRESHOLD } from '@/search/scores'
 import {
-  SEMANTIC_THRESHOLD,
   rescale,
   semanticResults,
   withQueryDirection,

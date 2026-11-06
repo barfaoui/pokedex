@@ -9,19 +9,10 @@ import {
 } from './exclusion'
 import { parseQuery } from './parse'
 import { scoreItem } from './score'
+import { CONFIDENT_SCORE, LISTED_SCORE, OTHER_KIND_WEIGHT } from './scores'
 import { compareResults, sortMatches } from './sort'
 import type { ParsedQuery, Sort } from './types/query'
 import type { ResultKind, SearchableItem, SearchResult } from './types/result'
-
-// Pokémon listed by a lone sort word without matching it: below any name match, never an exact match.
-const LISTED_SCORE = 0.1
-
-// The kinds a query doesn't ask for stay visible, below the asked kind: for "pokemon that
-// paralyzes", Thunder Wave (0.85) drops to 0.6, under Pikachu (0.82).
-const OTHER_KIND_WEIGHT = 0.7
-
-// Set with the PRD queries: "pikachoo" (0.71) is the weakest answer that must count as confident.
-export const CONFIDENT_SCORE = 0.7
 
 export function needsSemantic(results: SearchResult[]): boolean {
   return !results.some((result) => result.score >= CONFIDENT_SCORE)

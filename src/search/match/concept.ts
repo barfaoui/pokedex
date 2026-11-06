@@ -1,7 +1,18 @@
 import type { PokedexIndex, Pokemon } from '../../data/types/model'
 import { tagOf } from '../concepts/dictionary'
 import { CONCEPT_BY_ID } from '../concepts/seed'
-import type { Concept, ConceptId, Direction } from '../concepts/types'
+import type { Concept, ConceptId } from '../concepts/types'
+import {
+  BELOW_BEST_RELATED,
+  CONCEPT_CHANCE,
+  CONCEPT_COPIES,
+  CONCEPT_NAME_BONUS,
+  CONCEPT_STATED,
+  EXTRA_RELATED_BONUS,
+  MAX_EXTRA_RELATED,
+  RELATED_WEIGHT,
+  WEATHER_SCORES,
+} from '../scores'
 import type { Match, Scored, SearchableItem } from '../types/result'
 
 type Tag = NonNullable<ReturnType<typeof tagOf>>
@@ -24,30 +35,8 @@ interface GroupRules {
   relatedMatch: (related: Related, pokedex: PokedexIndex) => Match
 }
 
-// A concept is an interpretation of the query, so it never scores 1: that is kept for literal
-// matches (an exact name, a type, a colour, a stat condition met).
-const STATED = 0.85
 // "Has a chance to…": the effect may not happen.
-const CHANCE = 0.75
 const CHANCE_WORDING = /\bchance\b/i
-// Only passes on a status it received, so below a chance. Kept above 0.7 (CONFIDENT_SCORE): a
-// query answered by it alone would otherwise sit on the edge of semantic search.
-const COPIES = 0.72
-// Weather keeps its order (starts, benefits, affected) under the same ceiling as a status.
-const WEATHER_SCORES: Partial<Record<Direction, number>> = {
-  starts: 0.85,
-  benefits: 0.8,
-  affected: 0.75,
-}
-// A typed word in the name is literal evidence on top of the interpretation: Sleep Powder
-// ranks above Hypnosis for "sleep".
-const NAME_BONUS = 0.05
-// A Pokémon is one step further from the query than the move or ability that relates it.
-const RELATED_WEIGHT = 0.9
-// More related moves make a Pokémon a better fit, but never as good as its best move.
-const EXTRA_RELATED_BONUS = 0.02
-const MAX_EXTRA_RELATED = 3
-const BELOW_BEST_RELATED = 0.01
 
 // A status condition counts only when inflicted (or passed on), and shows the short effect.
 // Weather ranks what starts it, then benefits, then is affected, and shows the
@@ -57,9 +46,11 @@ const GROUPS: Record<Concept['group'], GroupRules> = {
     score: (tag) => {
       switch (tag.direction) {
         case 'inflicts':
-          return CHANCE_WORDING.test(tag.evidence) ? CHANCE : STATED
+          return CHANCE_WORDING.test(tag.evidence)
+            ? CONCEPT_CHANCE
+            : CONCEPT_STATED
         case 'copies':
-          return COPIES
+          return CONCEPT_COPIES
         default:
           return 0
       }
@@ -174,6 +165,6 @@ function tagScore(
 ): number {
   const score = rules.score(tag)
   return score > 0 && searchName.split(' ').includes(word)
-    ? score + NAME_BONUS
+    ? score + CONCEPT_NAME_BONUS
     : score
 }

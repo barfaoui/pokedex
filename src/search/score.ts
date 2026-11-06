@@ -10,12 +10,9 @@ import type {
   StatPart,
   WordPart,
 } from './types/query'
+import { MIN_NEAR_MISS_RATIO, NEAR_MISS_WEIGHT } from './scores'
 import { RARITY_WORDS } from './vocabulary'
 import type { Scored, SearchableItem } from './types/result'
-
-// A missed stat condition keeps a score for how close it was, unless the value is under half the threshold.
-const NEAR_MISS_WEIGHT = 0.95
-const MIN_NEAR_MISS_RATIO = 0.5
 
 const NO_MATCH: Scored = { score: 0, matched: [] }
 

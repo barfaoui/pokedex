@@ -4,25 +4,21 @@ import { tagOf } from '@/search/concepts/dictionary'
 import type { ConceptId } from '@/search/concepts/types'
 import { isWantedDirection } from '@/search/match/concept'
 import { parseQuery } from '@/search/parse'
+import {
+  COSINE_CEILING,
+  COSINE_FLOOR,
+  DESCRIPTION_WEIGHT,
+  SEMANTIC_MAX_RESULTS,
+  SEMANTIC_THRESHOLD,
+  SEMANTIC_TOP_SCORE,
+} from '@/search/scores'
 import type { EmbeddedText } from '@/search/semantic/model'
 import type { SearchResult } from '@/search/types/result'
 import { NEGATION_WORDS } from '@/search/vocabulary'
 
-// Set with the real model (tests/semantic.test.ts): the sleep moves for "make the enemy doze off"
-// reach a cosine of about 0.51, while "spaghetti" and other noise stay at 0.30 or below.
-const COSINE_FLOOR = 0.3
-const COSINE_CEILING = 0.7
-/** Meaning alone is never an exact match: no glow for semantic results. */
-const TOP_SCORE = 0.95
-/** 0–1, after rescaling: cosine 0.40. */
-export const SEMANTIC_THRESHOLD = 0.24
-/** Descriptions rank below the moves and abilities that do what was asked. */
-export const DESCRIPTION_WEIGHT = 0.85
-const MAX_RESULTS = 12
-
 export function rescale(cosine: number): number {
   const ratio = (cosine - COSINE_FLOOR) / (COSINE_CEILING - COSINE_FLOOR)
-  return Math.min(Math.max(ratio, 0), 1) * TOP_SCORE
+  return Math.min(Math.max(ratio, 0), 1) * SEMANTIC_TOP_SCORE
 }
 
 /** `vectors`: one normalised embedding per text, in the order of `texts`. */
@@ -46,7 +42,7 @@ export function semanticResults(
     .filter(({ score }) => score >= SEMANTIC_THRESHOLD)
     .flatMap(({ text, score }) => toResult(text, score, pokedex))
     .sort((a, b) => b.score - a.score)
-    .slice(0, MAX_RESULTS)
+    .slice(0, SEMANTIC_MAX_RESULTS)
 }
 
 /**

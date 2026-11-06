@@ -1,7 +1,11 @@
+import {
+  MIN_ANYWHERE_LENGTH,
+  MIN_SHORT_PREFIX_LENGTH,
+  NAME_ANYWHERE_SCORE,
+  NAME_COVER_WEIGHT,
+  NAME_START_SCORE,
+} from '../scores'
 import { typoScore } from '../typo'
-
-const MIN_ANYWHERE_LENGTH = 3
-const MIN_SHORT_PREFIX_LENGTH = 3
 
 /**
  * `anywhere: false` only matches from the start of the name, so "rain" never matches "Mega Drain".
@@ -19,10 +23,10 @@ export function nameScore(
   const cover = part.length / name.length
   const prefixLongEnough = shortPrefix || part.length >= MIN_SHORT_PREFIX_LENGTH
   if (prefixLongEnough && name.startsWith(part)) {
-    return 0.7 + 0.3 * cover
+    return NAME_START_SCORE + NAME_COVER_WEIGHT * cover
   }
   if (anywhere && part.length >= MIN_ANYWHERE_LENGTH && name.includes(part)) {
-    return 0.5 + 0.3 * cover
+    return NAME_ANYWHERE_SCORE + NAME_COVER_WEIGHT * cover
   }
   return typoScore(part, name)
 }

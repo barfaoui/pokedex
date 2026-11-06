@@ -1,11 +1,7 @@
 import type { PokedexIndex, Pokemon } from '../data/types/model'
+import { ASKED_FAMILY_WEIGHT, FAMILY_WEIGHT } from './scores'
 import type { FamilyDirection } from './types/query'
 import type { Match, SearchResult } from './types/result'
-
-// A family member is related to what was asked, not what was asked: well below the Pokémon itself.
-// Unless the family is what was asked ("evolution of charmander"): then it ranks with it.
-const FAMILY_WEIGHT = 0.6
-const ASKED_FAMILY_WEIGHT = 1
 
 type PokemonResult = Extract<SearchResult, { kind: 'pokemon' }>
 

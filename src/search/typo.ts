@@ -1,3 +1,5 @@
+import { MIN_PREFIX_LENGTH, PREFIX_SCORE, TYPO_RATIO } from './scores'
+
 // Optimal string alignment: insertions, deletions, substitutions and swaps of two adjacent letters each count as one change.
 export function editDistance(a: string, b: string): number {
   const distances = Array.from({ length: a.length + 1 }, (_, i) =>
@@ -22,11 +24,6 @@ export function editDistance(a: string, b: string): number {
   }
   return distances[a.length][b.length]
 }
-
-const TYPO_RATIO = 0.4
-
-const MIN_PREFIX_LENGTH = 4
-const PREFIX_SCORE = 0.95
 
 export function typoScore(word: string, target: string): number {
   const changes = editDistance(word, target)
