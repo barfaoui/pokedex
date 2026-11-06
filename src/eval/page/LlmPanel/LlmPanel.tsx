@@ -117,8 +117,6 @@ export function LlmPanel({
           {status.done} / {status.total} queries ·{' '}
           {dollars(status.spentEur / USD_TO_EUR)} spent
           {status.failed ? ` · ${status.failed} without an answer` : ''}
-          {status.state !== 'running' &&
-            ' · the “LLM (live)” column shows it next to the recorded run.'}
         </p>
       )}
       {(status.state === 'done' || status.state === 'stopped') && (

@@ -132,7 +132,6 @@ export async function askAi(
     {
       model,
       max_tokens: MAX_TOKENS,
-      temperature: 0,
       system: [
         { type: 'text', text: SYSTEM_PROMPT },
         // The catalogue is the same for every query: cached, it costs a tenth of the input price.
