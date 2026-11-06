@@ -1,34 +1,57 @@
-import { expect, test } from '@playwright/test'
+import { expect, test, type Page } from '@playwright/test'
 
-test('/eval loads without a key: it says whether an LLM run was recorded, and live runs are off', async ({
-  page,
-}) => {
+const MODEL = 'claude-haiku-5-5'
+const LOCAL_ENGINES = [
+  'Deterministic',
+  'Embeddings',
+  'Hybrid (deterministic + embeddings)',
+  'Claude Code (reference)',
+]
+
+async function openWith(page: Page, configured: boolean) {
   await page.route('**/api/ask-ai-status', (route) =>
-    route.fulfill({ json: { configured: false } }),
+    route.fulfill({ json: { configured, model: MODEL } }),
   )
   await page.goto('/eval')
+}
+
+// The embedding model takes a while to load: these tests only need the LLM.
+async function onlyLlm(page: Page) {
+  for (const name of LOCAL_ENGINES) {
+    await page.getByRole('checkbox', { name, exact: true }).uncheck()
+  }
+}
+
+test('/eval loads without a key, with live runs off', async ({ page }) => {
+  await openWith(page, false)
   await expect(
     page.getByRole('heading', { name: 'Search evaluation' }),
   ).toBeVisible()
-  await expect(
-    page.getByText(/^(Recorded run: |No recorded LLM run yet)/),
-  ).toBeVisible()
-  await expect(
-    page.getByRole('button', { name: 'Run LLM live' }),
-  ).toBeDisabled()
-  await expect(page.getByText('Live runs are off')).toBeVisible()
+  await expect(page.getByRole('checkbox', { name: 'run live' })).toBeDisabled()
+  await expect(page.getByText('off: no AI key on this server')).toBeVisible()
 })
 
-test('a live LLM run through a mocked endpoint completes and downloads as a snapshot', async ({
+test('the LLM column shows the recorded run, or says there is none', async ({
   page,
 }) => {
-  await page.route('**/api/ask-ai-status', (route) =>
-    route.fulfill({ json: { configured: true } }),
-  )
+  await openWith(page, false)
+  await onlyLlm(page)
+  const recorded = (await page.getByText(/^recorded on /).count()) > 0
+  await page.getByRole('button', { name: 'Run', exact: true }).click()
+
+  const summary = page.getByRole('table', {
+    name: 'Summary of the cases shown',
+  })
+  await expect(summary.getByRole('columnheader', { name: 'LLM' })).toBeVisible()
+  const passed = summary.getByRole('row', { name: /^Passed/ })
+  await expect(passed).toContainText(recorded ? / of \d+ / : 'no run yet')
+})
+
+test('a live LLM run through a mocked endpoint completes', async ({ page }) => {
   await page.route('**/api/ask-ai', (route) =>
     route.fulfill({
       json: {
-        results: [],
+        results: [{ key: 'pokemon:pikachu', note: 'mocked' }],
         usage: {
           latencyMs: 3,
           inputTokens: 10,
@@ -37,19 +60,23 @@ test('a live LLM run through a mocked endpoint completes and downloads as a snap
           outputTokens: 5,
           costUsd: 0.000001,
         },
-        model: 'mock',
+        model: MODEL,
         promptVersion: 'test',
       },
     }),
   )
-  await page.goto('/eval')
-  await page.getByRole('button', { name: 'Run LLM live' }).click()
-  await page.getByRole('button', { name: 'Start', exact: true }).click()
-  await expect(page.getByText(/^Done: /)).toBeVisible({ timeout: 60_000 })
+  await openWith(page, true)
+  await onlyLlm(page)
+  await page.getByRole('checkbox', { name: 'run live' }).check()
+  await page.getByRole('button', { name: 'Run', exact: true }).click()
 
-  const [download] = await Promise.all([
-    page.waitForEvent('download'),
-    page.getByRole('button', { name: 'Download as snapshot' }).click(),
-  ])
-  expect(download.suggestedFilename()).toBe('llm-snapshot.json')
+  await expect(page.getByText(/^Live done: (\d+) \/ \1 /)).toBeVisible({
+    timeout: 60_000,
+  })
+  const summary = page.getByRole('table', {
+    name: 'Summary of the cases shown',
+  })
+  await expect(summary.getByRole('row', { name: /^Passed/ })).toContainText(
+    / of \d+ /,
+  )
 })

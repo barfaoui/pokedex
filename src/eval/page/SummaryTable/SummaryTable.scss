@@ -31,6 +31,46 @@
     padding: $space-1 $space-3;
     font-weight: 400;
     text-align: left;
+    white-space: nowrap;
+  }
+
+  &__metric {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: $space-2;
+  }
+
+  &__help {
+    @include focus-ring;
+    @include Typography.tiny-display;
+
+    width: $icon-size * 1.25;
+    height: $icon-size * 1.25;
+    padding: 0;
+    border: $bevel-edge solid $ink;
+    background: $mint;
+    color: $ink;
+    cursor: help;
+  }
+
+  &__tip {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: 1;
+    display: none;
+    width: max-content;
+    max-width: 22rem;
+    padding: $space-1 $space-2;
+    border: $bevel-edge solid $ink;
+    background: $paper;
+    white-space: normal;
+  }
+
+  &__help:hover + &__tip,
+  &__help:focus-visible + &__tip {
+    display: block;
   }
 
   &__value {

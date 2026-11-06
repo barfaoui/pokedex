@@ -56,6 +56,9 @@ export function CaseRow({
           const run = runOf(engine)
           return (
             <td key={engine.id} className="case-row__cell">
+              {engine.placeholder && (
+                <span className="case-row__meta">{engine.placeholder}</span>
+              )}
               {run && (
                 <>
                   <span

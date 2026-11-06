@@ -7,6 +7,8 @@ import {
   type AvailableEngine,
 } from '@/eval/engines/engines'
 import llmDefinition from '@/eval/engines/llm.engine'
+import { modelLabel } from '@/eval/format'
+import { NO_RUN_YET } from '@/eval/llm-snapshot'
 import { askAi } from '@/features/ask-ai/ask-ai-client'
 import {
   modelStatus,
@@ -15,6 +17,7 @@ import {
 } from '@/features/semantic/semantic-client'
 
 export const CASES = parseCases(csv)
+export const LLM_ID = llmDefinition.id
 
 let semantic: SemanticSearch | undefined
 
@@ -44,32 +47,45 @@ const env = Object.fromEntries(
   ]),
 )
 
-export const ENGINES = availableEngines({
+const context = {
   semantic: () => (semantic ??= browserSemantic()),
   env,
-})
+}
 
-// The live LLM is billed, so it never joins the default run: it has its own button.
+/** Every engine but the LLM, which depends on the model and live toggle picked on the page. */
+export const LOCAL_ENGINES = availableEngines(context).filter(
+  (engine) => engine.id !== LLM_ID,
+)
+
+/** Engines that can't run here (a missing key), shown disabled. */
 export const UNAVAILABLE = ENGINE_DEFINITIONS.filter(
   (definition) =>
-    definition.id !== llmDefinition.id &&
-    !ENGINES.some((engine) => engine.id === definition.id),
+    definition.id !== LLM_ID &&
+    !LOCAL_ENGINES.some((engine) => engine.id === definition.id),
 ).map((definition) => definition.id)
 
-let liveLlm: AvailableEngine | undefined
+export const ENGINE_ORDER = ENGINE_DEFINITIONS.map(
+  (definition) => definition.id,
+)
 
-/** The live LLM engine, through /api/ask-ai: the browser never holds a key. */
-export function liveLlmEngine(model: string | null): AvailableEngine {
-  liveLlm ??= {
-    ...llmDefinition.create({
-      semantic: () => (semantic ??= browserSemantic()),
-      env,
-      askAi: (query) => askAi(query),
-      ...(model ? { aiModel: model } : {}),
-    })!,
-    id: llmDefinition.id,
+/**
+ * Live: a new engine through /api/ask-ai (the browser never holds a key), so its spending starts
+ * at 0. Otherwise the model's recorded run, or a placeholder whose column says there is none.
+ */
+export function llmEngine(model: string, live: boolean): AvailableEngine {
+  const engine = llmDefinition.create({
+    ...context,
+    llm: { model, ...(live ? { askAi: (query) => askAi(query) } : {}) },
+  })
+  return {
+    ...(engine ?? {
+      name: `LLM: ${modelLabel(model)}`,
+      shortName: 'LLM',
+      placeholder: NO_RUN_YET,
+      search: async () => [],
+    }),
+    id: LLM_ID,
   }
-  return liveLlm
 }
 
 /** null until an engine has needed the model. */

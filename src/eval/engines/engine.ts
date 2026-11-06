@@ -22,8 +22,8 @@ export interface Engine {
   recorded?: (query: string) => { ms: number; costEur: number } | undefined
   /** One line for the report and the page, e.g. which recorded run this is. */
   about?: string
-  /** The live LLM engine's full answers, to save the run as a snapshot. */
-  answerOf?: (query: string) => AiAnswer | undefined
+  /** Set on an engine with nothing to show (an LLM model without a run): its cells say this instead. */
+  placeholder?: string
 }
 
 /** One model, loaded once, shared by every engine. */
@@ -37,13 +37,15 @@ export interface EngineContext {
   semantic: () => SemanticSearch
   /** process.env in the CLI, import.meta.env in the page (only VITE_ names reach it). */
   env: Record<string, string | undefined>
-  /**
-   * Ask AI, for the live LLM engine: /api/ask-ai, given only by the eval page. Left out (as in the
-   * CLI), the engine isn't created, so nothing is ever billed by accident.
-   */
-  askAi?: (query: string) => Promise<AiAnswer>
-  /** The server's model id, for the live LLM engine's label. */
-  aiModel?: string
+  /** The LLM engine's model (the default one when left out) and how it runs. */
+  llm?: {
+    model?: string
+    /**
+     * Given only for a live run: /api/ask-ai in the page, the provider in `npm run eval -- --engine
+     * llm`. Left out, the engine shows the model's recorded run, so nothing is billed by accident.
+     */
+    askAi?: (query: string) => Promise<AiAnswer>
+  }
 }
 
 /**

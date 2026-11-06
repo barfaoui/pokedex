@@ -71,6 +71,8 @@ export function formatReport(
         `| ${row.label} | ${summaries.map((s, at) => summaryCell(row, s, engines[at])).join(' | ')} |`,
     ),
     '',
+    ...SUMMARY_ROWS.map((row) => `- **${row.label}:** ${row.help}`),
+    '',
   )
 
   push(...groupSection('category', 'By category', engines, runs))

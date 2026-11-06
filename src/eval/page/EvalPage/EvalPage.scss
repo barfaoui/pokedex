@@ -10,33 +10,28 @@
   margin: 0 auto;
   padding: $space-5 $space-4;
 
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: $space-2;
+  }
+
   &__title {
     @include Typography.title-display;
   }
 
-  &__controls {
-    display: grid;
-    gap: $space-4;
-
-    @include desktop {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-      align-items: start;
-    }
-  }
-
-  &__column {
-    display: flex;
-    flex-direction: column;
-    gap: $space-4;
-  }
-
   &__group {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
+    flex-direction: column;
     gap: $space-3;
     padding: $space-2 $space-3;
     border: $bevel-edge solid $ink;
+
+    &--row {
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: center;
+    }
   }
 
   &__legend {
@@ -51,12 +46,19 @@
     gap: $space-1;
   }
 
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-3;
+  }
+
   &__run {
     @include focus-ring;
     @include Typography.small-display;
 
     min-height: $touch-target;
-    padding: $space-2 $space-3;
+    padding: $space-2 $space-5;
     border: $bevel-edge solid $ink;
     background: $mint;
     color: $ink;

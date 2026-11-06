@@ -1,6 +1,6 @@
 import type { AiAnswer, AiEntry } from '../../api/_lib/ask-ai'
 
-export const NO_RECORDED_RUN = 'No recorded LLM run yet'
+export const NO_RUN_YET = 'no run yet'
 
 export interface SnapshotCase {
   id: string
@@ -15,7 +15,7 @@ export interface SnapshotCase {
   costUsd: number
 }
 
-/** tests/eval/llm-snapshot.json: a live run downloaded from the /eval page, then committed. */
+/** tests/eval/llm-snapshots/<model id>.json, written by `npm run eval -- --engine llm --save`. */
 export interface LlmSnapshot {
   model: string
   promptVersion: string
@@ -24,15 +24,23 @@ export interface LlmSnapshot {
   cases: SnapshotCase[]
 }
 
-// A glob, not an import: the file only exists once a run has been recorded.
-const files = import.meta.glob<unknown>('/tests/eval/llm-snapshot.json', {
+// A glob, not an import: a model has a file only once a run has been recorded.
+const files = import.meta.glob<unknown>('/tests/eval/llm-snapshots/*.json', {
   eager: true,
   import: 'default',
 })
 
-export const LLM_SNAPSHOT: LlmSnapshot | null = readSnapshot(
-  Object.values(files)[0],
+/** Recorded runs by model id. */
+export const LLM_SNAPSHOTS: ReadonlyMap<string, LlmSnapshot> = new Map(
+  Object.values(files).flatMap((value) => {
+    const snapshot = readSnapshot(value)
+    return snapshot ? [[snapshot.model, snapshot] as const] : []
+  }),
 )
+
+export function snapshotPath(model: string): string {
+  return `tests/eval/llm-snapshots/${model}.json`
+}
 
 export function buildSnapshot(
   answers: { id: string; query: string; answer: AiAnswer }[],
@@ -63,8 +71,15 @@ export function dollars(value: number): string {
   return `$${value < 0.01 && value > 0 ? value.toFixed(4) : value.toFixed(2)}`
 }
 
-export function snapshotSummary(snapshot: LlmSnapshot): string {
-  return `${snapshot.date.slice(0, 10)}, ${snapshot.model}, prompt ${snapshot.promptVersion}, ${snapshot.cases.length} queries, ${dollars(snapshot.totalCostUsd)} in total`
+/** "ask-ai-1" → "v1". */
+export function promptLabel(promptVersion: string): string {
+  const number = /\d+$/.exec(promptVersion)?.[0]
+  return number ? `v${number}` : promptVersion
+}
+
+/** "recorded on 2026-11-06, prompt v1". */
+export function recordedLabel(snapshot: LlmSnapshot): string {
+  return `recorded on ${snapshot.date.slice(0, 10)}, prompt ${promptLabel(snapshot.promptVersion)}`
 }
 
 function readSnapshot(value: unknown): LlmSnapshot | null {

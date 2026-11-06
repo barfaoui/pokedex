@@ -9,7 +9,7 @@ export { costUsd, PRICES_PER_MILLION, USD_TO_EUR } from './pricing.js'
 
 const DEFAULT_MODEL = 'claude-haiku-5-5'
 // Bump when the prompt changes, so cached answers and snapshots from an older prompt are told apart.
-const PROMPT_VERSION = 'ask-ai-1'
+export const PROMPT_VERSION = 'ask-ai-1'
 const MAX_QUERY_LENGTH = 200
 const MAX_RESULTS = 10
 export const MAX_NOTE_LENGTH = 120

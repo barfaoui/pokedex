@@ -1,4 +1,5 @@
 // It reports, it doesn't judge: the test only fails if the evaluation itself can't run.
+// Run through `npm run eval` (scripts/eval.ts), which turns its options into the EVAL_* variables.
 // EVAL_SNAPSHOT=<file.json> writes the numbers and every case's outcome there instead of a report,
 // to compare two runs.
 import { execSync } from 'node:child_process'
@@ -6,33 +7,106 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { arch, cpus, platform } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
+import { estimateRunCostUsd } from '../../api/_lib/pricing'
 import type { SemanticSearch } from '@/eval/engines/engine'
 import { availableEngines, ENGINE_DEFINITIONS } from '@/eval/engines/engines'
+import { DEFAULT_LLM_MODEL, LLM_MODELS } from '@/eval/llm-models'
+import {
+  buildSnapshot,
+  dollars,
+  LLM_SNAPSHOTS,
+  NO_RUN_YET,
+  snapshotPath,
+} from '@/eval/llm-snapshot'
 import { summarize } from '@/eval/metrics'
 import { keyOf, runAll, warmUp, type CaseRun } from '@/eval/run'
-import { LLM_SNAPSHOT, NO_RECORDED_RUN } from '@/eval/llm-snapshot'
+import { cliLlm, type CliLlm } from './llm-cli'
 import { formatReport, stamp } from './report'
 import { loadCases, nodeSemantic, unknownItems } from './run'
 
 const root = new URL('../../', import.meta.url)
 
 test('search evaluation', { timeout: 900_000 }, async () => {
+  const only = process.env.EVAL_ENGINE
+  const model = process.env.EVAL_MODEL ?? DEFAULT_LLM_MODEL
+  const live = only === 'llm'
+  const save = process.env.EVAL_SAVE === '1'
+  if (!LLM_MODELS.includes(model)) {
+    throw new Error(`Unknown model ${model}: one of ${LLM_MODELS.join(', ')}`)
+  }
+  if (only && !ENGINE_DEFINITIONS.some((d) => d.id === only)) {
+    throw new Error(
+      `Unknown engine ${only}: one of ${ENGINE_DEFINITIONS.map((d) => d.id).join(', ')}`,
+    )
+  }
+  if (save && !live) {
+    throw new Error('--save records an LLM run: add --engine llm')
+  }
+
   const cases = loadCases()
   expect(unknownItems(cases), 'items missing from the dataset').toEqual([])
+  const queries = [...new Set(cases.map((c) => c.query))]
+
+  let cli: CliLlm | undefined
+  if (live) {
+    const apiKey = process.env.ANTHROPIC_API_KEY
+    if (!apiKey) {
+      throw new Error(
+        'ANTHROPIC_API_KEY is not set: add it to .env.local (see .env.example)',
+      )
+    }
+    cli = cliLlm(apiKey, model, process.env.EVAL_FRESH === '1')
+    const uncached = cli.uncached(queries)
+    console.log(
+      `LLM ${model}: ${uncached} of ${queries.length} queries to ask, the others are cached. Estimated cost: ${dollars(estimateRunCostUsd(uncached))}.`,
+    )
+    if (uncached > 0 && process.env.EVAL_YES !== '1') {
+      console.log('Nothing was called. Add --yes to run it.')
+      return
+    }
+    const failed = await cli.fetchAll(queries)
+    if (failed.length) {
+      throw new Error(
+        `${failed.length} queries got no answer (the others are cached, a rerun only asks these): ${failed.join(' · ')}`,
+      )
+    }
+  }
 
   let semantic: SemanticSearch | undefined
-  // No Ask AI transport: the live LLM runs from the /eval page only, its recorded run shows here.
   const engines = availableEngines({
     semantic: () => (semantic ??= nodeSemantic()),
     env: process.env,
-  })
+    llm: { model, ...(cli ? { askAi: cli.askAi } : {}) },
+  }).filter((engine) => !only || engine.id === only)
   const skipped = ENGINE_DEFINITIONS.filter(
     (definition) => !engines.some((engine) => engine.id === definition.id),
-  ).map((definition) => `${definition.id} (${whyNotRun(definition.id)})`)
+  ).map(
+    (definition) =>
+      `${definition.id} (${only ? 'not selected' : whyNotRun(definition.id)})`,
+  )
 
   await warmUp(engines)
   const modelLoadMs = semantic ? await semantic.ready() : null
   const runs = await runAll(engines, cases)
+
+  if (save && cli) {
+    const answers = await Promise.all(
+      queries.map(async (query) => ({
+        id: cases.find((c) => c.query === query)!.id,
+        query,
+        answer: await cli.askAi(query),
+      })),
+    )
+    const recorded = buildSnapshot(answers)
+    const file = new URL(snapshotPath(model), root)
+    mkdirSync(new URL('./', file), { recursive: true })
+    writeFileSync(file, `${JSON.stringify(recorded, null, 2)}\n`)
+    const summary = summarize(runs)
+    console.log(
+      `Saved to ${fileURLToPath(file)}: ${summary.passed} of ${summary.cases} passed, ${dollars(recorded.totalCostUsd)} for the answers.`,
+    )
+    return
+  }
 
   const snapshotFile = process.env.EVAL_SNAPSHOT
   if (snapshotFile) {
@@ -49,9 +123,10 @@ test('search evaluation', { timeout: 900_000 }, async () => {
     machine: `Node ${process.version}, ${platform()} ${arch()}, ${cpus()[0]?.model.trim() ?? 'unknown CPU'}`,
     modelLoadMs,
     skipped,
-    llmNote: LLM_SNAPSHOT
-      ? ''
-      : `${NO_RECORDED_RUN}: run it live on the /eval page, then save its download as tests/eval/llm-snapshot.json.`,
+    llmNote:
+      live || LLM_SNAPSHOTS.has(model) || only
+        ? ''
+        : `${model}: ${NO_RUN_YET}. Record one with \`npm run eval -- --engine llm --model ${model} --save\`.`,
   })
 
   const folder = new URL('eval-reports/', root)
@@ -93,9 +168,7 @@ function snapshot(engines: { id: string; name: string }[], runs: CaseRun[]) {
 function whyNotRun(id: string): string {
   switch (id) {
     case 'llm':
-      return 'live, from the /eval page'
-    case 'llm-recorded':
-      return NO_RECORDED_RUN.toLowerCase()
+      return NO_RUN_YET
     default:
       return 'no key'
   }

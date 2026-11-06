@@ -1,7 +1,9 @@
+import { useId } from 'react'
 import type { AvailableEngine } from '@/eval/engines/engines'
 import { summarize } from '@/eval/metrics'
 import type { CaseRun } from '@/eval/run'
-import { SUMMARY_ROWS, summaryCell } from '@/eval/summary-rows'
+import { SUMMARY_ROWS, summaryCell, type SummaryRow } from '@/eval/summary-rows'
+import { engineTitle } from '../engine-title'
 import './SummaryTable.scss'
 
 interface SummaryTableProps {
@@ -28,7 +30,7 @@ export function SummaryTable({ engines, runs }: SummaryTableProps) {
               key={engine.id}
               className="summary-table__head"
               scope="col"
-              title={engine.shortName ? engine.name : undefined}
+              title={engineTitle(engine)}
             >
               {engine.shortName ?? engine.name}
             </th>
@@ -39,16 +41,40 @@ export function SummaryTable({ engines, runs }: SummaryTableProps) {
         {SUMMARY_ROWS.map((row) => (
           <tr key={row.label}>
             <th className="summary-table__label" scope="row">
-              {row.label}
+              <MetricName row={row} />
             </th>
             {summaries.map((summary, at) => (
               <td key={engines[at].id} className="summary-table__value">
-                {summary.cases ? summaryCell(row, summary, engines[at]) : '—'}
+                {engines[at].placeholder ??
+                  (summary.cases
+                    ? summaryCell(row, summary, engines[at])
+                    : '—')}
               </td>
             ))}
           </tr>
         ))}
       </tbody>
     </table>
+  )
+}
+
+// A tooltip that opens on focus too, so the explanation isn't mouse-only.
+function MetricName({ row }: { row: SummaryRow }) {
+  const id = useId()
+  return (
+    <span className="summary-table__metric">
+      {row.label}
+      <button
+        className="summary-table__help"
+        type="button"
+        aria-label={`What is ${row.label}?`}
+        aria-describedby={id}
+      >
+        ?
+      </button>
+      <span className="summary-table__tip" role="tooltip" id={id}>
+        {row.help}
+      </span>
+    </span>
   )
 }

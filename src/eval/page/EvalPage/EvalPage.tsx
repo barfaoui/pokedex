@@ -1,14 +1,24 @@
 import { useEffect, useState } from 'react'
+import { estimateRunCostUsd } from '../../../../api/_lib/pricing'
 import type { EvalCase } from '@/eval/cases'
-import { ms } from '@/eval/format'
+import type { AvailableEngine } from '@/eval/engines/engines'
+import { modelLabel, ms } from '@/eval/format'
+import { DEFAULT_LLM_MODEL } from '@/eval/llm-models'
+import { LLM_SNAPSHOTS } from '@/eval/llm-snapshot'
 import type { CaseRun } from '@/eval/run'
+import { aiStatus, type AiStatus } from '@/features/ask-ai/ask-ai-client'
 import { CaseTable } from '../CaseTable/CaseTable'
-import { SummaryTable } from '../SummaryTable/SummaryTable'
+import { EngineList } from '../EngineList/EngineList'
 import { FilterSelect } from '../FilterSelect/FilterSelect'
-import { aiStatus } from '@/features/ask-ai/ask-ai-client'
-import { LiveSearch } from '../LiveSearch/LiveSearch'
-import { LlmPanel } from '../LlmPanel/LlmPanel'
-import { CASES, ENGINES, liveLlmEngine, UNAVAILABLE } from '../page-engines'
+import {
+  CASES,
+  ENGINE_ORDER,
+  LLM_ID,
+  llmEngine,
+  LOCAL_ENGINES,
+  UNAVAILABLE,
+} from '../page-engines'
+import { SummaryTable } from '../SummaryTable/SummaryTable'
 import { useEvalRun, type RunStatus } from '../useEvalRun'
 import { useLlmLiveRun } from '../useLlmLiveRun'
 import './EvalPage.scss'
@@ -25,38 +35,68 @@ const NO_FILTERS: Filters = {
   source: ALL,
   failingOnly: false,
 }
+const LLM_ORDER = ENGINE_ORDER.indexOf(LLM_ID)
+const BEFORE_LLM = LOCAL_ENGINES.filter(
+  (engine) => ENGINE_ORDER.indexOf(engine.id) < LLM_ORDER,
+)
+const AFTER_LLM = LOCAL_ENGINES.filter(
+  (engine) => ENGINE_ORDER.indexOf(engine.id) > LLM_ORDER,
+)
 
 export function EvalPage() {
-  const [selected, setSelected] = useState(
-    () => new Set(ENGINES.map((engine) => engine.id)),
+  const [selected, setSelected] = useState<ReadonlySet<string>>(
+    () => new Set([...LOCAL_ENGINES.map((engine) => engine.id), LLM_ID]),
   )
+  const [model, setModel] = useState(DEFAULT_LLM_MODEL)
+  const [live, setLive] = useState(false)
+  const [server, setServer] = useState<AiStatus | null>(null)
   const [filters, setFilters] = useState(NO_FILTERS)
-  const { runs: defaultRuns, status, loadMs, start } = useEvalRun()
-  const live = useLlmLiveRun()
-  const [aiAvailable, setAiAvailable] = useState<boolean | null>(null)
-  const [aiModel, setAiModel] = useState<string | null>(null)
+  // The engines of the last Run, so a column never shows runs from another choice of model.
+  const [ranEngines, setRanEngines] = useState<AvailableEngine[]>([])
+  const { runs: localRuns, status, loadMs, start } = useEvalRun()
+  const liveRun = useLlmLiveRun()
   useEffect(() => {
-    aiStatus().then((status) => {
-      setAiModel(status.model)
-      setAiAvailable(status.configured)
-    })
+    aiStatus().then(setServer)
   }, [])
 
-  const liveEngine = aiAvailable ? liveLlmEngine(aiModel) : null
-  const runs = [...defaultRuns, ...live.runs]
-  const selectedEngines = ENGINES.filter((engine) => selected.has(engine.id))
-  const shownEngines = [
-    ...selectedEngines.filter((engine) =>
-      defaultRuns.some((run) => run.engineId === engine.id),
-    ),
-    ...(liveEngine && live.runs.length ? [liveEngine] : []),
-  ]
-  const shownRuns = runs.filter(
-    (run) => selected.has(run.engineId) || run.engineId === liveEngine?.id,
+  const liveBlocked = liveBlockedReason(server, model)
+  const snapshot = LLM_SNAPSHOTS.get(model)
+  // The recorded run's own average, when there is one: closer than a token count.
+  const liveEstimateUsd = snapshot?.cases.length
+    ? (snapshot.totalCostUsd / snapshot.cases.length) * CASES.length
+    : estimateRunCostUsd(CASES.length)
+
+  const runs = [...localRuns, ...liveRun.runs]
+  const shownEngines = ranEngines.filter((engine) => selected.has(engine.id))
+  const shownRuns = runs.filter((run) =>
+    shownEngines.some((engine) => engine.id === run.engineId),
   )
   const cases = CASES.filter((c) => matchesFilters(c, filters, shownRuns))
   const caseIds = new Set(cases.map((c) => c.id))
   const filteredRuns = shownRuns.filter((run) => caseIds.has(run.evalCase.id))
+
+  const busy =
+    status.state === 'loading-model' ||
+    status.state === 'running' ||
+    liveRun.status.state === 'running'
+
+  async function run() {
+    const local = LOCAL_ENGINES.filter((engine) => selected.has(engine.id))
+    const runsLive = live && liveBlocked === null
+    const llm = selected.has(LLM_ID) ? llmEngine(model, runsLive) : null
+    const engines = [...local, ...(llm ? [llm] : [])].sort(
+      (a, b) => ENGINE_ORDER.indexOf(a.id) - ENGINE_ORDER.indexOf(b.id),
+    )
+    setRanEngines(engines)
+    liveRun.clear()
+    // A placeholder has nothing to run; a live LLM runs after the rest, so its calls don't skew
+    // the local timings.
+    const runsHere = llm && !runsLive && !llm.placeholder ? [llm] : []
+    await start([...local, ...runsHere], CASES)
+    if (llm && runsLive) {
+      await liveRun.start(llm, CASES)
+    }
+  }
 
   const toggle = (id: string) =>
     setSelected((previous) => {
@@ -70,102 +110,102 @@ export function EvalPage() {
     })
   const setFilter = <K extends keyof Filters>(name: K, value: Filters[K]) =>
     setFilters((previous) => ({ ...previous, [name]: value }))
-  const busy = status.state === 'loading-model' || status.state === 'running'
 
   return (
     <main className="eval-page">
-      <h1 className="eval-page__title">Search evaluation</h1>
-      <p className="eval-page__intro">
-        Every engine on the {CASES.length} queries of tests/eval/cases.csv,
-        timed in this browser. The first run with embeddings loads their
-        33&nbsp;MB model once. {loadMs !== null && `Model load: ${ms(loadMs)}.`}
-      </p>
+      <header className="eval-page__header">
+        <h1 className="eval-page__title">Search evaluation</h1>
+        <p className="eval-page__intro">
+          {ENGINE_ORDER.length} search engines compared on the {CASES.length}{' '}
+          queries of tests/eval/cases.csv.
+        </p>
+        <p className="eval-page__intro">
+          The engines run live in this browser, except Claude Code (answers
+          written once) and the LLM (a recorded run, or live).
+        </p>
+      </header>
 
-      <div className="eval-page__controls">
-        <div className="eval-page__column">
-          <fieldset className="eval-page__group">
-            <legend className="eval-page__legend">Engines</legend>
-            {ENGINES.map((engine) => (
-              <label key={engine.id} className="eval-page__option">
-                <input
-                  type="checkbox"
-                  checked={selected.has(engine.id)}
-                  onChange={() => toggle(engine.id)}
-                />
-                {engine.name}
-              </label>
-            ))}
-            {UNAVAILABLE.map((id) => (
-              <label key={id} className="eval-page__option">
-                <input type="checkbox" disabled />
-                {id} ({id === 'llm-recorded' ? 'no recorded run yet' : 'no key'}
-                )
-              </label>
-            ))}
-            <button
-              className="eval-page__run"
-              type="button"
-              disabled={busy || !selectedEngines.length}
-              onClick={() => start(selectedEngines, CASES)}
-            >
-              {runs.length ? 'Run again' : `Run ${CASES.length} cases`}
-            </button>
-            <span className="eval-page__status" role="status">
-              {statusText(status)}
-            </span>
-          </fieldset>
-
-          <fieldset className="eval-page__group">
-            <legend className="eval-page__legend">Cases</legend>
-            <FilterSelect
-              label="Category"
-              value={filters.category}
-              options={distinct(CASES.map((c) => c.category))}
-              onChange={(value) => setFilter('category', value)}
-            />
-            <FilterSelect
-              label="Source"
-              value={filters.source}
-              options={distinct(CASES.map((c) => c.source))}
-              onChange={(value) => setFilter('source', value)}
-            />
-            <label className="eval-page__option">
-              <input
-                type="checkbox"
-                checked={filters.failingOnly}
-                onChange={(event) =>
-                  setFilter('failingOnly', event.target.checked)
-                }
-              />
-              Failing only
-            </label>
-          </fieldset>
-        </div>
-
-        <LlmPanel
-          available={aiAvailable}
-          liveName={liveEngine?.name ?? null}
-          cases={CASES.length}
-          status={live.status}
-          onStart={() => liveEngine && live.start(liveEngine, CASES)}
-          onStop={live.stop}
-          onDownload={() => download(live.snapshot())}
+      <fieldset className="eval-page__group">
+        <legend className="eval-page__legend">Engines</legend>
+        <EngineList
+          before={BEFORE_LLM}
+          after={AFTER_LLM}
+          unavailable={UNAVAILABLE}
+          selected={selected}
+          llmId={LLM_ID}
+          onToggle={toggle}
+          model={model}
+          onModel={setModel}
+          live={live}
+          onLive={setLive}
+          liveBlocked={liveBlocked}
+          liveEstimateUsd={liveEstimateUsd}
+          liveStatus={liveRun.status}
+          onStop={liveRun.stop}
         />
-      </div>
+        <div className="eval-page__actions">
+          <button
+            className="eval-page__run"
+            type="button"
+            disabled={busy || selected.size === 0}
+            onClick={run}
+          >
+            Run
+          </button>
+          <span className="eval-page__status" role="status">
+            {statusText(status, loadMs)}
+          </span>
+        </div>
+      </fieldset>
+
+      <fieldset className="eval-page__group eval-page__group--row">
+        <legend className="eval-page__legend">Cases</legend>
+        <FilterSelect
+          label="Category"
+          value={filters.category}
+          options={distinct(CASES.map((c) => c.category))}
+          onChange={(value) => setFilter('category', value)}
+        />
+        <FilterSelect
+          label="Source"
+          value={filters.source}
+          options={distinct(CASES.map((c) => c.source))}
+          onChange={(value) => setFilter('source', value)}
+        />
+        <label className="eval-page__option">
+          <input
+            type="checkbox"
+            checked={filters.failingOnly}
+            onChange={(event) => setFilter('failingOnly', event.target.checked)}
+          />
+          Failing only
+        </label>
+      </fieldset>
 
       {shownEngines.length > 0 && (
-        <SummaryTable engines={shownEngines} runs={filteredRuns} />
+        <>
+          <SummaryTable engines={shownEngines} runs={filteredRuns} />
+          <CaseTable cases={cases} engines={shownEngines} runs={filteredRuns} />
+        </>
       )}
-
-      <LiveSearch
-        engines={
-          liveEngine ? [...selectedEngines, liveEngine] : selectedEngines
-        }
-      />
-
-      <CaseTable cases={cases} engines={shownEngines} runs={filteredRuns} />
     </main>
   )
+}
+
+function liveBlockedReason(
+  server: AiStatus | null,
+  model: string,
+): string | null {
+  if (!server) {
+    return 'checking the server…'
+  }
+  if (!server.configured) {
+    return 'off: no AI key on this server'
+  }
+  if (server.model && server.model !== model) {
+    return `off: this server runs ${modelLabel(server.model)}`
+  }
+  return null
 }
 
 function matchesFilters(
@@ -181,36 +221,20 @@ function matchesFilters(
   )
 }
 
-function download(snapshot: unknown) {
-  if (!snapshot) {
-    return
-  }
-  const url = URL.createObjectURL(
-    new Blob([`${JSON.stringify(snapshot, null, 2)}\n`], {
-      type: 'application/json',
-    }),
-  )
-  const link = document.createElement('a')
-  link.href = url
-  link.download = 'llm-snapshot.json'
-  link.click()
-  URL.revokeObjectURL(url)
-}
-
 function distinct(values: string[]): string[] {
   return [...new Set(values)].sort((a, b) => a.localeCompare(b))
 }
 
-function statusText(status: RunStatus): string {
+function statusText(status: RunStatus, loadMs: number | null): string {
   switch (status.state) {
     case 'idle':
       return ''
     case 'loading-model':
-      return 'Loading the model…'
+      return 'Loading the embedding model (33 MB, once)…'
     case 'running':
       return `${status.done} / ${status.total} runs`
     case 'done':
-      return 'Done'
+      return loadMs === null ? 'Done' : `Done · model load ${ms(loadMs)}`
     case 'failed':
       return `Failed: ${status.reason}`
   }

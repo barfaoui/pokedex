@@ -1,0 +1,50 @@
+@use 'styles/tokens' as *;
+@use 'styles/typography' as Typography;
+@use 'styles/mixins' as *;
+
+.engine-list {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+
+  &__item {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-1 $space-3;
+  }
+
+  &__option {
+    display: inline-flex;
+    align-items: center;
+    gap: $space-1;
+  }
+
+  &__select {
+    @include Typography.body;
+    @include focus-ring;
+
+    padding: 0 $space-1;
+    border: $bevel-edge solid $ink;
+    background: $surface;
+    color: $ink;
+  }
+
+  &__note {
+    color: $placeholder;
+  }
+
+  &__stop {
+    @include focus-ring;
+    @include Typography.tiny-display;
+
+    padding: $space-1 $space-2;
+    border: $bevel-edge solid $ink;
+    background: $glow;
+    color: $ink;
+    cursor: pointer;
+  }
+}

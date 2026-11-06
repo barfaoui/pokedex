@@ -32,3 +32,6 @@ dist-ssr
 
 .env
 .env.local
+
+# Ask AI answers cached by npm run eval -- --engine llm
+.cache/
