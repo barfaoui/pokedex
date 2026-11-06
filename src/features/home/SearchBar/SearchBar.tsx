@@ -15,6 +15,34 @@ const CROSS = [
 
 const CROSS_PIXELS = { '#': 'search-bar__clear-pixel' }
 
+// 🔍 with gold sparkles above it: search, with AI.
+const ASK_AI = [
+  '...S.......S..',
+  '..SSS.....SSS.',
+  '...S.......S..',
+  '....FFFF......',
+  '..FFFFFFFF....',
+  '..FFGWGGFF....',
+  '.FFGWGGGGFF...',
+  '.FFGGGGGGFF...',
+  '.FFGGGGGGFF...',
+  '..FFGGGGFF....',
+  '..FFFFFFFFH...',
+  '....FFFF.HHH..',
+  '..........HHH.',
+  '...........HHH',
+]
+
+const ASK_AI_PIXELS = {
+  S: 'search-bar__ask-ai-sparkle',
+  F: 'search-bar__ask-ai-frame',
+  G: 'search-bar__ask-ai-glass',
+  W: 'search-bar__ask-ai-glint',
+  H: 'search-bar__ask-ai-handle',
+}
+
+const AI_NOTICE = 'Ask AI: sends your query to an AI provider (Anthropic)'
+
 interface SearchBarProps {
   query: string
   onQueryChange: (query: string) => void
@@ -48,7 +76,7 @@ export function SearchBar({
     <div
       className="search-bar"
       role="search"
-      data-ask-ai={onAskAi ? 'true' : undefined}
+      data-ask-ai={onAskAi && query.trim() ? 'true' : undefined}
     >
       <input
         ref={inputRef}
@@ -76,20 +104,26 @@ export function SearchBar({
           />
         </button>
       )}
-      {onAskAi && (
+      {onAskAi && query.trim() && (
         <>
           <button
             className="search-bar__ask-ai"
             type="button"
+            aria-label="Ask AI"
             aria-describedby={noteId}
-            disabled={!query.trim() || askingAi}
+            title={AI_NOTICE}
+            disabled={askingAi}
             onClick={onAskAi}
           >
-            Ask AI
+            <PixelArt
+              className="search-bar__ask-ai-icon"
+              rows={ASK_AI}
+              pixelClasses={ASK_AI_PIXELS}
+            />
           </button>
-          <p className="search-bar__ask-ai-note" id={noteId}>
-            Ask AI sends your query to an AI provider (Anthropic).
-          </p>
+          <span className="search-bar__ask-ai-note" id={noteId}>
+            {AI_NOTICE}
+          </span>
         </>
       )}
     </div>

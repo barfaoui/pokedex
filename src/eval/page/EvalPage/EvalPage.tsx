@@ -72,83 +72,80 @@ export function EvalPage() {
     <main className="eval-page">
       <h1 className="eval-page__title">Search evaluation</h1>
       <p className="eval-page__intro">
-        How well each search engine answers the {CASES.length} test queries of
-        tests/eval/cases.csv: the app&rsquo;s manual search, search by meaning
-        (embeddings) and the two together (hybrid, what the app runs), next to
-        an LLM. Manual, embeddings and hybrid run live in this browser, timed
-        here with the app&rsquo;s own worker; the first run that needs search by
-        meaning loads its 33&nbsp;MB model once. The LLM column shows a recorded
-        run (its date, model and cost are below), and can be run again live
-        through the server&rsquo;s Ask AI endpoint.{' '}
-        {loadMs !== null && `Model load, once: ${ms(loadMs)}.`}
+        Every engine on the {CASES.length} queries of tests/eval/cases.csv,
+        timed in this browser. The first run with embeddings loads their
+        33&nbsp;MB model once. {loadMs !== null && `Model load: ${ms(loadMs)}.`}
       </p>
 
-      <LlmPanel
-        available={aiAvailable}
-        cases={CASES.length}
-        status={live.status}
-        onStart={() => liveEngine && live.start(liveEngine, CASES)}
-        onStop={live.stop}
-        onDownload={() => download(live.snapshot())}
-      />
-
       <div className="eval-page__controls">
-        <fieldset className="eval-page__group">
-          <legend className="eval-page__legend">Engines</legend>
-          {ENGINES.map((engine) => (
-            <label key={engine.id} className="eval-page__option">
+        <div className="eval-page__column">
+          <fieldset className="eval-page__group">
+            <legend className="eval-page__legend">Engines</legend>
+            {ENGINES.map((engine) => (
+              <label key={engine.id} className="eval-page__option">
+                <input
+                  type="checkbox"
+                  checked={selected.has(engine.id)}
+                  onChange={() => toggle(engine.id)}
+                />
+                {engine.name}
+              </label>
+            ))}
+            {UNAVAILABLE.map((id) => (
+              <label key={id} className="eval-page__option">
+                <input type="checkbox" disabled />
+                {id} ({id === 'llm-recorded' ? 'no recorded run yet' : 'no key'}
+                )
+              </label>
+            ))}
+            <button
+              className="eval-page__run"
+              type="button"
+              disabled={busy || !selectedEngines.length}
+              onClick={() => start(selectedEngines, CASES)}
+            >
+              {runs.length ? 'Run again' : `Run ${CASES.length} cases`}
+            </button>
+            <span className="eval-page__status" role="status">
+              {statusText(status)}
+            </span>
+          </fieldset>
+
+          <fieldset className="eval-page__group">
+            <legend className="eval-page__legend">Cases</legend>
+            <FilterSelect
+              label="Category"
+              value={filters.category}
+              options={distinct(CASES.map((c) => c.category))}
+              onChange={(value) => setFilter('category', value)}
+            />
+            <FilterSelect
+              label="Source"
+              value={filters.source}
+              options={distinct(CASES.map((c) => c.source))}
+              onChange={(value) => setFilter('source', value)}
+            />
+            <label className="eval-page__option">
               <input
                 type="checkbox"
-                checked={selected.has(engine.id)}
-                onChange={() => toggle(engine.id)}
+                checked={filters.failingOnly}
+                onChange={(event) =>
+                  setFilter('failingOnly', event.target.checked)
+                }
               />
-              {engine.name}
+              Failing only
             </label>
-          ))}
-          {UNAVAILABLE.map((id) => (
-            <label key={id} className="eval-page__option">
-              <input type="checkbox" disabled />
-              {id} ({id === 'llm-recorded' ? 'no recorded run yet' : 'no key'})
-            </label>
-          ))}
-          <button
-            className="eval-page__run"
-            type="button"
-            disabled={busy || !selectedEngines.length}
-            onClick={() => start(selectedEngines, CASES)}
-          >
-            {runs.length ? 'Run again' : `Run ${CASES.length} cases`}
-          </button>
-          <span className="eval-page__status" role="status">
-            {statusText(status)}
-          </span>
-        </fieldset>
+          </fieldset>
+        </div>
 
-        <fieldset className="eval-page__group">
-          <legend className="eval-page__legend">Cases</legend>
-          <FilterSelect
-            label="Category"
-            value={filters.category}
-            options={distinct(CASES.map((c) => c.category))}
-            onChange={(value) => setFilter('category', value)}
-          />
-          <FilterSelect
-            label="Source"
-            value={filters.source}
-            options={distinct(CASES.map((c) => c.source))}
-            onChange={(value) => setFilter('source', value)}
-          />
-          <label className="eval-page__option">
-            <input
-              type="checkbox"
-              checked={filters.failingOnly}
-              onChange={(event) =>
-                setFilter('failingOnly', event.target.checked)
-              }
-            />
-            Failing only
-          </label>
-        </fieldset>
+        <LlmPanel
+          available={aiAvailable}
+          cases={CASES.length}
+          status={live.status}
+          onStart={() => liveEngine && live.start(liveEngine, CASES)}
+          onStop={live.stop}
+          onDownload={() => download(live.snapshot())}
+        />
       </div>
 
       {shownEngines.length > 0 && (

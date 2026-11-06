@@ -43,10 +43,12 @@ test('Ask AI shows the AI results with their note, and typing goes back to the s
 }) => {
   await mockAi(page, 'An electric mouse, as asked')
   await page.goto('/')
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+  await expect(askButton(page)).toHaveCount(0)
   await searchBar(page).fill('the yellow electric mouse')
-  await expect(
-    page.getByText('Ask AI sends your query to an AI provider'),
-  ).toBeVisible()
+  await expect(askButton(page)).toHaveAccessibleDescription(
+    /sends your query to an AI provider/,
+  )
   await askButton(page).click()
 
   const pikachu = page.getByRole('article', { name: 'Pikachu', exact: true })

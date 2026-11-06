@@ -15,8 +15,18 @@
   }
 
   &__controls {
+    display: grid;
+    gap: $space-4;
+
+    @include desktop {
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+
+  &__column {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
     gap: $space-4;
   }
 

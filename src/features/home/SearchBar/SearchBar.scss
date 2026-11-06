@@ -2,9 +2,6 @@
 @use 'styles/typography' as Typography;
 @use 'styles/mixins' as *;
 
-// Room for "Ask AI" in the pixel font, at the end of the bar.
-$ask-ai-width: 6.5rem;
-
 .search-bar {
   position: relative;
   width: 100%;
@@ -32,44 +29,64 @@ $ask-ai-width: 6.5rem;
   }
 
   &[data-ask-ai='true'] &__input {
-    padding-right: $touch-target + $ask-ai-width + $space-3;
+    padding-right: $touch-target * 2 + $space-2;
   }
 
   &[data-ask-ai='true'] &__clear-button {
-    right: $pixel + $pixel-lift + $space-2 + $ask-ai-width;
+    right: $pixel + $pixel-lift + $space-1 + $touch-target;
   }
 
   &__ask-ai {
-    @include bevel-raised;
     @include focus-ring;
-    @include Typography.small-display;
 
     position: absolute;
     top: $pixel + ($search-bar-height - $touch-target) * 0.5;
     right: $pixel + $pixel-lift + $space-1;
-    width: $ask-ai-width;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: $touch-target;
     height: $touch-target;
-    padding: 0 $space-2;
+    padding: 0;
     border: none;
-    background: $surface;
+    background: transparent;
     color: $ink;
     cursor: pointer;
 
-    &:active {
-      @include bevel-pressed;
-    }
-
     &:disabled {
-      color: $placeholder;
-      cursor: not-allowed;
+      cursor: progress;
+      opacity: 0.5;
     }
   }
 
-  &__ask-ai-note {
-    @include Typography.body;
+  &__ask-ai-icon {
+    display: block;
+    width: $icon-size * 1.75;
+    height: $icon-size * 1.75;
+  }
 
-    margin-top: $space-1;
-    color: $accent;
+  &__ask-ai-sparkle {
+    fill: $glow;
+  }
+
+  &__ask-ai-frame {
+    fill: $accent;
+  }
+
+  &__ask-ai-glass {
+    fill: $mint;
+  }
+
+  &__ask-ai-glint {
+    fill: $white;
+  }
+
+  &__ask-ai-handle {
+    fill: $ink;
+  }
+
+  &__ask-ai-note {
+    @include visually-hidden;
   }
 
   &__clear-button {

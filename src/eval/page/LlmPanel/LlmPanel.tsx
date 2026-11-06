@@ -42,6 +42,13 @@ export function LlmPanel({
           ? `Recorded run: ${snapshotSummary(LLM_SNAPSHOT)}. Tick “LLM (recorded)” and run the cases to see it.`
           : `${NO_RECORDED_RUN}.`}
       </p>
+      {status.state === 'idle' && (
+        <p className="llm-panel__line">
+          The LLM isn&rsquo;t in the default run: it calls a paid API. Run it
+          live at least once to compare it with the other engines; its results
+          then join the tables below as the &ldquo;LLM (live)&rdquo; column.
+        </p>
+      )}
 
       {available === false && (
         <p className="llm-panel__line">
