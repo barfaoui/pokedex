@@ -16,7 +16,7 @@ function askAiDevServer(): Plugin {
     configureServer(server) {
       const env = loadEnv(server.config.mode, process.cwd(), '')
       server.middlewares.use('/api/ask-ai-status', (_request, response) =>
-        sendReply(response, statusReply(env.ANTHROPIC_API_KEY)),
+        sendReply(response, statusReply(env.ANTHROPIC_API_KEY, env.AI_MODEL)),
       )
       server.middlewares.use('/api/ask-ai', async (request, response) => {
         const body =

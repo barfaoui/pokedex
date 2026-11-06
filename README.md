@@ -4,8 +4,6 @@ A search for the first 151 Pokémon that understands what you mean: type part of
 
 **Live: https://prof-chen.vercel.app/**
 
-Built for the Biolevate full-stack technical assessment.
-
 ## Try these
 
 - `bulba`: part of a name
@@ -56,7 +54,7 @@ Also available: `npm run lint`, `npm run typecheck`, `npm run format`.
 
 ## How it works
 
-The manual search runs first: names, typos, types, criteria and effects, each result scored from 0 to 1. Effects come from a concept dictionary that knows their direction (Hypnosis puts the target to sleep, Insomnia prevents it). When no result is confident, a small embedding model searches by meaning, in a Web Worker so typing never waits. Details: [docs/03-tech-spec.md](./docs/03-tech-spec.md).
+The deterministic search runs first: names, typos, types, criteria and effects, each result scored from 0 to 1. Effects come from a concept dictionary that knows their direction (Hypnosis puts the target to sleep, Insomnia prevents it). When no result is confident, a small embedding model searches by meaning, in a Web Worker so typing never waits. Details: [docs/03-tech-spec.md](./docs/03-tech-spec.md).
 
 ## How it was built
 

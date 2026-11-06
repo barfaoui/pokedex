@@ -10,18 +10,31 @@ const AI_UNAVAILABLE = 'AI unavailable'
 // The server's own limit: checked here too, to say so before sending.
 export const AI_MAX_QUERY_LENGTH = 200
 
-let configured: Promise<boolean> | undefined
+export interface AiStatus {
+  configured: boolean
+  /** The server's model id, e.g. claude-haiku-5-5; null when the server doesn't say. */
+  model: string | null
+}
 
-/** Whether the server has a key. Asked once per visit; any failure counts as no. */
-export function aiConfigured(): Promise<boolean> {
-  configured ??= fetch('/api/ask-ai-status')
+let status: Promise<AiStatus> | undefined
+
+/** Whether the server has a key, and its model. Asked once per visit; any failure counts as no. */
+export function aiStatus(): Promise<AiStatus> {
+  status ??= fetch('/api/ask-ai-status')
     .then((response) => (response.ok ? response.json() : null))
-    .then(
-      (body: unknown) =>
-        (body as { configured?: unknown })?.configured === true,
-    )
-    .catch(() => false)
-  return configured
+    .then((body: unknown) => {
+      const { configured, model } = (body ?? {}) as Record<string, unknown>
+      return {
+        configured: configured === true,
+        model: typeof model === 'string' ? model : null,
+      }
+    })
+    .catch(() => ({ configured: false, model: null }))
+  return status
+}
+
+export function aiConfigured(): Promise<boolean> {
+  return aiStatus().then((value) => value.configured)
 }
 
 /** Rejects with a short message fit for the page, never an upstream detail. */

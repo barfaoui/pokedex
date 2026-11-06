@@ -1,5 +1,6 @@
 import type { AiAnswer } from '../../../api/_lib/ask-ai'
 import { USD_TO_EUR } from '../../../api/_lib/pricing'
+import { modelLabel } from '@/eval/format'
 import { aiResults } from '@/features/ask-ai/ask-ai-client'
 import type { EngineDefinition } from './engine'
 
@@ -7,14 +8,14 @@ import type { EngineDefinition } from './engine'
 const llm: EngineDefinition = {
   id: 'llm',
   order: 6,
-  create: ({ askAi }) => {
+  create: ({ askAi, aiModel }) => {
     if (!askAi) {
       return null
     }
     const answers = new Map<string, AiAnswer>()
     let spentEur = 0
     return {
-      name: 'LLM (live)',
+      name: aiModel ? `LLM: ${modelLabel(aiModel)}` : 'LLM',
       search: async (query) => {
         const answer = await askAi(query)
         answers.set(query, answer)

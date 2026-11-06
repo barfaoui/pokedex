@@ -1,5 +1,6 @@
 import { USD_TO_EUR } from '../../../api/_lib/pricing'
 import { aiResults } from '@/features/ask-ai/ask-ai-client'
+import { modelLabel } from '@/eval/format'
 import { LLM_SNAPSHOT, snapshotSummary } from '@/eval/llm-snapshot'
 import type { EngineDefinition } from './engine'
 
@@ -14,7 +15,7 @@ const llmRecorded: EngineDefinition = {
     }
     const byQuery = new Map(snapshot.cases.map((c) => [c.query, c]))
     return {
-      name: 'LLM (recorded)',
+      name: `LLM: ${modelLabel(snapshot.model)} (recorded)`,
       about: `Recorded run: ${snapshotSummary(snapshot)}.`,
       search: async (query) => aiResults(byQuery.get(query)?.results ?? []),
       recorded: (query) => {

@@ -3,7 +3,7 @@ import { decimal, itemLabel, percent } from '@/eval/format'
 import { groupRuns, matchesItem, summarize, type Summary } from '@/eval/metrics'
 import { keyOf, type CaseRun } from '@/eval/run'
 
-const LLM = 'llm-reference'
+const LLM = 'claude-code-reference'
 const HYBRID = 'hybrid'
 /** Categories whose answer is a whole list the data decides, where every missing item is a miss. */
 const EXACT_LISTS = ['type', 'stats', 'number']
@@ -55,9 +55,9 @@ export function llmSection(
   return [
     '## Is an LLM worth adding?',
     '',
-    `LLM reference against Hybrid (the app). Gap = LLM minus hybrid: above 0, the LLM does better. Categories from the biggest pass-rate gap to the smallest, then by nDCG@10 gap.`,
+    `Claude Code (reference) against Hybrid (deterministic + embeddings). Gap = Claude Code minus hybrid: above 0, Claude Code does better. Categories from the biggest pass-rate gap to the smallest, then by nDCG@10 gap.`,
     '',
-    '| Category | Cases | LLM passed | Hybrid passed | Gap | LLM nDCG@10 | Hybrid nDCG@10 | Gap |',
+    '| Category | Cases | Claude Code passed | Hybrid passed | Gap | Claude Code nDCG@10 | Hybrid nDCG@10 | Gap |',
     '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',
     ...[overall, ...categories].map(
       (g) =>

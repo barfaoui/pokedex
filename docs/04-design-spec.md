@@ -117,16 +117,17 @@ An overlay that looks like a **photo album**: cards with picture, name and a cou
 | State | What the user sees |
 | --- | --- |
 | Nothing typed | Home: Chen and the search bar centred, example queries |
-| Waiting for semantic search (first visit only) | "Prof. Chen is digging through his lab files…" with an animated file drawer; manual results, if any, already shown. Manual search is instant, so it has no waiting state |
+| Waiting for semantic search (first visit only) | "Prof. Chen is digging through his lab files…" with an animated file drawer; deterministic results, if any, already shown. Deterministic search is instant, so it has no waiting state |
 | No results | "Prof. Chen found nothing for 'spaghetti'." + the example queries |
-| Semantic search unavailable | Manual results as usual, plus a short note that smart search couldn't load |
+| Semantic search unavailable | Deterministic results as usual, plus a short note that smart search couldn't load |
 | Image fails to load | A placeholder in the image's place; name, types and what matched stay visible |
 | Pokédex or team empty | The empty pockets / slots, with one line saying how to add a Pokémon |
 
 ## 5. Interactions
 
 **Search**
-- Results update **as you type**; manual search answers on every keystroke. Semantic search waits until typing pauses (~200 ms).
+
+- Results update **as you type**; deterministic search answers on every keystroke. Semantic search waits until typing pauses (~200 ms).
 - **Enter** does nothing extra (results are already there); **Escape** in the search bar clears it and returns to the home state.
 - Clicking an **example query** fills the bar and runs it.
 - The query and the current tab are kept in the URL, so a search can be shared and survives a refresh.

@@ -212,9 +212,15 @@ export async function handleAskAiRequest(
   }
 }
 
-/** For the UI to hide the button: says only whether a key is set, never anything about it. */
-export function statusReply(apiKey: string | undefined): HttpReply {
-  return { status: 200, body: { configured: Boolean(apiKey) } }
+/** For the UI: whether a key is set (never anything about it) and the model's name, not a secret. */
+export function statusReply(
+  apiKey: string | undefined,
+  model: string | undefined,
+): HttpReply {
+  return {
+    status: 200,
+    body: { configured: Boolean(apiKey), model: model || DEFAULT_MODEL },
+  }
 }
 
 async function postWithRetry(

@@ -24,8 +24,13 @@ export function SummaryTable({ engines, runs }: SummaryTableProps) {
             Metric
           </th>
           {engines.map((engine) => (
-            <th key={engine.id} className="summary-table__head" scope="col">
-              {engine.name}
+            <th
+              key={engine.id}
+              className="summary-table__head"
+              scope="col"
+              title={engine.shortName ? engine.name : undefined}
+            >
+              {engine.shortName ?? engine.name}
             </th>
           ))}
         </tr>

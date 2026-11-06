@@ -36,8 +36,13 @@ export function CaseTable({ cases, engines, runs }: CaseTableProps) {
             Expected
           </th>
           {engines.map((engine) => (
-            <th key={engine.id} className="case-table__head" scope="col">
-              {engine.name}
+            <th
+              key={engine.id}
+              className="case-table__head"
+              scope="col"
+              title={engine.shortName ? engine.name : undefined}
+            >
+              {engine.shortName ?? engine.name}
             </th>
           ))}
         </tr>

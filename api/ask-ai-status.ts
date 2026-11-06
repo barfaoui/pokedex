@@ -7,5 +7,8 @@ export default function handler(
   _request: IncomingMessage,
   response: ServerResponse,
 ): void {
-  sendReply(response, statusReply(process.env.ANTHROPIC_API_KEY))
+  sendReply(
+    response,
+    statusReply(process.env.ANTHROPIC_API_KEY, process.env.AI_MODEL),
+  )
 }

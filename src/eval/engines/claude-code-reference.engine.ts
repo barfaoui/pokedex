@@ -4,8 +4,8 @@ import { parseCsv } from '@/eval/cases'
 import type { SearchResult } from '@/search/types/result'
 import type { EngineDefinition } from './engine'
 
-export const LLM_NOTE =
-  'Answers written once by Claude (Claude Code, a fresh session that only saw the data and the queries). Not reproducible, not timed. An upper bound for what a strong LLM answers, not a production engine.'
+const REFERENCE_NOTE =
+  'Answers written once by a Claude Code session that saw the full data and the queries. An upper bound, not timed, not reproducible.'
 
 const answers = new Map(
   parseCsv(csv)
@@ -44,12 +44,12 @@ function resultOf(key: string): SearchResult | null {
 
 // A key the data doesn't hold can't be shown or linked: it is left out of the results and listed
 // by `invented` instead.
-const llmReference: EngineDefinition = {
-  id: 'llm-reference',
+const claudeCodeReference: EngineDefinition = {
+  id: 'claude-code-reference',
   order: 4,
   create: () => ({
-    name: 'LLM reference',
-    notMeasured: LLM_NOTE,
+    name: 'Claude Code (reference)',
+    notMeasured: REFERENCE_NOTE,
     search: async (query) =>
       keysOf(query)
         .map(resultOf)
@@ -58,4 +58,4 @@ const llmReference: EngineDefinition = {
   }),
 }
 
-export default llmReference
+export default claudeCodeReference

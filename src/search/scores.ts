@@ -1,6 +1,6 @@
 import type { Direction } from './concepts/types'
 
-// When the manual search is confident enough to skip semantic search.
+// When the deterministic search is confident enough to skip semantic search.
 // Set with the PRD queries: "pikachoo" (0.71) is the weakest answer that must count as confident.
 export const CONFIDENT_SCORE = 0.7
 

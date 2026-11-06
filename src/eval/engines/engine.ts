@@ -6,6 +6,8 @@ export type RankedResults = SearchResult[]
 
 export interface Engine {
   name: string
+  /** For table headers, where the full name doesn't fit: shown with the full name as a tooltip. */
+  shortName?: string
   search: (query: string) => Promise<RankedResults>
   /** Euros billed so far (an engine billed in dollars converts); local engines leave it out. */
   spentEur?: () => number
@@ -40,6 +42,8 @@ export interface EngineContext {
    * CLI), the engine isn't created, so nothing is ever billed by accident.
    */
   askAi?: (query: string) => Promise<AiAnswer>
+  /** The server's model id, for the live LLM engine's label. */
+  aiModel?: string
 }
 
 /**

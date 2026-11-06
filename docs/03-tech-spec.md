@@ -14,7 +14,7 @@
 ## 1. Overview
 
 - A React app where **all search runs in the browser**: no server, no API key, no paid service.
-- **Manual search first** (names, criteria, concepts); **semantic search** with a small in-browser model when manual search isn't confident.
+- **Deterministic search first** (names, criteria, concepts); **semantic search** with a small in-browser model when deterministic search isn't confident.
 - Every result gets a **match score from 0 to 1**; results are ranked by it.
 
 ## 2. Stack
@@ -65,19 +65,19 @@ flowchart LR
 
 ### 5.1 Flow
 
-Three layers, each for the job it does best: **manual matching** for names, types and numbers; a **concept dictionary** for effects like sleep or rain (keyword search gives wrong answers on this data, see [data discovery](./02-data-discovery.md)); **semantic search** for phrasings nothing else recognises (embeddings are good at meaning, bad at names and typos).
+Three layers, each for the job it does best: **deterministic matching** for names, types and numbers; a **concept dictionary** for effects like sleep or rain (keyword search gives wrong answers on this data, see [data discovery](./02-data-discovery.md)); **semantic search** for phrasings nothing else recognises (embeddings are good at meaning, bad at names and typos).
 
 ```mermaid
 flowchart LR
     Q["Query"] --> P["Normalise<br/>+ parse into parts"]
-    P --> M["Manual search<br/>+ 0–1 score"]
+    P --> M["Deterministic search<br/>+ 0–1 score"]
     M --> C{"Confident?"}
     C -- yes --> R["Ranked results<br/>(or 'nothing found')"]
     C -- no --> S["Semantic search<br/>(Web Worker)"]
     S --> R
 ```
 
-Manual search runs on every keystroke (about a millisecond over 151 Pokémon). Semantic search runs only when manual search isn't confident, debounced.
+Deterministic search runs on every keystroke (about a millisecond over 151 Pokémon). Semantic search runs only when deterministic search isn't confident, debounced.
 
 ### 5.2 Parsing and matching
 
@@ -110,7 +110,7 @@ The normalised query is split into **parts**; each part is matched by its kind.
 | Unknown | Semantic similarity, rescaled to 0–1 |
 
 - Exact matches (every part = 1) are highlighted ([PRD M6](./01-prd.md#m6-ranked-by-how-well-it-matches)). Sort words only order results with equal scores.
-- **One global threshold:** below it, results are hidden ([PRD M7](./01-prd.md#m7-no-match-means-no-results)); if the best manual score is below it, semantic search runs. Its value, and every number above, is set with the [PRD's test queries](./01-prd.md#7-success-metrics) ("spaghetti" and "drain" below, "pikachoo" and "put my opponent to sleep" above).
+- **One global threshold:** below it, results are hidden ([PRD M7](./01-prd.md#m7-no-match-means-no-results)); if the best deterministic score is below it, semantic search runs. Its value, and every number above, is set with the [PRD's test queries](./01-prd.md#7-success-metrics) ("spaghetti" and "drain" below, "pikachoo" and "put my opponent to sleep" above).
 
 ### 5.4 Concept dictionary
 
@@ -127,14 +127,14 @@ A prototype run on the dataset tagged most texts correctly and got a few wrong (
 ### 5.5 Semantic search
 
 - **Model:** all-MiniLM-L6-v2 to start. Once the test queries run, compared with bge-small-en-v1.5 on the same queries; switched only if clearly better. Model files ship with the app, so it works offline.
-- **Embeddings** (a list of numbers representing a text's meaning; similar meanings give similar lists): the ~430 searchable texts (move and ability effects, species descriptions) are embedded **in the browser, in the background, right after the app starts**, then cached. Manual search works meanwhile; if a search needs meaning before they're ready, the UI says so. Computing them in the browser instead of shipping them means nothing generated to keep in sync, and swapping models is a setting.
+- **Embeddings** (a list of numbers representing a text's meaning; similar meanings give similar lists): the ~430 searchable texts (move and ability effects, species descriptions) are embedded **in the browser, in the background, right after the app starts**, then cached. Deterministic search works meanwhile; if a search needs meaning before they're ready, the UI says so. Computing them in the browser instead of shipping them means nothing generated to keep in sync, and swapping models is a setting.
 - **Per query:** embed the query, compare it with the cached embeddings (cosine similarity: ~1 = same meaning, ~0 = unrelated), rescale to 0–1.
 
 ### 5.6 Example
 
 **"put my opponent to sleep":** "sleep" is a concept, the other words are filler → the dictionary gives Sing, Sleep Powder, Hypnosis, Lovely Kiss, Spore and the ability Effect Spore, but not Insomnia (*prevents*) or Rest (*self*) → each brings in its Pokémon → score 1, no semantic search needed → results grouped by kind, e.g. "Jigglypuff · Sing · Puts the target to sleep."
 
-**"make the enemy doze off":** "doze" isn't known → manual search isn't confident → semantic search finds the "Puts the target to sleep" texts → the same moves come back, ranked by similarity.
+**"make the enemy doze off":** "doze" isn't known → deterministic search isn't confident → semantic search finds the "Puts the target to sleep" texts → the same moves come back, ranked by similarity.
 
 ## 6. Quality
 
@@ -155,7 +155,7 @@ Everything runs in GitHub Actions on every push, except the production checks, w
 
 | Risk | Mitigation |
 | --- | --- |
-| First visit: loading the model (~20–25 MB) and embedding ~430 texts takes seconds, more on slow devices | Done in the background; manual search never waits; cached for later visits |
+| First visit: loading the model (~20–25 MB) and embedding ~430 texts takes seconds, more on slow devices | Done in the background; deterministic search never waits; cached for later visits |
 | Embeddings weak on short game texts | The concept dictionary covers the [PRD's test queries](./01-prd.md#7-success-metrics); measure before switching models |
 | Global threshold too blunt | Tuned with the test queries; revisited after implementation |
 

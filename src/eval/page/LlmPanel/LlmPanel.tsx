@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { estimateRunCostUsd, USD_TO_EUR } from '../../../../api/_lib/pricing'
+import { modelLabel } from '@/eval/format'
 import {
   dollars,
   LLM_SNAPSHOT,
@@ -12,6 +13,8 @@ import './LlmPanel.scss'
 interface LlmPanelProps {
   /** null while asking the server whether it has a key. */
   available: boolean | null
+  /** The live engine's label, with its model; null without a key. */
+  liveName: string | null
   cases: number
   status: LiveStatus
   onStart: () => void
@@ -21,6 +24,7 @@ interface LlmPanelProps {
 
 export function LlmPanel({
   available,
+  liveName,
   cases,
   status,
   onStart,
@@ -39,14 +43,15 @@ export function LlmPanel({
       <h2 className="llm-panel__title">LLM (Ask AI)</h2>
       <p className="llm-panel__line">
         {LLM_SNAPSHOT
-          ? `Recorded run: ${snapshotSummary(LLM_SNAPSHOT)}. Tick “LLM (recorded)” and run the cases to see it.`
+          ? `Recorded run: ${snapshotSummary(LLM_SNAPSHOT)}. Tick “LLM: ${modelLabel(LLM_SNAPSHOT.model)} (recorded)” and run the cases to see it.`
           : `${NO_RECORDED_RUN}.`}
       </p>
       {status.state === 'idle' && (
         <p className="llm-panel__line">
           The LLM isn&rsquo;t in the default run: it calls a paid API. Run it
           live at least once to compare it with the other engines; its results
-          then join the tables below as the &ldquo;LLM (live)&rdquo; column.
+          then join the tables below as the &ldquo;{liveName ?? 'LLM'}&rdquo;
+          column.
         </p>
       )}
 

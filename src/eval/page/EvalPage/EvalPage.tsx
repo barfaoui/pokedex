@@ -5,7 +5,7 @@ import type { CaseRun } from '@/eval/run'
 import { CaseTable } from '../CaseTable/CaseTable'
 import { SummaryTable } from '../SummaryTable/SummaryTable'
 import { FilterSelect } from '../FilterSelect/FilterSelect'
-import { aiConfigured } from '@/features/ask-ai/ask-ai-client'
+import { aiStatus } from '@/features/ask-ai/ask-ai-client'
 import { LiveSearch } from '../LiveSearch/LiveSearch'
 import { LlmPanel } from '../LlmPanel/LlmPanel'
 import { CASES, ENGINES, liveLlmEngine, UNAVAILABLE } from '../page-engines'
@@ -34,11 +34,15 @@ export function EvalPage() {
   const { runs: defaultRuns, status, loadMs, start } = useEvalRun()
   const live = useLlmLiveRun()
   const [aiAvailable, setAiAvailable] = useState<boolean | null>(null)
+  const [aiModel, setAiModel] = useState<string | null>(null)
   useEffect(() => {
-    aiConfigured().then(setAiAvailable)
+    aiStatus().then((status) => {
+      setAiModel(status.model)
+      setAiAvailable(status.configured)
+    })
   }, [])
 
-  const liveEngine = aiAvailable ? liveLlmEngine() : null
+  const liveEngine = aiAvailable ? liveLlmEngine(aiModel) : null
   const runs = [...defaultRuns, ...live.runs]
   const selectedEngines = ENGINES.filter((engine) => selected.has(engine.id))
   const shownEngines = [
@@ -140,6 +144,7 @@ export function EvalPage() {
 
         <LlmPanel
           available={aiAvailable}
+          liveName={liveEngine?.name ?? null}
           cases={CASES.length}
           status={live.status}
           onStart={() => liveEngine && live.start(liveEngine, CASES)}

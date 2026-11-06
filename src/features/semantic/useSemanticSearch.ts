@@ -6,7 +6,7 @@ import {
 } from '@/features/semantic/semantic-client'
 import type { SearchResult } from '@/search/types/result'
 
-// Searching by meaning waits until typing pauses; manual search answers on every keystroke.
+// Searching by meaning waits until typing pauses; deterministic search answers on every keystroke.
 const DEBOUNCE_MS = 200
 
 export type SemanticStatus =

@@ -101,7 +101,7 @@ describe('withSemanticResults', () => {
     expect(scores).toEqual([...scores].sort((a, b) => b - a))
   })
 
-  test('with nothing from meaning, the manual results stay as they are', () => {
+  test('with nothing from meaning, the deterministic results stay as they are', () => {
     const manual = search('sun team')
     expect(withSemanticResults(manual, [])).toBe(manual)
   })
@@ -109,11 +109,11 @@ describe('withSemanticResults', () => {
 
 describe('needsSemantic', () => {
   // "pikachoo" (0.71) is the weakest answer that must count as confident.
-  test('"pikachoo": manual search is confident', () => {
+  test('"pikachoo": deterministic search is confident', () => {
     expect(needsSemantic(search('pikachoo'))).toBe(false)
   })
 
-  test('"make the enemy doze off": manual search is not confident', () => {
+  test('"make the enemy doze off": deterministic search is not confident', () => {
     expect(needsSemantic(search('make the enemy doze off'))).toBe(true)
   })
 })

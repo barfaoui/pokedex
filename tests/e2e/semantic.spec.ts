@@ -17,7 +17,7 @@ test('search by meaning, from the first load to an unrelated query', async ({
   test.setTimeout(60_000)
   const waiting = page.getByText('Prof. Chen is digging through his lab files…')
 
-  await test.step('a confident manual search never waits for the lab files', async () => {
+  await test.step('a confident deterministic search never waits for the lab files', async () => {
     await searchFor(page, 'put my opponent to sleep')
     await expect(card(page, 'Sleep Powder')).toBeVisible()
     await expect(waiting).toHaveCount(0)
@@ -32,8 +32,8 @@ test('search by meaning, from the first load to an unrelated query', async ({
     }
   })
 
-  // Manual search only finds the ability Healer, by name
-  await test.step('meaning finds what manual search cannot', async () => {
+  // Deterministic search only finds the ability Healer, by name
+  await test.step('meaning finds what deterministic search cannot', async () => {
     await searchFor(page, 'heal the user')
     await expect(card(page, 'Recover')).toBeVisible()
     await expect(card(page, 'Soft-Boiled')).toBeVisible()
@@ -47,7 +47,7 @@ test('search by meaning, from the first load to an unrelated query', async ({
   })
 })
 
-test('if the model cannot load, a note says so and manual search still works', async ({
+test('if the model cannot load, a note says so and deterministic search still works', async ({
   page,
   context,
 }) => {

@@ -111,7 +111,7 @@ Each story has an example query and a "done when" acceptance criterion.
 
 #### S1. Semantic search for unusual phrasing
 
-> As any user, when the manual search isn't confident about my query, I want the app to search by meaning, so that I still get an answer when I phrase things in an unexpected way.
+> As any user, when the deterministic search isn't confident about my query, I want the app to search by meaning, so that I still get an answer when I phrase things in an unexpected way.
 
 - Done when: if no result reaches the confidence threshold, the query is compared by meaning with the move effects, ability effects and descriptions, using a small model that runs in the browser. Results still come only from the dataset, and if nothing reaches the threshold, M7 applies.
 - No server, API key or paid service: the model ships with the app and works offline.
@@ -207,7 +207,7 @@ I used Claude (chat) as a thinking partner. The decisions in this document are m
   - **How results are displayed.** The AI proposed showing, on each result, a sentence explaining *why* it matched, a list of which parts of the query it met or missed, and a separate section for close matches. I disagreed: users care about *what* matched (the speed, the move), not how the engine reasoned. My design shows the matched attribute on the result, in a single list ranked by a match score, with exact matches highlighted.
   - It suggested replacing favourites with a team builder. I kept favourites and made teams a separate story.
 - **A decision I changed later.** M4 first required the app to say when a theme has a known gap in the data. The AI pointed out it could be computed from the concept dictionary (a weather that things benefit from but nothing starts). I dropped it anyway: it would only cover the concepts in the dictionary, so it would look more complete than it is. Known gaps are stated in [Limits](#8-limits) instead.
-- **Ideas that came from me:** comparing two Pokémon, the match score with highlighted exact matches, the no-false-positive rule, semantic search with a small in-browser model when the manual search isn't confident, favourites, and evolution families. The final scope and priorities were my call.
+- **Ideas that came from me:** comparing two Pokémon, the match score with highlighted exact matches, the no-false-positive rule, semantic search with a small in-browser model when the deterministic search isn't confident, favourites, and evolution families. The final scope and priorities were my call.
 
 ---
 

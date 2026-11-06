@@ -59,12 +59,13 @@ export const UNAVAILABLE = ENGINE_DEFINITIONS.filter(
 let liveLlm: AvailableEngine | undefined
 
 /** The live LLM engine, through /api/ask-ai: the browser never holds a key. */
-export function liveLlmEngine(): AvailableEngine {
+export function liveLlmEngine(model: string | null): AvailableEngine {
   liveLlm ??= {
     ...llmDefinition.create({
       semantic: () => (semantic ??= browserSemantic()),
       env,
       askAi: (query) => askAi(query),
+      ...(model ? { aiModel: model } : {}),
     })!,
     id: llmDefinition.id,
   }

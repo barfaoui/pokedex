@@ -13,19 +13,20 @@ const hybrid: EngineDefinition = {
   id: 'hybrid',
   order: 3,
   create: ({ semantic }) => ({
-    name: 'Hybrid (the app)',
+    name: 'Hybrid (deterministic + embeddings)',
+    shortName: 'Hybrid',
     search: async (query) => {
       if (query.trim() === '') {
         return []
       }
-      const manual = search(query)
+      const deterministic = search(query)
       const semanticQuery = semanticQueryOf(query)
       const semanticResults =
-        semanticQuery !== '' && needsSemantic(manual)
+        semanticQuery !== '' && needsSemantic(deterministic)
           ? await semantic().search(semanticQuery)
           : []
       return withoutExcluded(
-        withSemanticResults(manual, semanticResults),
+        withSemanticResults(deterministic, semanticResults),
         queryExclusions(query).rules,
       )
     },
