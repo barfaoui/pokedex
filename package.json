@@ -21,6 +21,8 @@
     "eval": "vitest run --project eval --silent=false",
     "concepts": "node scripts/build-concepts.ts && prettier --write src/search/concepts/generated.ts",
     "embeddings": "node scripts/build-embeddings.ts",
+    "catalogue": "node scripts/build-catalogue.ts && prettier --write api/_lib/catalogue.ts",
+    "check:secrets": "node scripts/check-secrets.ts",
     "test:watch": "vitest",
     "test:e2e": "playwright test"
   },

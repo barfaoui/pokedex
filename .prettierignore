@@ -10,3 +10,6 @@ docs
 public/models
 public/semantic
 eval-reports
+
+## Recorded LLM run, downloaded from the /eval page
+tests/eval/llm-snapshot.json

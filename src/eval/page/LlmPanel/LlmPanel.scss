@@ -1,0 +1,39 @@
+@use 'styles/tokens' as *;
+@use 'styles/typography' as Typography;
+@use 'styles/mixins' as *;
+
+.llm-panel {
+  display: flex;
+  flex-direction: column;
+  gap: $space-2;
+  padding: $space-2 $space-3;
+  border: $bevel-edge solid $ink;
+
+  &__title {
+    @include Typography.small-display;
+  }
+
+  &__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: $space-3;
+  }
+
+  &__button {
+    @include focus-ring;
+    @include Typography.small-display;
+
+    min-height: $touch-target;
+    padding: $space-2 $space-3;
+    border: $bevel-edge solid $ink;
+    background: $mint;
+    color: $ink;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: 0.6;
+    }
+  }
+}

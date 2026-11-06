@@ -46,6 +46,8 @@ export const MATCH_FIELDS = [
   'number',
   'evolutionOf',
   'evolvesInto',
+  // An Ask AI answer: the value is the AI's note. Never produced by the search itself.
+  'ai',
   ...STAT_NAMES,
 ] as const
 

@@ -19,21 +19,24 @@ export async function runCase(
   const spentBefore = engine.spentEur?.() ?? 0
   const start = performance.now()
   const results = await engine.search(evalCase.query)
-  const ms = performance.now() - start
+  const measured = performance.now() - start
+  const recorded = engine.recorded?.(evalCase.query)
   return {
     engineId: engine.id,
     evalCase,
     results,
-    ms,
-    costEur: (engine.spentEur?.() ?? 0) - spentBefore,
+    ms: recorded?.ms ?? measured,
+    costEur: recorded?.costEur ?? (engine.spentEur?.() ?? 0) - spentBefore,
     score: scoreCase(evalCase, results.map(keyOf)),
   }
 }
 
-/** The first call compiles and caches; timing it would only measure that. */
+/** The first call compiles and caches; timing it would only measure that. A billed engine is skipped. */
 export async function warmUp(engines: AvailableEngine[]): Promise<void> {
   for (const engine of engines) {
-    await engine.search('make the enemy doze off')
+    if (!engine.spentEur) {
+      await engine.search('make the enemy doze off')
+    }
   }
 }
 

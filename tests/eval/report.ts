@@ -15,6 +15,8 @@ export interface Context {
   /** null when no engine that ran needs the model. */
   modelLoadMs: number | null
   skipped: string[]
+  /** Said when there is no recorded LLM run; empty otherwise. */
+  llmNote: string
 }
 
 const TOP_SHOWN = 5
@@ -50,6 +52,10 @@ export function formatReport(
     ...engines.flatMap((e) =>
       e.notMeasured ? [`**${e.name}:** ${e.notMeasured}`, ''] : [],
     ),
+    ...engines.flatMap((e) =>
+      e.about ? [`**${e.name}:** ${e.about}`, ''] : [],
+    ),
+    ...(context.llmNote ? [`**LLM:** ${context.llmNote}`, ''] : []),
     '## Summary',
     '',
   )

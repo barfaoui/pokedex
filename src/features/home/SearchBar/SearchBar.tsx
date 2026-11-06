@@ -1,4 +1,4 @@
-import { useRef, type KeyboardEvent } from 'react'
+import { useId, useRef, type KeyboardEvent } from 'react'
 import { PixelArt } from '@/shared/PixelArt/PixelArt'
 import './SearchBar.scss'
 
@@ -18,9 +18,18 @@ const CROSS_PIXELS = { '#': 'search-bar__clear-pixel' }
 interface SearchBarProps {
   query: string
   onQueryChange: (query: string) => void
+  /** Left out when the server has no AI key: the button isn't shown at all. */
+  onAskAi?: () => void
+  askingAi?: boolean
 }
 
-export function SearchBar({ query, onQueryChange }: SearchBarProps) {
+export function SearchBar({
+  query,
+  onQueryChange,
+  onAskAi,
+  askingAi = false,
+}: SearchBarProps) {
+  const noteId = useId()
   const inputRef = useRef<HTMLInputElement>(null)
 
   function handleKeyDown(event: KeyboardEvent<HTMLInputElement>) {
@@ -36,7 +45,11 @@ export function SearchBar({ query, onQueryChange }: SearchBarProps) {
   }
 
   return (
-    <div className="search-bar" role="search">
+    <div
+      className="search-bar"
+      role="search"
+      data-ask-ai={onAskAi ? 'true' : undefined}
+    >
       <input
         ref={inputRef}
         className="search-bar__input"
@@ -62,6 +75,22 @@ export function SearchBar({ query, onQueryChange }: SearchBarProps) {
             pixelClasses={CROSS_PIXELS}
           />
         </button>
+      )}
+      {onAskAi && (
+        <>
+          <button
+            className="search-bar__ask-ai"
+            type="button"
+            aria-describedby={noteId}
+            disabled={!query.trim() || askingAi}
+            onClick={onAskAi}
+          >
+            Ask AI
+          </button>
+          <p className="search-bar__ask-ai-note" id={noteId}>
+            Ask AI sends your query to an AI provider (Anthropic).
+          </p>
+        </>
       )}
     </div>
   )

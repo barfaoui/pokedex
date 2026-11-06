@@ -17,6 +17,8 @@ import { NoResults } from '@/features/home/NoResults/NoResults'
 import { ProfessorChen } from '@/features/home/ProfessorChen/ProfessorChen'
 import { ResultsView } from '@/features/results/ResultsView/ResultsView'
 import { SearchBar } from '@/features/home/SearchBar/SearchBar'
+import { AiNote } from '@/features/ask-ai/AiNote/AiNote'
+import { useAskAi } from '@/features/ask-ai/useAskAi'
 import './SearchPage.scss'
 
 interface SearchPageProps {
@@ -46,13 +48,22 @@ export function SearchPage({
   )
   const exclusions = isHome ? NO_EXCLUSIONS : queryExclusions(query)
   // A semantic result mustn't bring back what the query excludes.
-  const results = withoutExcluded(
+  const searchResults = withoutExcluded(
     withSemanticResults(manualResults, semantic.results),
     exclusions.rules,
   )
+  // An AI answer belongs to the query it was asked for: typing anything else is the usual search.
+  const ai = useAskAi()
+  const aiState = ai.state?.query === query && !isHome ? ai.state : null
+  const aiShown =
+    aiState?.status === 'done' && aiState.results.length
+      ? aiState.results
+      : null
+  const results = aiShown ?? searchResults
   const isWaiting =
-    semantic.status === 'loading-model' ||
-    (semantic.status === 'searching' && !results.length)
+    !aiShown &&
+    (semantic.status === 'loading-model' ||
+      (semantic.status === 'searching' && !results.length))
   const state: PageState = isHome
     ? 'home'
     : isWaiting
@@ -70,12 +81,20 @@ export function SearchPage({
             What are you looking for? Professor Chen is here to help
           </h1>
         )}
-        <SearchBar query={query} onQueryChange={onQueryChange} />
+        <SearchBar
+          query={query}
+          onQueryChange={onQueryChange}
+          onAskAi={ai.available ? () => ai.ask(query) : undefined}
+          askingAi={aiState?.status === 'asking'}
+        />
         {isHome && <ExampleQueries onPick={onQueryChange} />}
       </div>
+      {aiState && <AiNote state={aiState} shown={aiShown?.length ?? 0} />}
       {state === 'waiting' && <LabFilesWaiting />}
       {semantic.status === 'failed' && <SemanticUnavailable />}
-      {state !== 'waiting' && <ExclusionNote exclusions={exclusions} />}
+      {state !== 'waiting' && !aiShown && (
+        <ExclusionNote exclusions={exclusions} />
+      )}
       {state === 'results' && (
         <ResultsView
           query={query}

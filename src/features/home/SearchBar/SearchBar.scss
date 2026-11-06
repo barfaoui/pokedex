@@ -2,6 +2,9 @@
 @use 'styles/typography' as Typography;
 @use 'styles/mixins' as *;
 
+// Room for "Ask AI" in the pixel font, at the end of the bar.
+$ask-ai-width: 6.5rem;
+
 .search-bar {
   position: relative;
   width: 100%;
@@ -26,6 +29,47 @@
     &::-webkit-search-cancel-button {
       appearance: none;
     }
+  }
+
+  &[data-ask-ai='true'] &__input {
+    padding-right: $touch-target + $ask-ai-width + $space-3;
+  }
+
+  &[data-ask-ai='true'] &__clear-button {
+    right: $pixel + $pixel-lift + $space-2 + $ask-ai-width;
+  }
+
+  &__ask-ai {
+    @include bevel-raised;
+    @include focus-ring;
+    @include Typography.small-display;
+
+    position: absolute;
+    top: $pixel + ($search-bar-height - $touch-target) * 0.5;
+    right: $pixel + $pixel-lift + $space-1;
+    width: $ask-ai-width;
+    height: $touch-target;
+    padding: 0 $space-2;
+    border: none;
+    background: $surface;
+    color: $ink;
+    cursor: pointer;
+
+    &:active {
+      @include bevel-pressed;
+    }
+
+    &:disabled {
+      color: $placeholder;
+      cursor: not-allowed;
+    }
+  }
+
+  &__ask-ai-note {
+    @include Typography.body;
+
+    margin-top: $space-1;
+    color: $accent;
   }
 
   &__clear-button {

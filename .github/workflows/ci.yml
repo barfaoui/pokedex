@@ -39,6 +39,12 @@ jobs:
       - name: Semantic search with the real model
         run: npm run test:semantic
 
+      - name: Build
+        run: npm run build
+
+      - name: No API key in the build or the repository
+        run: npm run check:secrets
+
       - name: Install Playwright's Chrome
         run: npx playwright install --with-deps chromium
 

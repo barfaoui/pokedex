@@ -1,7 +1,13 @@
 import csv from '../../../tests/eval/cases.csv?raw'
 import { parseCases } from '@/eval/cases'
 import type { SemanticSearch } from '@/eval/engines/engine'
-import { availableEngines, ENGINE_DEFINITIONS } from '@/eval/engines/engines'
+import {
+  availableEngines,
+  ENGINE_DEFINITIONS,
+  type AvailableEngine,
+} from '@/eval/engines/engines'
+import llmDefinition from '@/eval/engines/llm.engine'
+import { askAi } from '@/features/ask-ai/ask-ai-client'
 import {
   modelStatus,
   onModelStatus,
@@ -43,9 +49,27 @@ export const ENGINES = availableEngines({
   env,
 })
 
+// The live LLM is billed, so it never joins the default run: it has its own button.
 export const UNAVAILABLE = ENGINE_DEFINITIONS.filter(
-  (definition) => !ENGINES.some((engine) => engine.id === definition.id),
+  (definition) =>
+    definition.id !== llmDefinition.id &&
+    !ENGINES.some((engine) => engine.id === definition.id),
 ).map((definition) => definition.id)
+
+let liveLlm: AvailableEngine | undefined
+
+/** The live LLM engine, through /api/ask-ai: the browser never holds a key. */
+export function liveLlmEngine(): AvailableEngine {
+  liveLlm ??= {
+    ...llmDefinition.create({
+      semantic: () => (semantic ??= browserSemantic()),
+      env,
+      askAi: (query) => askAi(query),
+    })!,
+    id: llmDefinition.id,
+  }
+  return liveLlm
+}
 
 /** null until an engine has needed the model. */
 export function modelLoadMs(): Promise<number> | null {

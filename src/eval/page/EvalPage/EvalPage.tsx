@@ -1,13 +1,16 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { EvalCase } from '@/eval/cases'
 import { ms } from '@/eval/format'
 import type { CaseRun } from '@/eval/run'
 import { CaseTable } from '../CaseTable/CaseTable'
 import { SummaryTable } from '../SummaryTable/SummaryTable'
 import { FilterSelect } from '../FilterSelect/FilterSelect'
+import { aiConfigured } from '@/features/ask-ai/ask-ai-client'
 import { LiveSearch } from '../LiveSearch/LiveSearch'
-import { CASES, ENGINES, UNAVAILABLE } from '../page-engines'
+import { LlmPanel } from '../LlmPanel/LlmPanel'
+import { CASES, ENGINES, liveLlmEngine, UNAVAILABLE } from '../page-engines'
 import { useEvalRun, type RunStatus } from '../useEvalRun'
+import { useLlmLiveRun } from '../useLlmLiveRun'
 import './EvalPage.scss'
 
 interface Filters {
@@ -28,13 +31,25 @@ export function EvalPage() {
     () => new Set(ENGINES.map((engine) => engine.id)),
   )
   const [filters, setFilters] = useState(NO_FILTERS)
-  const { runs, status, loadMs, start } = useEvalRun()
+  const { runs: defaultRuns, status, loadMs, start } = useEvalRun()
+  const live = useLlmLiveRun()
+  const [aiAvailable, setAiAvailable] = useState<boolean | null>(null)
+  useEffect(() => {
+    aiConfigured().then(setAiAvailable)
+  }, [])
 
+  const liveEngine = aiAvailable ? liveLlmEngine() : null
+  const runs = [...defaultRuns, ...live.runs]
   const selectedEngines = ENGINES.filter((engine) => selected.has(engine.id))
-  const shownEngines = selectedEngines.filter((engine) =>
-    runs.some((run) => run.engineId === engine.id),
+  const shownEngines = [
+    ...selectedEngines.filter((engine) =>
+      defaultRuns.some((run) => run.engineId === engine.id),
+    ),
+    ...(liveEngine && live.runs.length ? [liveEngine] : []),
+  ]
+  const shownRuns = runs.filter(
+    (run) => selected.has(run.engineId) || run.engineId === liveEngine?.id,
   )
-  const shownRuns = runs.filter((run) => selected.has(run.engineId))
   const cases = CASES.filter((c) => matchesFilters(c, filters, shownRuns))
   const caseIds = new Set(cases.map((c) => c.id))
   const filteredRuns = shownRuns.filter((run) => caseIds.has(run.evalCase.id))
@@ -57,10 +72,25 @@ export function EvalPage() {
     <main className="eval-page">
       <h1 className="eval-page__title">Search evaluation</h1>
       <p className="eval-page__intro">
-        Dev only. Every case in tests/eval/cases.csv, run in this browser:
-        latency is measured here, with the app&rsquo;s own worker.{' '}
+        How well each search engine answers the {CASES.length} test queries of
+        tests/eval/cases.csv: the app&rsquo;s manual search, search by meaning
+        (embeddings) and the two together (hybrid, what the app runs), next to
+        an LLM. Manual, embeddings and hybrid run live in this browser, timed
+        here with the app&rsquo;s own worker; the first run that needs search by
+        meaning loads its 33&nbsp;MB model once. The LLM column shows a recorded
+        run (its date, model and cost are below), and can be run again live
+        through the server&rsquo;s Ask AI endpoint.{' '}
         {loadMs !== null && `Model load, once: ${ms(loadMs)}.`}
       </p>
+
+      <LlmPanel
+        available={aiAvailable}
+        cases={CASES.length}
+        status={live.status}
+        onStart={() => liveEngine && live.start(liveEngine, CASES)}
+        onStop={live.stop}
+        onDownload={() => download(live.snapshot())}
+      />
 
       <div className="eval-page__controls">
         <fieldset className="eval-page__group">
@@ -78,7 +108,7 @@ export function EvalPage() {
           {UNAVAILABLE.map((id) => (
             <label key={id} className="eval-page__option">
               <input type="checkbox" disabled />
-              {id} (no key)
+              {id} ({id === 'llm-recorded' ? 'no recorded run yet' : 'no key'})
             </label>
           ))}
           <button
@@ -125,7 +155,11 @@ export function EvalPage() {
         <SummaryTable engines={shownEngines} runs={filteredRuns} />
       )}
 
-      <LiveSearch engines={selectedEngines} />
+      <LiveSearch
+        engines={
+          liveEngine ? [...selectedEngines, liveEngine] : selectedEngines
+        }
+      />
 
       <CaseTable cases={cases} engines={shownEngines} runs={filteredRuns} />
     </main>
@@ -143,6 +177,22 @@ function matchesFilters(
     (!filters.failingOnly ||
       runs.some((run) => run.evalCase.id === c.id && !run.score.passed))
   )
+}
+
+function download(snapshot: unknown) {
+  if (!snapshot) {
+    return
+  }
+  const url = URL.createObjectURL(
+    new Blob([`${JSON.stringify(snapshot, null, 2)}\n`], {
+      type: 'application/json',
+    }),
+  )
+  const link = document.createElement('a')
+  link.href = url
+  link.download = 'llm-snapshot.json'
+  link.click()
+  URL.revokeObjectURL(url)
 }
 
 function distinct(values: string[]): string[] {

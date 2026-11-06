@@ -10,6 +10,7 @@ import type { SemanticSearch } from '@/eval/engines/engine'
 import { availableEngines, ENGINE_DEFINITIONS } from '@/eval/engines/engines'
 import { summarize } from '@/eval/metrics'
 import { keyOf, runAll, warmUp, type CaseRun } from '@/eval/run'
+import { LLM_SNAPSHOT, NO_RECORDED_RUN } from '@/eval/llm-snapshot'
 import { formatReport, stamp } from './report'
 import { loadCases, nodeSemantic, unknownItems } from './run'
 
@@ -20,13 +21,14 @@ test('search evaluation', { timeout: 900_000 }, async () => {
   expect(unknownItems(cases), 'items missing from the dataset').toEqual([])
 
   let semantic: SemanticSearch | undefined
+  // No Ask AI transport: the live LLM runs from the /eval page only, its recorded run shows here.
   const engines = availableEngines({
     semantic: () => (semantic ??= nodeSemantic()),
     env: process.env,
   })
   const skipped = ENGINE_DEFINITIONS.filter(
     (definition) => !engines.some((engine) => engine.id === definition.id),
-  ).map((definition) => `${definition.id} (no key)`)
+  ).map((definition) => `${definition.id} (${whyNotRun(definition.id)})`)
 
   await warmUp(engines)
   const modelLoadMs = semantic ? await semantic.ready() : null
@@ -47,6 +49,9 @@ test('search evaluation', { timeout: 900_000 }, async () => {
     machine: `Node ${process.version}, ${platform()} ${arch()}, ${cpus()[0]?.model.trim() ?? 'unknown CPU'}`,
     modelLoadMs,
     skipped,
+    llmNote: LLM_SNAPSHOT
+      ? ''
+      : `${NO_RECORDED_RUN}: run it live on the /eval page, then save its download as tests/eval/llm-snapshot.json.`,
   })
 
   const folder = new URL('eval-reports/', root)
@@ -82,6 +87,17 @@ function snapshot(engines: { id: string; name: string }[], runs: CaseRun[]) {
       top: run.results.slice(0, 10).map(keyOf),
       count: run.results.length,
     })),
+  }
+}
+
+function whyNotRun(id: string): string {
+  switch (id) {
+    case 'llm':
+      return 'live, from the /eval page'
+    case 'llm-recorded':
+      return NO_RECORDED_RUN.toLowerCase()
+    default:
+      return 'no key'
   }
 }
 
