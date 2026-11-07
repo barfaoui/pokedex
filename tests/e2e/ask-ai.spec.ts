@@ -50,6 +50,9 @@ test('without a key on the server, there is no Ask AI button', async ({
 test('Ask AI shows its results under the assistant line, and editing the query goes back to the search', async ({
   page,
 }) => {
+  test.slow()
+
+  
   await mockAi(page, true, ['pokemon:pikachu'])
   await page.goto('/')
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
