@@ -10,10 +10,20 @@ export { costUsd, PRICES_PER_MILLION, USD_TO_EUR } from './pricing.js'
 
 const DEFAULT_MODEL = 'claude-haiku-5-5'
 // Bump when the prompt changes, so cached answers and snapshots from an older prompt are told apart.
-export const PROMPT_VERSION = 'ask-ai-2'
+export const PROMPT_VERSION = 'ask-ai-3'
 const MAX_QUERY_LENGTH = 200
-// 30 of the longest keys, as JSON, count 289 tokens (count_tokens): the rest is room for spacing.
-const MAX_TOKENS = 320
+// Thinking counts toward it too: at 320, prompt v2 lost 75 of 192 answers to the cut.
+const MAX_TOKENS = 1024
+// The model can't be prefilled, so the format is enforced instead: nothing comes before the JSON.
+const ANSWER_FORMAT = {
+  type: 'json_schema',
+  schema: {
+    type: 'object',
+    properties: { results: { type: 'array', items: { type: 'string' } } },
+    required: ['results'],
+    additionalProperties: false,
+  },
+}
 // Two attempts and the pause between them stay well under the function's maxDuration (vercel.json).
 const TIMEOUT_MS = 15_000
 const RETRY_DELAY_MS = 800
@@ -45,6 +55,9 @@ export interface AiAnswer {
   results: string[]
   /** Set when the answer couldn't be read: the results are then empty. */
   note?: string
+  stopReason: string | null
+  /** Cut at MAX_TOKENS: the results are the keys written before the cut. */
+  truncated: boolean
   usage: AiUsage
   model: string
   promptVersion: string
@@ -78,19 +91,19 @@ export function sanitizeQuery(raw: string): string {
 
 /**
  * Only known keys survive, each once, MAX_RESULTS at most. Anything that isn't that shape gives an
- * empty list and a note.
+ * empty list and a note. A cut answer keeps the keys written in full before the cut.
  */
-export function readAnswer(text: string): Pick<AiAnswer, 'results' | 'note'> {
-  const parsed = parseJsonObject(text)
-  if (
-    !parsed ||
-    typeof parsed !== 'object' ||
-    !Array.isArray((parsed as { results?: unknown }).results)
-  ) {
+export function readAnswer(
+  text: string,
+  truncated = false,
+): Pick<AiAnswer, 'results' | 'note'> {
+  const listed = truncated ? completeStrings(text) : resultsOf(text)
+  // A cut answer without one complete key is as unreadable as broken JSON.
+  if (listed === null || (truncated && listed.length === 0)) {
     return { results: [], note: MESSAGES.answerUnavailable }
   }
   const results: string[] = []
-  for (const key of (parsed as { results: unknown[] }).results) {
+  for (const key of listed) {
     if (results.length >= MAX_RESULTS) {
       break
     }
@@ -120,6 +133,7 @@ export async function askAi(
     {
       model,
       max_tokens: MAX_TOKENS,
+      output_config: { format: ANSWER_FORMAT },
       system: [
         { type: 'text', text: SYSTEM_PROMPT },
         // The catalogue is the same for every query: cached, it costs a tenth of the input price.
@@ -133,6 +147,7 @@ export async function askAi(
 
   const data = (await response.json().catch(() => null)) as {
     content?: { type?: string; text?: string }[]
+    stop_reason?: string
     usage?: Record<string, number | undefined>
   } | null
   if (!data) {
@@ -145,8 +160,12 @@ export async function askAi(
     cacheWriteTokens: data.usage?.cache_creation_input_tokens ?? 0,
     outputTokens: data.usage?.output_tokens ?? 0,
   }
+  const stopReason = data.stop_reason ?? null
+  const truncated = stopReason === 'max_tokens'
   return {
-    ...readAnswer(text),
+    ...readAnswer(text, truncated),
+    stopReason,
+    truncated,
     usage: { latencyMs, ...tokens, costUsd: costUsd(tokens) },
     model,
     promptVersion: PROMPT_VERSION,
@@ -256,15 +275,28 @@ function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
-function parseJsonObject(text: string): unknown {
+function resultsOf(text: string): unknown[] | null {
   const start = text.indexOf('{')
   const end = text.lastIndexOf('}')
   if (start < 0 || end <= start) {
     return null
   }
   try {
-    return JSON.parse(text.slice(start, end + 1))
+    const parsed: unknown = JSON.parse(text.slice(start, end + 1))
+    const results = (parsed as { results?: unknown } | null)?.results
+    return Array.isArray(results) ? results : null
   } catch {
     return null
   }
+}
+
+// The last key of a cut answer has no closing quote, so it doesn't match.
+function completeStrings(text: string): string[] {
+  const start = text.indexOf('[')
+  if (start < 0) {
+    return []
+  }
+  return [...text.slice(start).matchAll(/"(?:[^"\\]|\\.)*"/g)].map(
+    ([quoted]) => JSON.parse(quoted) as string,
+  )
 }

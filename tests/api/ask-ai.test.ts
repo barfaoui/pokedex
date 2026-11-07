@@ -11,10 +11,11 @@ import { CATALOGUE_LINES } from '../../api/_lib/catalogue'
 // Not shaped like a real key on purpose: the repository check fails on that prefix.
 const FAKE_KEY = 'test-key-do-not-leak-0123456789'
 
-function providerReply(text: string): Response {
+function providerReply(text: string, stopReason = 'end_turn'): Response {
   return new Response(
     JSON.stringify({
       content: [{ type: 'text', text }],
+      stop_reason: stopReason,
       usage: {
         input_tokens: 400,
         cache_read_input_tokens: 14000,
@@ -104,7 +105,10 @@ describe('handleAskAiRequest', () => {
       },
     )
     expect(sent.model).toBe('server-model')
-    expect(sent.max_tokens).toBe(320)
+    expect(sent.max_tokens).toBe(1024)
+    expect(sent.output_config).toMatchObject({
+      format: { type: 'json_schema' },
+    })
     expect(JSON.stringify(sent.system)).not.toContain('pirate')
     expect(sent.messages).toEqual([
       { role: 'user', content: '<query>pikachu</query>' },
@@ -112,8 +116,34 @@ describe('handleAskAiRequest', () => {
     expect(reply.status).toBe(200)
     expect(reply.body).toMatchObject({
       results: ['pokemon:pikachu'],
+      stopReason: 'end_turn',
+      truncated: false,
       usage: { inputTokens: 400, cacheReadTokens: 14000, outputTokens: 120 },
     })
+  })
+
+  it('an answer cut at max_tokens keeps the keys written in full before the cut', async () => {
+    const reply = await handleAskAiRequest(
+      {
+        method: 'POST',
+        contentType: 'application/json',
+        body: { query: 'electric' },
+      },
+      {
+        apiKey: FAKE_KEY,
+        fetch: async () =>
+          providerReply(
+            '{"results":["pokemon:pikachu","pokemon:raichu","pokemon:jolt',
+            'max_tokens',
+          ),
+      },
+    )
+    expect(reply.body).toMatchObject({
+      results: ['pokemon:pikachu', 'pokemon:raichu'],
+      stopReason: 'max_tokens',
+      truncated: true,
+    })
+    expect(reply.body).not.toHaveProperty('note')
   })
 
   it('an upstream error reaches neither the client nor the logs, and the key never does', async () => {

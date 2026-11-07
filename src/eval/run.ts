@@ -31,6 +31,7 @@ export async function runCase(
     ...(engine.sentToLlm
       ? { sentToLlm: engine.sentToLlm(evalCase.query) }
       : {}),
+    ...(engine.cutOff ? { cutOff: engine.cutOff(evalCase.query) } : {}),
   }
 }
 

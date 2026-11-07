@@ -69,6 +69,8 @@ test('a live LLM run through a mocked endpoint completes', async ({ page }) => {
         },
         model: MODEL,
         promptVersion: 'test',
+        stopReason: 'end_turn',
+        truncated: false,
       },
     }),
   )
@@ -85,5 +87,8 @@ test('a live LLM run through a mocked endpoint completes', async ({ page }) => {
   })
   await expect(summary.getByRole('row', { name: /^Passed/ })).toContainText(
     / of \d+ /,
+  )
+  await expect(summary.getByRole('row', { name: /^Cut off/ })).toContainText(
+    '0',
   )
 })

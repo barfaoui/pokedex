@@ -142,6 +142,7 @@ export interface ScoredRun {
   costEur: number
   /** Set by an engine with an LLM fallback: whether this query went to the LLM. */
   sentToLlm?: boolean
+  cutOff?: boolean
 }
 
 export interface Summary {
@@ -161,6 +162,8 @@ export interface Summary {
   costPer1000: number
   /** Queries sent to the LLM; null for an engine without a fallback. */
   sentToLlm: number | null
+  /** LLM answers cut at max_tokens; null when the engine doesn't know. */
+  cutOff: number | null
 }
 
 export function summarize(runs: ScoredRun[]): Summary {
@@ -184,6 +187,9 @@ export function summarize(runs: ScoredRun[]): Summary {
     costPer1000: runs.length ? (spent / runs.length) * 1000 : 0,
     sentToLlm: runs.some((run) => run.sentToLlm !== undefined)
       ? runs.filter((run) => run.sentToLlm).length
+      : null,
+    cutOff: runs.some((run) => run.cutOff !== undefined)
+      ? runs.filter((run) => run.cutOff).length
       : null,
   }
 }

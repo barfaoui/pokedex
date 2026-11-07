@@ -122,7 +122,7 @@ test('search evaluation', { timeout: 900_000 }, async () => {
     writeFileSync(file, `${JSON.stringify(recorded, null, 2)}\n`)
     const summary = summarize(runs)
     console.log(
-      `Saved to ${fileURLToPath(file)}: ${summary.passed} of ${summary.cases} passed, ${dollars(recorded.totalCostUsd)} for the answers.`,
+      `Saved to ${fileURLToPath(file)}: ${summary.passed} of ${summary.cases} passed, cut off: ${summary.cutOff ?? 0}, ${dollars(recorded.totalCostUsd)} for the answers.`,
     )
     return
   }
@@ -181,6 +181,7 @@ function snapshot(engines: { id: string; name: string }[], runs: CaseRun[]) {
       top: run.results.slice(0, 10).map(keyOf),
       count: run.results.length,
       ...(run.sentToLlm !== undefined ? { sentToLlm: run.sentToLlm } : {}),
+      ...(run.cutOff !== undefined ? { cutOff: run.cutOff } : {}),
     })),
   }
 }

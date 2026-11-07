@@ -19,6 +19,8 @@ async function mockAi(page: Page, configured: boolean, results: string[]) {
         },
         model: 'mock',
         promptVersion: 'test',
+        stopReason: 'end_turn',
+        truncated: false,
       },
     }),
   )

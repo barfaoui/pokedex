@@ -13,6 +13,9 @@ export interface SnapshotCase {
   cacheWriteTokens: number
   outputTokens: number
   costUsd: number
+  // Recorded from prompt v3 on.
+  stopReason?: string | null
+  truncated?: boolean
 }
 
 /**
@@ -83,6 +86,8 @@ export function buildSnapshot(
     cacheWriteTokens: answer.usage.cacheWriteTokens,
     outputTokens: answer.usage.outputTokens,
     costUsd: answer.usage.costUsd,
+    stopReason: answer.stopReason,
+    truncated: answer.truncated,
   }))
   return {
     model: answers[0]?.answer.model ?? 'unknown',

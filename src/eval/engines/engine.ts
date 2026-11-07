@@ -24,6 +24,8 @@ export interface Engine {
   placeholder?: string
   /** Set by an engine that hands some queries to the LLM: whether this one was, read after `search`. */
   sentToLlm?: (query: string) => boolean
+  /** Set by an engine that knows when its LLM answer hit max_tokens: whether this one did. */
+  cutOff?: (query: string) => boolean
 }
 
 /** One model, loaded once, shared by every engine. */

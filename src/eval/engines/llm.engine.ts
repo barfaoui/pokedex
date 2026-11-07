@@ -12,6 +12,7 @@ const llm: EngineDefinition = {
       return null
     }
     const usage = new Map<string, { ms: number; costEur: number }>()
+    const cut = new Set<string>()
     let spentEur = 0
     return {
       name: source.modelName,
@@ -19,10 +20,14 @@ const llm: EngineDefinition = {
       search: async (query) => {
         const answer = await source.answer(query)
         usage.set(query, { ms: answer.ms, costEur: answer.costEur })
+        if (answer.truncated) {
+          cut.add(query)
+        }
         spentEur += answer.costEur
         return answer.results
       },
       recorded: (query) => usage.get(query),
+      ...(source.knowsCutOff ? { cutOff: (query) => cut.has(query) } : {}),
       ...(source.live ? { spentEur: () => spentEur } : {}),
     }
   },

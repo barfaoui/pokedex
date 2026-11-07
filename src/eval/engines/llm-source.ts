@@ -11,6 +11,7 @@ export interface LlmAnswer {
   /** Measured where the work happened: the provider's call, or the recorded run. */
   ms: number
   costEur: number
+  truncated: boolean
 }
 
 export interface LlmSource {
@@ -19,6 +20,8 @@ export interface LlmSource {
   about: string
   /** Billed: an engine using it sets `spentEur`, so warmUp never calls it. */
   live: boolean
+  /** Runs recorded before prompt v3 don't say which answers were cut off. */
+  knowsCutOff: boolean
   answer: (query: string) => Promise<LlmAnswer>
 }
 
@@ -32,12 +35,14 @@ export function llmSource(options: EngineContext['llm']): LlmSource | null {
       modelName,
       about: 'live',
       live: true,
+      knowsCutOff: true,
       answer: async (query) => {
         const answer = await askAi(query)
         return {
           results: aiResults(answer.results),
           ms: answer.usage.latencyMs,
           costEur: answer.usage.costUsd * USD_TO_EUR,
+          truncated: answer.truncated === true,
         }
       },
     }
@@ -51,12 +56,14 @@ export function llmSource(options: EngineContext['llm']): LlmSource | null {
     modelName,
     about: recordedLabel(snapshot),
     live: false,
+    knowsCutOff: snapshot.cases.some((c) => c.truncated !== undefined),
     answer: async (query) => {
       const recorded = byQuery.get(query)
       return {
         results: aiResults(recorded?.results ?? []),
         ms: recorded?.latencyMs ?? 0,
         costEur: (recorded?.costUsd ?? 0) * USD_TO_EUR,
+        truncated: recorded?.truncated === true,
       }
     },
   }

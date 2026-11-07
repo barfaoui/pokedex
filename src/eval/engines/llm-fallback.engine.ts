@@ -18,6 +18,7 @@ const llmFallback: EngineDefinition = {
     }
     const usage = new Map<string, { ms: number; costEur: number }>()
     const sent = new Set<string>()
+    const cut = new Set<string>()
     let spentEur = 0
     return {
       name: FALLBACK_NAME,
@@ -34,12 +35,16 @@ const llmFallback: EngineDefinition = {
         }
         const answer = await source.answer(query)
         sent.add(query)
+        if (answer.truncated) {
+          cut.add(query)
+        }
         usage.set(query, { ms: ms + answer.ms, costEur: answer.costEur })
         spentEur += answer.costEur
         return answer.results
       },
       recorded: (query) => usage.get(query),
       sentToLlm: (query) => sent.has(query),
+      ...(source.knowsCutOff ? { cutOff: (query) => cut.has(query) } : {}),
       ...(source.live ? { spentEur: () => spentEur } : {}),
     }
   },

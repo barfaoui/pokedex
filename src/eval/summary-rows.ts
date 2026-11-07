@@ -68,6 +68,11 @@ export const SUMMARY_ROWS: SummaryRow[] = [
         ? '—'
         : `${s.sentToLlm} of ${s.cases} (${percent(s.sentToLlm / s.cases)})`,
   },
+  {
+    label: 'Cut off',
+    help: 'LLM answers that hit the output limit: only the keys written in full before the cut are kept.',
+    value: (s) => (s.cutOff === null ? '—' : String(s.cutOff)),
+  },
 ]
 
 export function summaryCell(
