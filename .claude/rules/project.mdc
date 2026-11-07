@@ -17,7 +17,7 @@ The documents in `docs/` are the source of truth: read the relevant one before c
 
 - **No back end.** Everything runs in the browser. No server, API route, database or paid service.
 - **The search core (`src/search/`) is plain TypeScript with no UI dependency**: no React, no DOM, no `window`. It must be testable in Node.
-- **Semantic search runs in a Web Worker**, only when manual search isn't confident. Manual search never waits for it.
+- **Semantic search runs in a Web Worker**, only when deterministic search isn't confident. Deterministic search never waits for it.
 - **The dataset (`src/data/pokedex.json`) is read-only.** Never edit it to make something work.
 - Links between Pokémon, moves and abilities are built from the Pokémon side only.
 

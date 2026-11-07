@@ -79,14 +79,14 @@ export function withQueryDirection(
 }
 
 export function withSemanticResults(
-  manual: SearchResult[],
+  deterministic: SearchResult[],
   semantic: SearchResult[],
 ): SearchResult[] {
   if (!semantic.length) {
-    return manual
+    return deterministic
   }
   const best = new Map<string, SearchResult>()
-  for (const result of [...manual, ...semantic]) {
+  for (const result of [...deterministic, ...semantic]) {
     const key = `${result.kind}:${result.item.name}`
     if (result.score > (best.get(key)?.score ?? -1)) {
       best.set(key, result)

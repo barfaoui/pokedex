@@ -41,17 +41,17 @@ export function SearchPage({
   onTabChange,
 }: SearchPageProps) {
   const isHome = query.trim() === ''
-  const manualResults = isHome ? [] : search(query)
+  const deterministicResults = isHome ? [] : search(query)
   // Excluded words never reach the model, and "not" alone never triggers it.
   const semanticQuery = semanticQueryOf(query)
   const semantic = useSemanticSearch(
     semanticQuery,
-    !isHome && semanticQuery !== '' && needsSemantic(manualResults),
+    !isHome && semanticQuery !== '' && needsSemantic(deterministicResults),
   )
   const exclusions = isHome ? NO_EXCLUSIONS : queryExclusions(query)
   // A semantic result mustn't bring back what the query excludes.
   const searchResults = withoutExcluded(
-    withSemanticResults(manualResults, semantic.results),
+    withSemanticResults(deterministicResults, semantic.results),
     exclusions.rules,
   )
   // An AI answer belongs to the query it was asked for: typing anything else is the usual search.
@@ -79,7 +79,7 @@ export function SearchPage({
       settled:
         semantic.status !== 'searching' && semantic.status !== 'loading-model',
       askedAi: aiState !== null,
-      deterministic: manualResults,
+      deterministic: deterministicResults,
     })
 
   return (
