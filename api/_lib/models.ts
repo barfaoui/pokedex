@@ -8,7 +8,6 @@ export interface Prices {
 }
 
 export interface ModelConfig {
-  /** The model id, plus a variant when there is one: names the setup's recorded runs. */
   key: string
   model: string
   label: string
@@ -85,7 +84,7 @@ export function serverSetup(
   }
 }
 
-/** The model's prices; an unlisted model is costed at the default's, so check its rate card. */
+// An unlisted model is costed at the default's prices: check its rate card.
 export function pricesOf(model: string): Prices {
   return (
     MODEL_CONFIGS.find((config) => config.model === model)?.prices ??

@@ -18,12 +18,9 @@ export interface SnapshotCase {
   truncated?: boolean
 }
 
-/**
- * tests/eval/llm-snapshots/<model id>.prompt-v<n>.json, written by `npm run eval -- --engine llm
- * --save`: one file per prompt version, so a new prompt never overwrites an older run.
- */
+// One file per prompt version, so a new prompt never overwrites an older run.
 export interface LlmSnapshot {
-  /** The model config (api/_lib/models.ts); runs recorded before it existed go by `model`. */
+  /** Runs recorded before model configs existed have none and go by `model`. */
   key?: string
   model: string
   promptVersion: string
@@ -43,13 +40,11 @@ const SNAPSHOTS: LlmSnapshot[] = Object.values(files).flatMap((value) => {
   return snapshot ? [snapshot] : []
 })
 
-/** "ask-ai-1" → 1; null for a version without a number. */
 export function promptNumber(promptVersion: string): number | null {
   const number = /\d+$/.exec(promptVersion)?.[0]
   return number ? Number(number) : null
 }
 
-/** The config's recorded run for that prompt version, the latest version when left out. */
 export function snapshotFor(
   key: string,
   promptVersion?: number,

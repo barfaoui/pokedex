@@ -18,7 +18,6 @@ interface ResultsViewProps {
   query: string
   results: SearchResult[]
   tab: ResultTab
-  /** In selection mode, the ticked Pokémon and what a tick does. */
   cardSelection?: CardSelection
   onTabChange: (tab: ResultTab) => void
 }

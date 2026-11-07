@@ -41,7 +41,6 @@ type OverlayProps = OverlayName & {
   /** Changes when the content is replaced, so it starts at the top again. */
   contentKey: string
   onClose: () => void
-  /** Shown as a Back button when there is something to go back to. */
   onBack?: () => void
   children: ReactNode
 }

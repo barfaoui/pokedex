@@ -1,6 +1,5 @@
 import type { Match, ResultKind } from '@/search/types/result'
 
-/** Opened from a link inside the overlay, it has no matches. */
 export interface OpenItem {
   kind: ResultKind
   name: string

@@ -5,10 +5,7 @@ import type { Match, SearchResult } from './types/result'
 
 type PokemonResult = Extract<SearchResult, { kind: 'pokemon' }>
 
-/**
- * Both directions. A member that matches the query keeps its own result. Members of the same
- * stage aren't related: "vaporeon" brings Eevee, not Jolteon.
- */
+// Members of the same stage aren't related: "vaporeon" brings Eevee, not Jolteon.
 export function withEvolutionFamilies(
   results: SearchResult[],
   pokedex: PokedexIndex,

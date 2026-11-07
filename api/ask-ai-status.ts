@@ -1,4 +1,4 @@
-// Vercel serverless function: GET /api/ask-ai-status, so the UI can hide Ask AI without a key.
+// So the UI can hide Ask AI when the server has no key.
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { statusReply } from './_lib/ask-ai.js'
 import { serverSetup } from './_lib/models.js'

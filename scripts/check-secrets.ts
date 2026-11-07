@@ -1,5 +1,3 @@
-// Run after the build (`npm run check:secrets`, also in CI): fails if an Anthropic key, or the
-// value of ANTHROPIC_API_KEY, is in the built app or in a tracked file.
 import { execFileSync } from 'node:child_process'
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import { join, relative } from 'node:path'

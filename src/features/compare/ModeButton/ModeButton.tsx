@@ -6,7 +6,6 @@ interface ModeButtonProps {
   /** The mode this button belongs to, so focus can come back to it when that mode ends. */
   mode: SelectionMode
   label: string
-  /** Read out when the button can't be used yet, to say why. */
   hint: string
   enabled: boolean
   onClick: () => void

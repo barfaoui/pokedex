@@ -11,7 +11,6 @@ import type { LiveStatus } from '../useLlmLiveRun'
 import './EngineList.scss'
 
 interface EngineListProps {
-  /** The other engines, in page order around the LLM. */
   before: AvailableEngine[]
   after: AvailableEngine[]
   unavailable: string[]
@@ -22,9 +21,7 @@ interface EngineListProps {
   onModel: (model: string) => void
   live: boolean
   onLive: (live: boolean) => void
-  /** Why live runs are off, null when they can be used. */
   liveBlocked: string | null
-  /** What a live run of every case would cost, in dollars. */
   liveEstimateUsd: number
   liveStatus: LiveStatus
   onStop: () => void

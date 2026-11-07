@@ -1,11 +1,9 @@
-// Node request plumbing shared by the serverless functions and the Vite dev middleware.
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { HttpReply } from './ask-ai.js'
 
 // A query is 200 characters at most: anything far larger isn't a search.
 const MAX_BODY_BYTES = 4096
 
-/** The parsed JSON body, or undefined when it isn't JSON or is too large. */
 export async function readJsonBody(
   request: IncomingMessage & { body?: unknown },
 ): Promise<unknown> {

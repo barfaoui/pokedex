@@ -18,7 +18,6 @@ export function needsSemantic(results: SearchResult[]): boolean {
   return !results.some((result) => result.score >= CONFIDENT_SCORE)
 }
 
-/** Results scoring 0 are hidden; equal scores follow the query's sort word. */
 export function search(
   query: string,
   pokedex: PokedexIndex = index,
@@ -44,10 +43,8 @@ export function queryExclusions(
   return parsed.excluded ? exclusionsOf(parsed, pokedex) : NO_EXCLUSIONS
 }
 
-/**
- * '' when nothing is left to search (a lone negation or sort word): its listed Pokémon would
- * otherwise look weak enough to call the model.
- */
+// '' when nothing is left to search (a lone negation or sort word): its listed Pokémon would
+// otherwise look weak enough to call the model.
 export function semanticQueryOf(query: string): string {
   const parsed = parseQuery(query)
   if (!parsed.parts.length) {
@@ -93,7 +90,6 @@ function matchingResults(
   return withEvolutionFamilies(results, pokedex, parsed.family)
 }
 
-/** A lone sort word: its name matches first, then every other Pokémon, each listed once. */
 function sortWordResults(sort: Sort, pokedex: PokedexIndex): SearchResult[] {
   // "slow" can mean Slowpoke, but a phrase is never a name: "most attack" would be read as a
   // typo of Horn Attack.
@@ -110,7 +106,6 @@ function sortWordResults(sort: Sort, pokedex: PokedexIndex): SearchResult[] {
   return [...nameMatches, ...listedItems(pokedex, ['pokemon'], found)]
 }
 
-/** In Pokédex order, below any real match. */
 function listedItems(
   pokedex: PokedexIndex,
   kinds: ResultKind[],

@@ -17,7 +17,6 @@ export type Exclusion =
 
 export interface Exclusions {
   rules: Exclusion[]
-  /** Excluded words that are nothing excludable: shown, but they remove nothing. */
   unknown: string[]
 }
 
@@ -57,7 +56,6 @@ export function exclusionsOf(
   return { rules, unknown }
 }
 
-/** The others keep their score. */
 export function withoutExcluded(
   results: SearchResult[],
   rules: Exclusion[],

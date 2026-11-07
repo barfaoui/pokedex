@@ -12,10 +12,8 @@ export interface Context {
   commit: string
   dirty: boolean | null
   machine: string
-  /** null when no engine that ran needs the model. */
   modelLoadMs: number | null
   skipped: string[]
-  /** Said when there is no recorded LLM run; empty otherwise. */
   llmNote: string
 }
 

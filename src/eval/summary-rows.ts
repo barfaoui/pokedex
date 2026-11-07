@@ -4,7 +4,6 @@ import type { Summary } from './metrics'
 
 export interface SummaryRow {
   label: string
-  /** One sentence, for the page's "?" and the report's legend. */
   help: string
   value: (s: Summary) => string
   /** Latency and cost: meaningless for an engine that reads its answers. */

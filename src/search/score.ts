@@ -16,7 +16,7 @@ import type { Scored, SearchableItem } from './types/result'
 
 const NO_MATCH: Scored = { score: 0, matched: [] }
 
-/** The average of the part scores; expects at least one part. */
+/** Expects at least one part. */
 export function scoreItem(
   query: ParsedQuery,
   searchable: SearchableItem,
@@ -46,10 +46,7 @@ function scorePart(
     : scoreWord(part, searchable, pokedex, alone, learners)
 }
 
-/**
- * Multi-word names ("mr mime", "double team") are also matched against the
- * whole query as typed, filler words included.
- */
+// Multi-word names ("mr mime") are also matched against the whole query, filler words included.
 function scorePhrase(
   normalizedQuery: string,
   searchable: SearchableItem,
@@ -59,10 +56,7 @@ function scorePhrase(
     : NO_MATCH
 }
 
-/**
- * A word can mean a concept, a name, a type or a descriptor; the best counts.
- * The concept comes first, so on a tie the effect is shown.
- */
+// The best meaning counts; the concept comes first, so on a tie the effect is shown.
 function scoreWord(
   part: WordPart,
   searchable: SearchableItem,
@@ -90,7 +84,6 @@ function scoreWord(
   )
 }
 
-/** Pokémon only: 1 when the condition is met, otherwise its near-miss score. */
 function scoreStat(part: StatPart, searchable: SearchableItem): Scored {
   if (searchable.kind !== 'pokemon') {
     return NO_MATCH

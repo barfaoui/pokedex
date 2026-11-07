@@ -1,12 +1,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { toggleSelection } from '@/features/compare/selection'
 
-/** Compare picks two Pokémon; team ticks add to the saved team. */
 export type SelectionMode = 'compare' | 'team'
 
 export interface Selection {
   mode: SelectionMode | null
-  /** The two Pokémon picked to compare, oldest first. */
   selected: string[]
   start: (mode: SelectionMode) => void
   cancel: () => void

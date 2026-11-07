@@ -1,11 +1,4 @@
-// `npm run eval [-- --engine <id>] [--model <id>] [--save] [--fresh] [--yes]`: vitest rejects
-// options it doesn't know, so they reach tests/eval/eval.test.ts as EVAL_* variables.
-//   --engine <id>  only this engine; `llm` runs the LLM live (key from .env.local, see .env.example)
-//   --model <id>   the LLM's model, one of src/eval/llm-models.ts
-//   --prompt-version <n>  which recorded run of that model (default: the latest)
-//   --save         with --engine llm: write tests/eval/llm-snapshots/<model>.prompt-v<n>.json, no report
-//   --fresh        with --engine llm: ignore the answers cached in .cache/ask-ai/
-//   --yes          with --engine llm: spend the estimated cost printed without it
+// Vitest rejects options it doesn't know, so they reach tests/eval/eval.test.ts as EVAL_* variables.
 import { spawnSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
 

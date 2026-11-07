@@ -14,9 +14,7 @@ export type ConceptId =
 export interface Concept {
   id: ConceptId
   group: 'statusCondition' | 'weather'
-  /** Forms found in the effect texts, matched as whole words. */
   roots: string[]
-  /** What a user might type for it, roots included. */
   words: string[]
 }
 
@@ -50,7 +48,6 @@ export type Concepts = Record<ConceptId, Record<Direction, GeneratedTag[]>>
 
 export type Correction = Pick<GeneratedTag, 'kind' | 'name'>
 
-/** Same grouping as Concepts; a correction sits under its corrected direction. */
 export type Corrections = Partial<
   Record<ConceptId, Partial<Record<Direction, Correction[]>>>
 >

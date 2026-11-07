@@ -20,7 +20,6 @@ const SPARKLE_PIXELS = { '#': 'team-overlay__sparkle-pixel' }
 
 interface TeamOverlayProps {
   team: string[]
-  /** Adding works from the Pokémon tab only. */
   canAdd: boolean
   onRemove: (name: string) => void
   onAdd: () => void

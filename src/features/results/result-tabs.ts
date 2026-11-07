@@ -14,7 +14,6 @@ export function isResultTab(value: string): value is ResultTab {
   return (RESULT_TABS as readonly string[]).includes(value)
 }
 
-/** In the order search ranked them. */
 export function resultsInTab(
   results: SearchResult[],
   tab: ResultTab,

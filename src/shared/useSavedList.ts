@@ -52,7 +52,7 @@ function writeStored(key: string, value: string) {
   try {
     window.localStorage.setItem(key, value)
   } catch {
-    // Kept in memory only
+    // Storage is blocked: the list stays in memory, for this visit only.
   }
 }
 
@@ -76,7 +76,6 @@ export function useSavedList(
     (listener: () => void) => {
       const { listeners } = savedList(key)
       listeners.add(listener)
-      // Another tab changed the list
       const onStorage = (event: StorageEvent) => {
         if (event.key === key) {
           listener()

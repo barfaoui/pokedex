@@ -61,12 +61,11 @@ const context = {
 
 const LLM_IDS = [LLM_ID, FALLBACK_ID]
 
-/** Every engine but the two that use the LLM, which depend on the model and live toggle. */
+// The two LLM engines depend on the model and the live toggle, so they're built at each Run.
 export const LOCAL_ENGINES = availableEngines(context).filter(
   (engine) => !LLM_IDS.includes(engine.id),
 )
 
-/** Engines that can't run here (a missing key), shown disabled. */
 export const UNAVAILABLE = ENGINE_DEFINITIONS.filter(
   (definition) =>
     !LLM_IDS.includes(definition.id) &&
@@ -82,10 +81,7 @@ export interface LiveTransport {
   spentEur: () => number
 }
 
-/**
- * One per live Run, through /api/ask-ai (the browser never holds a key). Shared by the LLM and the
- * fallback, so a query both need is asked once and billed once.
- */
+// Shared by the LLM and the fallback, so a query both need is asked and billed once.
 export function liveTransport(): LiveTransport {
   const answers = new Map<string, Promise<AiAnswer>>()
   let spentEur = 0
@@ -106,10 +102,6 @@ export function liveTransport(): LiveTransport {
   }
 }
 
-/**
- * The LLM and the fallback for this model: live with a transport, else on its latest recorded run,
- * else placeholders whose columns say there is none.
- */
 export function llmEngines(
   model: string,
   transport: LiveTransport | null,

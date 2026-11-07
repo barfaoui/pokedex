@@ -3,7 +3,6 @@ import { KIND_WORDS } from '../vocabulary'
 
 const wordsByGenus = new Map<string, Set<string>>()
 
-/** Whole words only */
 export function genusScore(word: string, genus: string): number {
   let words = wordsByGenus.get(genus)
   if (!words) {

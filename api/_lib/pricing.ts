@@ -1,4 +1,4 @@
-// Prices and cost estimates for Ask AI. No catalogue and no key here: the eval page imports this.
+// No catalogue and no key here: the eval page imports this.
 import { CACHED_PROMPT_TOKENS } from './catalogue-size.js'
 import { pricesOf } from './models.js'
 
@@ -28,7 +28,7 @@ export function costUsd(tokens: TokenCounts, model: string): number {
 const QUERY_TOKENS = 20
 const ANSWER_TOKENS = 100
 
-/** A rough cost for `queries` calls: the prompt and catalogue are written to the cache once, then read. */
+// Assumes the prompt is written to the cache once, then read.
 export function estimateRunCostUsd(queries: number, model: string): number {
   if (queries <= 0) {
     return 0

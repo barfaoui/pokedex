@@ -9,7 +9,6 @@ import './RankedList.scss'
 interface RankedListProps {
   results: SearchResult[]
   query: string
-  /** Left out for a live query: nothing is expected. */
   evalCase?: EvalCase
   limit?: number
 }

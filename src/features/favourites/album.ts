@@ -17,7 +17,6 @@ export interface AlbumStat {
   value: number
 }
 
-/** A tie keeps the usual stat order. */
 export function albumStats(pokemon: Pokemon): AlbumStat[] {
   return [...STAT_NAMES]
     .sort((a, b) => pokemon.stats[b] - pokemon.stats[a])

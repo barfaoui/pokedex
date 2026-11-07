@@ -27,20 +27,16 @@ interface Related {
 }
 
 interface GroupRules {
-  /** 0 for a direction search doesn't use. */
   score: (tag: Tag) => number
-  /** What a move or ability result shows. */
   ownMatch: (tag: Tag, item: MoveOrAbility['item']) => Match
-  /** What a Pokémon result shows for one of its moves or abilities. */
   relatedMatch: (related: Related, pokedex: PokedexIndex) => Match
 }
 
 // "Has a chance to…": the effect may not happen.
 const CHANCE_WORDING = /\bchance\b/i
 
-// A status condition counts only when inflicted (or passed on), and shows the short effect.
-// Weather ranks what starts it, then benefits, then is affected, and shows the
-// sentence about it with the direction.
+// A status counts only when inflicted (or passed on); weather ranks what starts it, then what
+// benefits, then what is affected.
 const GROUPS: Record<Concept['group'], GroupRules> = {
   statusCondition: {
     score: (tag) => {
@@ -85,7 +81,6 @@ export function isWantedDirection(concept: ConceptId, tag: Tag): boolean {
   return GROUPS[CONCEPT_BY_ID[concept].group].score(tag) > 0
 }
 
-/** A Pokémon relates through its moves and abilities; `word` is the word as typed, looked for in the names. */
 export function matchConcept(
   concept: ConceptId,
   searchable: SearchableItem,
@@ -133,7 +128,6 @@ function matchPokemon(
   }
 }
 
-/** Best first. */
 function relatedOf(
   concept: ConceptId,
   pokemon: Pokemon,

@@ -6,11 +6,9 @@ import { TEAM_SIZE } from '@/features/team/team'
 import './SelectionControls.scss'
 
 interface SelectionControlsProps {
-  /** The header on desktop, a floating group on phones: each is hidden on the other screen size. */
   placement: 'header' | 'floating'
   selection: Selection
   teamSize: number
-  /** Selection mode starts from the Pokémon tab only. */
   canStart: boolean
   onCompare: () => void
   onOpenTeam: () => void

@@ -5,7 +5,6 @@ export interface UrlState {
   tab: ResultTab
 }
 
-/** A missing or unknown tab is All. */
 export function readUrlState(search: string): UrlState {
   const params = new URLSearchParams(search)
   const tab = params.get('tab') ?? ''
@@ -15,7 +14,6 @@ export function readUrlState(search: string): UrlState {
   }
 }
 
-/** All, the default tab, is left out of the URL. */
 export function writeUrlState({ query, tab }: UrlState): string {
   const params = new URLSearchParams()
   if (query) {

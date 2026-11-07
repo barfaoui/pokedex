@@ -1,8 +1,6 @@
 import type { EngineDefinition } from './engine'
 import { llmSource } from './llm-source'
 
-// The same answers as the app's Ask AI button: live when given a transport (billed), otherwise the
-// model's recorded run, with the latency and cost it had then. Neither: not created.
 const llm: EngineDefinition = {
   id: 'llm',
   order: 5,

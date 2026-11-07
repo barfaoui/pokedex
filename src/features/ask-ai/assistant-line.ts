@@ -4,7 +4,6 @@ export const ASSISTANT_FOUND = 'Prof. Chen’s assistant found these'
 export const ASSISTANT_FOUND_NOTHING =
   'Prof. Chen’s assistant found nothing either'
 
-/** `shown`: how many AI results replace the list; a failure leaves the usual search. */
 export function assistantLine(state: AiState, shown: number): string {
   switch (state.status) {
     case 'asking':

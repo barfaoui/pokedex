@@ -14,14 +14,13 @@ export const AI_MAX_QUERY_LENGTH = 200
 
 export interface AiStatus {
   configured: boolean
-  /** The server's model id, e.g. claude-haiku-5-5; null when the server doesn't say. */
   model: string | null
   thinking: 'disabled' | 'default'
 }
 
 let status: Promise<AiStatus> | undefined
 
-/** Whether the server has a key, and its model. Asked once per visit; any failure counts as no. */
+/** Asked once per visit; any failure counts as no key. */
 export function aiStatus(): Promise<AiStatus> {
   status ??= fetch('/api/ask-ai-status')
     .then((response) => (response.ok ? response.json() : null))
@@ -70,10 +69,7 @@ export async function askAi(
   return body as AiAnswer
 }
 
-/**
- * The answer as result cards, best first. A key the data doesn't hold is dropped again here, and
- * the score stays below 1: an AI answer is never an exact match.
- */
+// Unknown keys are dropped again here; score 0, since an AI answer is never an exact match.
 export function aiResults(keys: string[]): SearchResult[] {
   return keys.flatMap((key): SearchResult[] => {
     if (typeof key !== 'string') {

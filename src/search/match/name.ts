@@ -7,11 +7,8 @@ import {
 } from '../scores'
 import { typoScore } from '../typo'
 
-/**
- * `anywhere: false` only matches from the start of the name, so "rain" never matches "Mega Drain".
- * `shortPrefix: false` needs 3 letters to match the start of a name: in "weather in paris", "in"
- * would otherwise find Insomnia. Typed alone, "ab" still finds Abra.
- */
+// `anywhere: false`, so "rain" never matches "Mega Drain". `shortPrefix: false` needs 3 letters, so
+// "in" in "weather in paris" doesn't find Insomnia; typed alone, "ab" still finds Abra.
 export function nameScore(
   part: string,
   name: string,

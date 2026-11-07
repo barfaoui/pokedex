@@ -17,9 +17,7 @@ const CONCURRENCY = 4
 export interface CliLlm {
   /** Answers from `fetchAll` only: the engine never calls the provider itself. */
   askAi: (query: string) => Promise<AiAnswer>
-  /** How many of these queries would call the provider; the others are cached. */
   uncached: (queries: string[]) => number
-  /** Asks every query, cached ones from disk. Returns the queries that got no answer. */
   fetchAll: (queries: string[]) => Promise<string[]>
 }
 

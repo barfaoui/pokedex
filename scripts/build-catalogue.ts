@@ -1,10 +1,5 @@
-// Run with `npm run catalogue` after the dataset or the prompt changes. The serverless function
-// can't import the app's code (extensionless imports, the @ alias), so it gets the catalogue as a
-// generated file.
-//
-// Image URLs and the reverse lists (a move's learned_by_pokemon, an ability's pokemon) are left out:
-// they repeat each Pokémon's own lists. One line per item, because minified JSON repeats every
-// field name: 98k tokens against 80k.
+// A generated file: the serverless function can't import the app's code (extensionless imports, @).
+// No image URLs or reverse lists (they repeat each Pokémon's own); one line per item: 80k tokens, JSON 98k.
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { catalogueBlock } from '../api/_lib/catalogue-text.ts'
 import { MODEL_CONFIGS } from '../api/_lib/models.ts'

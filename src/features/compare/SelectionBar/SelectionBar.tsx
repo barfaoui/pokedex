@@ -15,10 +15,8 @@ const CROSS = [
 const CROSS_PIXELS = { '#': 'selection-bar__cancel-pixel' }
 
 interface SelectionBarProps {
-  /** Carries the count, e.g. "My team (3 / 6)". */
   actionLabel: string
   actionEnabled: boolean
-  /** Read out when the count changes. */
   announcement: string
   onAction: () => void
   onCancel: () => void

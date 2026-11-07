@@ -1,7 +1,6 @@
 import { PixelArt } from '@/shared/PixelArt/PixelArt'
 import './AskAiIcon.scss'
 
-// 🔍 with gold sparkles above it: search, with AI.
 const ASK_AI = [
   '...S.......S..',
   '..SSS.....SSS.',
@@ -28,7 +27,6 @@ const ASK_AI_PIXELS = {
 }
 
 interface AskAiIconProps {
-  /** Sets the size: the icon fills it. */
   className: string
 }
 

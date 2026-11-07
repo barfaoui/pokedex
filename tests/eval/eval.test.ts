@@ -1,7 +1,5 @@
 // It reports, it doesn't judge: the test only fails if the evaluation itself can't run.
-// Run through `npm run eval` (scripts/eval.ts), which turns its options into the EVAL_* variables.
-// EVAL_SNAPSHOT=<file.json> writes the numbers and every case's outcome there instead of a report,
-// to compare two runs.
+// EVAL_SNAPSHOT=<file.json> writes every case's outcome there instead of a report, to compare runs.
 import { execSync } from 'node:child_process'
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { arch, cpus, platform } from 'node:os'

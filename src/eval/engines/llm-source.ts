@@ -15,7 +15,6 @@ export interface LlmAnswer {
 
 export interface LlmSource {
   modelName: string
-  /** "live", or which recorded run. */
   about: string
   /** Billed: an engine using it sets `spentEur`, so warmUp never calls it. */
   live: boolean
@@ -24,7 +23,6 @@ export interface LlmSource {
   answer: (query: string) => Promise<LlmAnswer>
 }
 
-/** The LLM answers for the context's config: live when given a transport, else its recorded run. */
 export function llmSource(options: EngineContext['llm']): LlmSource | null {
   const config = configByKey(options?.model ?? '') ?? DEFAULT_CONFIG
   const modelName = `LLM (${config.label})`

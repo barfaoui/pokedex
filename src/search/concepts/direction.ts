@@ -45,10 +45,7 @@ export function tagItem(
   return classified.find((t) => t.direction !== 'unclear') ?? classified[0]
 }
 
-/**
- * Undefined when the concept only appears in passing. For weather, "inflicts" becomes
- * "starts", and "affected" becomes "benefits" when the clause is positive.
- */
+/** Undefined when the concept is only mentioned in passing. */
 export function classifySentence(
   sentence: string,
   concept: Concept,

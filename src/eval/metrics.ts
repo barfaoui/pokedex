@@ -41,7 +41,6 @@ export function gradeOf(evalCase: EvalCase, resultKey: string): Grade {
   return isAny(resultKey, evalCase.ok) ? 'ok' : null
 }
 
-/** `ranked`: `kind:name` keys, best first. */
 export function scoreCase(evalCase: EvalCase, ranked: string[]): CaseScore {
   const forbiddenFound = ranked.filter((key) => isAny(key, evalCase.forbidden))
   const failures = forbiddenFound.length

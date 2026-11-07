@@ -1,4 +1,3 @@
-// The whole "Ask AI" logic, shared by the serverless function and the Vite dev middleware.
 // Server-only: the browser never imports it (the app and the eval page only import its types).
 // No imports from src/: the serverless function can't resolve them.
 import { CATALOGUE_HEADER, CATALOGUE_LINES } from './catalogue.js'

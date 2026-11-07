@@ -3,7 +3,6 @@ import { index } from '@/data/dataset'
 import { search, semanticQueryOf } from '@/search/search'
 import type { MatchField } from '@/search/types/result'
 
-/** The sorted value search itself shows on each Pokémon, in the order it returns them. */
 function shownValues(query: string, field: MatchField): number[] {
   return search(query).flatMap((r) => {
     const match = r.matched.find((m) => m.field === field)

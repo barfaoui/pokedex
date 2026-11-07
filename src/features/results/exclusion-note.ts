@@ -2,7 +2,6 @@ import { displayName } from '@/data/display-name'
 import { DESCRIPTOR_LABELS } from '@/features/results/describe-match'
 import type { Exclusion, Exclusions } from '@/search/exclusion'
 
-/** Empty when nothing was negated. */
 export function exclusionNote({ rules, unknown }: Exclusions): string[] {
   const excluding = [...new Set(rules.map(label))]
   return [

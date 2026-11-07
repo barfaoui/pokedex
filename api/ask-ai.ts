@@ -1,4 +1,3 @@
-// Vercel serverless function: POST /api/ask-ai with { "query": "…" }.
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import { handleAskAiRequest } from './_lib/ask-ai.js'
 import { serverSetup } from './_lib/models.js'

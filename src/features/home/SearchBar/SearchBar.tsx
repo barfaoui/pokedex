@@ -20,7 +20,6 @@ const CROSS_PIXELS = { '#': 'search-bar__clear-pixel' }
 interface SearchBarProps {
   query: string
   onQueryChange: (query: string) => void
-  /** Left out when the server has no AI key: the button isn't shown at all. */
   onAskAi?: () => void
   askingAi?: boolean
 }

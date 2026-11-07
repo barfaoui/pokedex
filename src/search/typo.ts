@@ -32,7 +32,6 @@ export function typoScore(word: string, target: string): number {
     : 0
 }
 
-/** Exact, its start, or a typo. */
 export function closeScore(word: string, target: string): number {
   const prefix =
     word.length >= MIN_PREFIX_LENGTH && target.startsWith(word)

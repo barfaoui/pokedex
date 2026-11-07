@@ -22,10 +22,7 @@ export function useLlmLiveRun() {
   const stopping = useRef(false)
 
   const start = useCallback(
-    /**
-     * One engine after the other, so the fallback finds the LLM's answers already asked.
-     * `spentEur` is the transport's: a query both engines need is billed once.
-     */
+    // One engine after the other: the fallback reuses the LLM's answers, billed once by the transport.
     async (
       engines: AvailableEngine[],
       cases: EvalCase[],

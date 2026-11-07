@@ -13,7 +13,7 @@ interface SemanticClient {
 }
 
 let client: SemanticClient | undefined
-// null until the first query that needs search by meaning starts the model
+// Lazy: the model loads on the first query that needs search by meaning.
 let status: ModelStatus | null = null
 const listeners = new Set<() => void>()
 

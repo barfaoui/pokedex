@@ -5,7 +5,6 @@ import { Overlay } from '@/shared/Overlay/Overlay'
 import './PokedexOverlay.scss'
 
 interface PokedexOverlayProps {
-  /** Pokémon names, in the order they were added. */
   favourites: string[]
   onRemove: (name: string) => void
   onClose: () => void

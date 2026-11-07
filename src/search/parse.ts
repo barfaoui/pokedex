@@ -87,11 +87,8 @@ export function parseQuery(query: string): ParsedQuery {
   return parsed
 }
 
-/**
- * Everything after "not" or "no", up to "and" or the end, is excluded; the rest is searched.
- * A kind word always names the kind: "not electric pokemon" excludes Electric, not Pokémon.
- * `excluded` holds each segment's words, filler dropped; it is set whenever a negation is typed.
- */
+// After "not" or "no", up to "and" or the end, words are excluded. A kind word always names
+// the kind: "not electric pokemon" excludes Electric, not Pokémon.
 export function splitExclusions(typed: string[]): {
   searched: string[]
   excluded?: string[][]

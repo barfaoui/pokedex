@@ -13,7 +13,6 @@ export const MIN_ANYWHERE_LENGTH = 3
 // In a query of several words, "in" would otherwise find Insomnia.
 export const MIN_SHORT_PREFIX_LENGTH = 3
 
-// Typos and short forms, for names, types, colours, shapes and habitats.
 export const TYPO_RATIO = 0.4
 // "fight", "elec": a deliberate short form, just under the full word. Fewer than 4 letters
 // would be too ambiguous ("gr": grass or ground).
