@@ -3,7 +3,6 @@ import type { AvailableEngine } from '@/eval/engines/engines'
 import { summarize } from '@/eval/metrics'
 import type { CaseRun } from '@/eval/run'
 import { SUMMARY_ROWS, summaryCell, type SummaryRow } from '@/eval/summary-rows'
-import { engineTitle } from '../engine-title'
 import './SummaryTable.scss'
 
 interface SummaryTableProps {
@@ -30,9 +29,9 @@ export function SummaryTable({ engines, runs }: SummaryTableProps) {
               key={engine.id}
               className="summary-table__head"
               scope="col"
-              title={engineTitle(engine)}
+              title={engine.about}
             >
-              {engine.shortName ?? engine.name}
+              {engine.name}
             </th>
           ))}
         </tr>

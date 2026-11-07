@@ -23,7 +23,7 @@ interface EngineListProps {
   onModel: (model: string) => void
   live: boolean
   onLive: (live: boolean) => void
-  /** Why the live toggle is off, null when it can be used. */
+  /** Why live runs are off, null when they can be used. */
   liveBlocked: string | null
   /** What a live run of every case would cost, in dollars. */
   liveEstimateUsd: number
@@ -100,17 +100,25 @@ function LlmItem({
           </option>
         ))}
       </select>
-      <span className="engine-list__note">
-        {snapshot ? recordedLabel(snapshot) : NO_RUN_YET}
-      </span>
       <label className="engine-list__option">
         <input
-          type="checkbox"
+          type="radio"
+          name="llm-source"
+          checked={!live}
+          disabled={!snapshot || running}
+          onChange={() => onLive(false)}
+        />
+        {snapshot ? recordedLabel(snapshot) : `recorded: ${NO_RUN_YET}`}
+      </label>
+      <label className="engine-list__option">
+        <input
+          type="radio"
+          name="llm-source"
           checked={live && !liveBlocked}
           disabled={liveBlocked !== null || running}
-          onChange={(event) => onLive(event.target.checked)}
+          onChange={() => onLive(true)}
         />
-        run live
+        live run
       </label>
       {liveBlocked !== null && (
         <span className="engine-list__note">{liveBlocked}</span>

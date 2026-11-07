@@ -46,9 +46,9 @@ function resultOf(key: string): SearchResult | null {
 // by `invented` instead.
 const claudeCodeReference: EngineDefinition = {
   id: 'claude-code-reference',
-  order: 6,
+  order: 4,
   create: () => ({
-    name: 'Claude Code (reference)',
+    name: 'Claude Code',
     notMeasured: REFERENCE_NOTE,
     search: async (query) =>
       keysOf(query)

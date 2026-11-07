@@ -55,7 +55,7 @@ export function llmSection(
   return [
     '## Is an LLM worth adding?',
     '',
-    `Claude Code (reference) against Hybrid (deterministic + embeddings). Gap = Claude Code minus hybrid: above 0, Claude Code does better. Categories from the biggest pass-rate gap to the smallest, then by nDCG@10 gap.`,
+    `Claude Code against Hybrid (D + E). Gap = Claude Code minus hybrid: above 0, Claude Code does better. Categories from the biggest pass-rate gap to the smallest, then by nDCG@10 gap.`,
     '',
     '| Category | Cases | Claude Code passed | Hybrid passed | Gap | Claude Code nDCG@10 | Hybrid nDCG@10 | Gap |',
     '| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: |',

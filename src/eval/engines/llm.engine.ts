@@ -15,7 +15,6 @@ const llm: EngineDefinition = {
     let spentEur = 0
     return {
       name: source.modelName,
-      shortName: 'LLM',
       about: source.about,
       search: async (query) => {
         const answer = await source.answer(query)

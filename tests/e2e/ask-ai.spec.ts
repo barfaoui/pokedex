@@ -1,14 +1,14 @@
 import { expect, test, type Page } from '@playwright/test'
 
 // The AI endpoint is always mocked here: no test ever reaches the provider.
-async function mockAi(page: Page, note: string | null) {
+async function mockAi(page: Page, configured: boolean, results: string[]) {
   await page.route('**/api/ask-ai-status', (route) =>
-    route.fulfill({ json: { configured: note !== null } }),
+    route.fulfill({ json: { configured } }),
   )
   await page.route('**/api/ask-ai', (route) =>
     route.fulfill({
       json: {
-        results: [{ key: 'pokemon:pikachu', note: note ?? '' }],
+        results,
         usage: {
           latencyMs: 5,
           inputTokens: 1,
@@ -31,17 +31,17 @@ const askButton = (page: Page) => page.getByRole('button', { name: 'Ask AI' })
 test('without a key on the server, there is no Ask AI button', async ({
   page,
 }) => {
-  await mockAi(page, null)
+  await mockAi(page, false, [])
   await page.goto('/')
   await searchBar(page).fill('electric mouse')
   await expect(page.getByRole('article').first()).toBeVisible()
   await expect(askButton(page)).toHaveCount(0)
 })
 
-test('Ask AI shows the AI results with their note, and typing goes back to the search', async ({
+test('Ask AI shows the AI results as found by AI, and typing goes back to the search', async ({
   page,
 }) => {
-  await mockAi(page, 'An electric mouse, as asked')
+  await mockAi(page, true, ['pokemon:pikachu'])
   await page.goto('/')
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
   await expect(askButton(page)).toHaveCount(0)
@@ -53,23 +53,27 @@ test('Ask AI shows the AI results with their note, and typing goes back to the s
 
   const pikachu = page.getByRole('article', { name: 'Pikachu', exact: true })
   await expect(page.getByText(/^AI answer/)).toBeVisible()
-  await expect(pikachu.getByText('An electric mouse, as asked')).toBeVisible()
+  await expect(pikachu.getByText('Found by AI')).toBeVisible()
   await expect(pikachu.getByText('Exact match')).toHaveCount(0)
 
   await searchBar(page).fill('the yellow electric mice')
   await expect(page.getByText(/^AI answer/)).toHaveCount(0)
 })
 
-test('an AI note holding HTML shows as text, never as markup', async ({
+test('markup in place of a key is dropped, never shown or run', async ({
   page,
 }) => {
-  const note =
+  const markup =
     '<script>window.injected = true</script><img src=x onerror="window.injected = true">'
-  await mockAi(page, note)
+  await mockAi(page, true, [markup, 'pokemon:pikachu'])
   await page.goto('/')
   await searchBar(page).fill('pikachu')
   await askButton(page).click()
 
-  await expect(page.getByText(note).first()).toBeVisible()
+  await expect(
+    page.getByRole('article', { name: 'Pikachu', exact: true }),
+  ).toBeVisible()
+  await expect(page.getByRole('article')).toHaveCount(1)
+  await expect(page.getByText(markup)).toHaveCount(0)
   expect(await page.evaluate("'injected' in window")).toBe(false)
 })

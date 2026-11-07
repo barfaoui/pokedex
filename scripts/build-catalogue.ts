@@ -1,40 +1,81 @@
-// Run with `npm run catalogue` after the dataset changes. The serverless function can't import the
-// app's code (extensionless imports, the @ alias), so it gets the catalogue as a generated file.
-import { readFileSync, writeFileSync } from 'node:fs'
+// Run with `npm run catalogue` after the dataset or the prompt changes. The serverless function
+// can't import the app's code (extensionless imports, the @ alias), so it gets the catalogue as a
+// generated file.
+//
+// Image URLs and the reverse lists (a move's learned_by_pokemon, an ability's pokemon) are left out:
+// they repeat each Pokémon's own lists. One line per item, because minified JSON repeats every
+// field name: 98k tokens against 80k.
+import { existsSync, readFileSync, writeFileSync } from 'node:fs'
+import { catalogueBlock } from '../api/_lib/catalogue-text.ts'
+import { SYSTEM_PROMPT } from '../api/_lib/system-prompt.ts'
 import { displayName } from '../src/data/display-name.ts'
 
 interface RawPokemon {
   id: number
   name: string
+  height_decimetres: number
+  weight_hectograms: number
+  base_experience: number
   types: string[]
   stats: Record<string, number>
   abilities: string[]
+  moves: string[]
   species: {
+    generation: string
+    description: string
     genus: string
     color: string
     shape: string
     habitat: string | null
+    is_legendary: boolean
+    is_mythical: boolean
     evolution_chain_id: number
   }
 }
 
-interface RawEffect {
+interface RawMove {
+  id: number
   name: string
+  type: string
+  power: number | null
+  pp: number | null
+  accuracy: number | null
+  priority: number
+  damage_class: string
+  effect_chance: number | null
+  effect: string
   short_effect: string
+  generation: string
 }
 
-interface RawMove extends RawEffect {
-  type: string
+interface RawAbility {
+  id: number
+  name: string
+  effect: string
+  short_effect: string
+  generation: string
+  is_main_series: boolean
 }
 
 const DATASET = new URL('../src/data/pokedex.json', import.meta.url)
 const OUTPUT = new URL('../api/_lib/catalogue.ts', import.meta.url)
 // Its size alone, so the eval page can estimate a cost without bundling the catalogue.
 const SIZE_OUTPUT = new URL('../api/_lib/catalogue-size.ts', import.meta.url)
+// Haiku's input price is 5× past 100k tokens: stay well under.
+const MAX_INPUT_TOKENS = 90_000
+// Measured on the recorded v1 run (25,951 cached tokens for about 56k characters): this text,
+// full of names and numbers, packs fewer characters per token than prose.
+const CHARACTERS_PER_TOKEN = 2.2
+const MODEL = process.env.AI_MODEL || 'claude-haiku-5-5'
 
-const { pokemon, moves, abilities } = JSON.parse(
+const { metadata, pokemon, moves, abilities } = JSON.parse(
   readFileSync(DATASET, 'utf8'),
-) as { pokemon: RawPokemon[]; moves: RawMove[]; abilities: RawEffect[] }
+) as {
+  metadata: { source: string; scope: string; version_groups: string[] }
+  pokemon: RawPokemon[]
+  moves: RawMove[]
+  abilities: RawAbility[]
+}
 
 const STAT_SHORT: Record<string, string> = {
   hp: 'hp',
@@ -64,6 +105,20 @@ function familyOf(p: RawPokemon): string {
 }
 
 const oneLine = (text: string) => text.replace(/\s+/g, ' ').trim()
+const orDash = (value: number | null) => (value === null ? '—' : String(value))
+// Some short effects are the whole effect: sent once.
+const effects = (item: { effect: string; short_effect: string }) => {
+  const short = oneLine(item.short_effect)
+  const full = oneLine(item.effect)
+  return full === short ? [short] : [short, `effect: ${full}`]
+}
+
+const HEADER = [
+  `Dataset: ${metadata.scope}. Source: ${metadata.source}, version groups ${metadata.version_groups.join(', ')}.`,
+  'Pokémon: key | name | #id | types | base stats | height, weight | base experience | generation | colour, shape, habitat | genus | legendary or mythical, when it is | abilities | evolution family | moves it learns | description',
+  'Move: key | name | #id | type | damage class | power, pp, accuracy, priority, effect chance (— when none) | generation | short effect | effect, when longer',
+  'Ability: key | name | #id | generation | short effect | effect, when longer',
+]
 
 const lines = [
   ...pokemon.map((p) =>
@@ -75,31 +130,64 @@ const lines = [
       Object.entries(p.stats)
         .map(([stat, value]) => `${STAT_SHORT[stat] ?? stat} ${value}`)
         .join(' '),
+      `${p.height_decimetres / 10} m, ${p.weight_hectograms / 10} kg`,
+      `base exp ${p.base_experience}`,
+      p.species.generation,
       `${p.species.color}, ${p.species.shape}, ${p.species.habitat ?? 'unknown habitat'}`,
       p.species.genus,
+      ...(p.species.is_legendary ? ['legendary'] : []),
+      ...(p.species.is_mythical ? ['mythical'] : []),
       `abilities: ${p.abilities.join(', ')}`,
       `family: ${familyOf(p)}`,
+      `moves: ${p.moves.join(', ')}`,
+      oneLine(p.species.description),
     ].join(' | '),
   ),
   ...moves.map((m) =>
     [
       `move:${m.name}`,
       displayName(m.name),
+      `#${m.id}`,
       m.type,
-      oneLine(m.short_effect),
+      m.damage_class,
+      `power ${orDash(m.power)}, pp ${orDash(m.pp)}, accuracy ${orDash(m.accuracy)}, priority ${m.priority}, effect chance ${orDash(m.effect_chance)}`,
+      m.generation,
+      ...effects(m),
     ].join(' | '),
   ),
   ...abilities.map((a) =>
-    [`ability:${a.name}`, displayName(a.name), oneLine(a.short_effect)].join(
-      ' | ',
-    ),
+    [
+      `ability:${a.name}`,
+      displayName(a.name),
+      `#${a.id}`,
+      a.generation,
+      ...(a.is_main_series ? [] : ['not main series']),
+      ...effects(a),
+    ].join(' | '),
   ),
 ]
+
+const catalogue = catalogueBlock(HEADER, lines)
+const counted = await countTokens()
+const tokens =
+  counted ??
+  Math.ceil((SYSTEM_PROMPT.length + catalogue.length) / CHARACTERS_PER_TOKEN)
+console.log(
+  `Request: ${tokens} input tokens (${counted === null ? 'estimated: no ANTHROPIC_API_KEY' : `counted by the API for ${MODEL}`}), ${catalogue.length} catalogue characters, ${lines.length} items.`,
+)
+if (tokens > MAX_INPUT_TOKENS) {
+  console.error(
+    `Over ${MAX_INPUT_TOKENS} input tokens: nothing written. Make the catalogue smaller.`,
+  )
+  process.exit(1)
+}
 
 writeFileSync(
   OUTPUT,
   [
     '// Generated by scripts/build-catalogue.ts from src/data/pokedex.json: run `npm run catalogue`.',
+    `export const CATALOGUE_HEADER: readonly string[] = ${JSON.stringify(HEADER, null, 2)}`,
+    '',
     `export const CATALOGUE_LINES: readonly string[] = ${JSON.stringify(lines, null, 2)}`,
     '',
   ].join('\n'),
@@ -108,8 +196,52 @@ writeFileSync(
   SIZE_OUTPUT,
   [
     '// Generated by scripts/build-catalogue.ts: run `npm run catalogue`.',
-    `export const CATALOGUE_CHARACTERS = ${lines.join('\n').length}`,
+    `// The system prompt and the catalogue, ${counted === null ? 'estimated' : 'counted by the API'}.`,
+    `export const CACHED_PROMPT_TOKENS = ${tokens}`,
     '',
   ].join('\n'),
 )
-console.log(`${lines.length} items written to api/_lib/catalogue.ts`)
+console.log('Written to api/_lib/catalogue.ts')
+
+/** The whole request with a one-word query, counted for free. null without a key or on failure. */
+async function countTokens(): Promise<number | null> {
+  if (!process.env.ANTHROPIC_API_KEY && existsSync('.env.local')) {
+    process.loadEnvFile('.env.local')
+  }
+  const apiKey = process.env.ANTHROPIC_API_KEY
+  if (!apiKey) {
+    return null
+  }
+  try {
+    const response = await fetch(
+      'https://api.anthropic.com/v1/messages/count_tokens',
+      {
+        method: 'POST',
+        headers: {
+          'content-type': 'application/json',
+          'x-api-key': apiKey,
+          'anthropic-version': '2023-06-01',
+        },
+        body: JSON.stringify({
+          model: MODEL,
+          system: [
+            { type: 'text', text: SYSTEM_PROMPT },
+            { type: 'text', text: catalogue },
+          ],
+          messages: [{ role: 'user', content: '<query>x</query>' }],
+        }),
+      },
+    )
+    if (!response.ok) {
+      console.error(`count_tokens: HTTP ${response.status}, estimating instead`)
+      return null
+    }
+    const { input_tokens } = (await response.json()) as {
+      input_tokens?: number
+    }
+    return typeof input_tokens === 'number' ? input_tokens : null
+  } catch {
+    console.error('count_tokens: unreachable, estimating instead')
+    return null
+  }
+}

@@ -1,6 +1,6 @@
 // The browser side of Ask AI: it only ever talks to /api/ask-ai, never to the AI provider, and
 // holds no key. The types come from the server module; nothing else of it reaches the bundle.
-import type { AiAnswer, AiEntry } from '../../../api/_lib/ask-ai'
+import type { AiAnswer } from '../../../api/_lib/ask-ai'
 import { index } from '@/data/dataset'
 import type { SearchResult } from '@/search/types/result'
 
@@ -67,16 +67,13 @@ export async function askAi(
  * The answer as result cards, best first. A key the data doesn't hold is dropped again here, and
  * the score stays below 1: an AI answer is never an exact match.
  */
-export function aiResults(entries: AiEntry[]): SearchResult[] {
-  return entries.flatMap((entry): SearchResult[] => {
-    if (typeof entry?.key !== 'string') {
+export function aiResults(keys: string[]): SearchResult[] {
+  return keys.flatMap((key): SearchResult[] => {
+    if (typeof key !== 'string') {
       return []
     }
-    const [kind, name] = entry.key.split(':')
-    const matched: SearchResult['matched'] =
-      typeof entry.note === 'string' && entry.note
-        ? [{ field: 'ai', value: entry.note }]
-        : []
+    const [kind, name] = key.split(':')
+    const matched: SearchResult['matched'] = [{ field: 'ai', value: '' }]
     switch (kind) {
       case 'pokemon': {
         const item = index.pokemon.get(name)

@@ -1,5 +1,5 @@
 // Prices and cost estimates for Ask AI. No catalogue and no key here: the eval page imports this.
-import { CATALOGUE_CHARACTERS } from './catalogue-size.js'
+import { CACHED_PROMPT_TOKENS } from './catalogue-size.js'
 
 // USD per million tokens, for Claude Haiku 5.5. Check them on https://www.anthropic.com/pricing
 // before trusting a cost: they are not read from the API.
@@ -29,23 +29,25 @@ export function costUsd(tokens: TokenCounts): number {
   )
 }
 
-// About 4 characters per token. The prompt around the catalogue and the answer are rough sizes.
-const CHARACTERS_PER_TOKEN = 4
-const PROMPT_TOKENS = 450
-const ANSWER_TOKENS = 350
+// The query in its tags (18 tokens on average in the recorded v1 run), and a keys-only answer of
+// about ten keys: an estimate until a v2 run is recorded.
+const QUERY_TOKENS = 20
+const ANSWER_TOKENS = 100
 
-/** A rough cost for `queries` calls: the catalogue is written to the cache once, then read. */
+/** A rough cost for `queries` calls: the prompt and catalogue are written to the cache once, then read. */
 export function estimateRunCostUsd(queries: number): number {
   if (queries <= 0) {
     return 0
   }
-  const catalogueTokens = Math.ceil(CATALOGUE_CHARACTERS / CHARACTERS_PER_TOKEN)
   const call = (cacheWriteTokens: number, cacheReadTokens: number) =>
     costUsd({
-      inputTokens: PROMPT_TOKENS,
+      inputTokens: QUERY_TOKENS,
       cacheWriteTokens,
       cacheReadTokens,
       outputTokens: ANSWER_TOKENS,
     })
-  return call(catalogueTokens, 0) + (queries - 1) * call(0, catalogueTokens)
+  return (
+    call(CACHED_PROMPT_TOKENS, 0) +
+    (queries - 1) * call(0, CACHED_PROMPT_TOKENS)
+  )
 }

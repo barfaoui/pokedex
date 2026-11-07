@@ -61,7 +61,7 @@ export function EvalPage() {
       ]),
   )
   const [model, setModel] = useState(DEFAULT_LLM_MODEL)
-  const [live, setLive] = useState(false)
+  const [liveChosen, setLiveChosen] = useState(false)
   const [server, setServer] = useState<AiStatus | null>(null)
   const [filters, setFilters] = useState(NO_FILTERS)
   // The engines of the last Run, so a column never shows runs from another choice of model.
@@ -74,10 +74,10 @@ export function EvalPage() {
 
   const liveBlocked = liveBlockedReason(server, model)
   const snapshot = snapshotFor(model)
-  // The recorded run's own average, when there is one: closer than a token count.
-  const liveEstimateUsd = snapshot?.cases.length
-    ? (snapshot.totalCostUsd / snapshot.cases.length) * CASES.length
-    : estimateRunCostUsd(CASES.length)
+  // Without a recorded run, live is the only way to get answers.
+  const live = liveChosen || !snapshot
+  // Not the recorded run's average: it may come from an older, smaller prompt.
+  const liveEstimateUsd = estimateRunCostUsd(CASES.length)
 
   const runs = [...localRuns, ...liveRun.runs]
   const shownEngines = ranEngines.filter((engine) => selected.has(engine.id))
@@ -138,8 +138,8 @@ export function EvalPage() {
         </p>
         <p className="eval-page__intro">
           The engines run live in this browser, except Claude Code (answers
-          written once) and the LLM (a recorded run, or live), which the
-          fallback uses too.
+          written once) and the LLM (a recorded run, or live), which Hybrid (D +
+          LLM) uses too.
         </p>
       </header>
 
@@ -155,7 +155,7 @@ export function EvalPage() {
           model={model}
           onModel={setModel}
           live={live}
-          onLive={setLive}
+          onLive={setLiveChosen}
           liveBlocked={liveBlocked}
           liveEstimateUsd={liveEstimateUsd}
           liveStatus={liveRun.status}

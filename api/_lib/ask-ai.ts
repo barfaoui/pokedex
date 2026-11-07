@@ -1,19 +1,19 @@
 // The whole "Ask AI" logic, shared by the serverless function and the Vite dev middleware.
 // Server-only: the browser never imports it (the app and the eval page only import its types).
 // No imports from src/: the serverless function can't resolve them.
-import { CATALOGUE_LINES } from './catalogue.js'
+import { CATALOGUE_HEADER, CATALOGUE_LINES } from './catalogue.js'
+import { catalogueBlock } from './catalogue-text.js'
 import { costUsd } from './pricing.js'
-import { systemPrompt } from './system-prompt.js'
+import { MAX_RESULTS, SYSTEM_PROMPT } from './system-prompt.js'
 
 export { costUsd, PRICES_PER_MILLION, USD_TO_EUR } from './pricing.js'
 
 const DEFAULT_MODEL = 'claude-haiku-5-5'
 // Bump when the prompt changes, so cached answers and snapshots from an older prompt are told apart.
-export const PROMPT_VERSION = 'ask-ai-1'
+export const PROMPT_VERSION = 'ask-ai-2'
 const MAX_QUERY_LENGTH = 200
-const MAX_RESULTS = 10
-export const MAX_NOTE_LENGTH = 120
-const MAX_TOKENS = 800
+// 30 of the longest keys, as JSON, count 289 tokens (count_tokens): the rest is room for spacing.
+const MAX_TOKENS = 320
 // Two attempts and the pause between them stay well under the function's maxDuration (vercel.json).
 const TIMEOUT_MS = 15_000
 const RETRY_DELAY_MS = 800
@@ -32,11 +32,6 @@ export const MESSAGES = {
   answerUnavailable: 'AI answer unavailable',
 } as const
 
-export interface AiEntry {
-  key: string
-  note: string
-}
-
 export interface AiUsage {
   latencyMs: number
   inputTokens: number
@@ -47,7 +42,7 @@ export interface AiUsage {
 }
 
 export interface AiAnswer {
-  results: AiEntry[]
+  results: string[]
   /** Set when the answer couldn't be read: the results are then empty. */
   note?: string
   usage: AiUsage
@@ -68,9 +63,7 @@ const KNOWN_KEYS: ReadonlySet<string> = new Set(
   CATALOGUE_LINES.map((line) => line.slice(0, line.indexOf(' |'))),
 )
 
-const SYSTEM_PROMPT = systemPrompt(MAX_RESULTS, MAX_NOTE_LENGTH)
-
-const CATALOGUE = `<catalogue>\n${CATALOGUE_LINES.join('\n')}\n</catalogue>`
+const CATALOGUE = catalogueBlock(CATALOGUE_HEADER, CATALOGUE_LINES)
 
 class AiError extends Error {}
 
@@ -84,8 +77,8 @@ export function sanitizeQuery(raw: string): string {
 }
 
 /**
- * Only known keys survive, each once, at most 10, with a plain-text note of 120 characters at
- * most. Anything that isn't that shape gives an empty list and a note.
+ * Only known keys survive, each once, MAX_RESULTS at most. Anything that isn't that shape gives an
+ * empty list and a note.
  */
 export function readAnswer(text: string): Pick<AiAnswer, 'results' | 'note'> {
   const parsed = parseJsonObject(text)
@@ -96,23 +89,18 @@ export function readAnswer(text: string): Pick<AiAnswer, 'results' | 'note'> {
   ) {
     return { results: [], note: MESSAGES.answerUnavailable }
   }
-  const results: AiEntry[] = []
-  for (const entry of (parsed as { results: unknown[] }).results) {
+  const results: string[] = []
+  for (const key of (parsed as { results: unknown[] }).results) {
     if (results.length >= MAX_RESULTS) {
       break
     }
-    if (!entry || typeof entry !== 'object') {
-      continue
-    }
-    const { key, note } = entry as { key?: unknown; note?: unknown }
     if (
-      typeof key !== 'string' ||
-      !KNOWN_KEYS.has(key) ||
-      results.some((result) => result.key === key)
+      typeof key === 'string' &&
+      KNOWN_KEYS.has(key) &&
+      !results.includes(key)
     ) {
-      continue
+      results.push(key)
     }
-    results.push({ key, note: typeof note === 'string' ? cleanNote(note) : '' })
   }
   return { results }
 }
@@ -279,12 +267,4 @@ function parseJsonObject(text: string): unknown {
   } catch {
     return null
   }
-}
-
-function cleanNote(note: string): string {
-  return note
-    .replace(/[\p{Cc}\p{Cf}]/gu, ' ')
-    .replace(/\s+/g, ' ')
-    .trim()
-    .slice(0, MAX_NOTE_LENGTH)
 }

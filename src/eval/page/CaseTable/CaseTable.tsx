@@ -3,7 +3,6 @@ import type { EvalCase } from '@/eval/cases'
 import type { AvailableEngine } from '@/eval/engines/engines'
 import type { CaseRun } from '@/eval/run'
 import { CaseRow } from '../CaseRow/CaseRow'
-import { engineTitle } from '../engine-title'
 import './CaseTable.scss'
 
 interface CaseTableProps {
@@ -41,9 +40,9 @@ export function CaseTable({ cases, engines, runs }: CaseTableProps) {
               key={engine.id}
               className="case-table__head"
               scope="col"
-              title={engineTitle(engine)}
+              title={engine.about}
             >
-              {engine.shortName ?? engine.name}
+              {engine.name}
             </th>
           ))}
         </tr>

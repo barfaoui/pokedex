@@ -5,7 +5,7 @@ const embeddings: EngineDefinition = {
   id: 'embeddings',
   order: 2,
   create: ({ semantic }) => ({
-    name: 'Embeddings',
+    name: 'Embeddings (E)',
     search: (query) => semantic().search(query),
   }),
 }

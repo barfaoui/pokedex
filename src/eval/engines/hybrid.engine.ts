@@ -13,8 +13,7 @@ const hybrid: EngineDefinition = {
   id: 'hybrid',
   order: 3,
   create: ({ semantic }) => ({
-    name: 'Hybrid (deterministic + embeddings)',
-    shortName: 'Hybrid',
+    name: 'Hybrid (D + E)',
     search: async (query) => {
       if (query.trim() === '') {
         return []

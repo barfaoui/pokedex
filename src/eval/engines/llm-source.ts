@@ -25,7 +25,7 @@ export interface LlmSource {
 /** The LLM answers for the context's model: live when given a transport, else its recorded run. */
 export function llmSource(options: EngineContext['llm']): LlmSource | null {
   const model = options?.model ?? DEFAULT_LLM_MODEL
-  const modelName = `LLM: ${modelLabel(model)}`
+  const modelName = `LLM (${modelLabel(model)})`
   const askAi = options?.askAi
   if (askAi) {
     return {

@@ -6,7 +6,7 @@ const deterministic: EngineDefinition = {
   id: 'deterministic',
   order: 1,
   create: () => ({
-    name: 'Deterministic',
+    name: 'Deterministic (D)',
     search: async (query) => search(query),
   }),
 }

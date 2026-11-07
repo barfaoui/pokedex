@@ -2,10 +2,10 @@ import { expect, test, type Page } from '@playwright/test'
 
 const MODEL = 'claude-haiku-5-5'
 const LOCAL_ENGINES = [
-  'Deterministic',
-  'Embeddings',
-  'Hybrid (deterministic + embeddings)',
-  'Claude Code (reference)',
+  'Deterministic (D)',
+  'Embeddings (E)',
+  'Hybrid (D + E)',
+  'Claude Code',
 ]
 
 async function openWith(page: Page, configured: boolean) {
@@ -27,7 +27,7 @@ test('/eval loads without a key, with live runs off', async ({ page }) => {
   await expect(
     page.getByRole('heading', { name: 'Search evaluation' }),
   ).toBeVisible()
-  await expect(page.getByRole('checkbox', { name: 'run live' })).toBeDisabled()
+  await expect(page.getByRole('radio', { name: 'live run' })).toBeDisabled()
   await expect(page.getByText('off: no AI key on this server')).toBeVisible()
 })
 
@@ -43,7 +43,9 @@ test('the LLM and fallback columns show the recorded run, or say there is none',
     name: 'Summary of the cases shown',
   })
   await expect(
-    summary.getByRole('columnheader', { name: 'LLM', exact: true }),
+    summary.getByRole('columnheader', {
+      name: 'LLM (Claude Haiku 5.5)',
+    }),
   ).toBeVisible()
   const passed = summary.getByRole('row', { name: /^Passed/ })
   await expect(passed).toContainText(recorded ? / of \d+ / : 'no run yet')
@@ -56,7 +58,7 @@ test('a live LLM run through a mocked endpoint completes', async ({ page }) => {
   await page.route('**/api/ask-ai', (route) =>
     route.fulfill({
       json: {
-        results: [{ key: 'pokemon:pikachu', note: 'mocked' }],
+        results: ['pokemon:pikachu'],
         usage: {
           latencyMs: 3,
           inputTokens: 10,
@@ -72,7 +74,7 @@ test('a live LLM run through a mocked endpoint completes', async ({ page }) => {
   )
   await openWith(page, true)
   await onlyLlm(page)
-  await page.getByRole('checkbox', { name: 'run live' }).check()
+  await page.getByRole('radio', { name: 'live run' }).check()
   await page.getByRole('button', { name: 'Run', exact: true }).click()
 
   await expect(page.getByText(/^Live done: (\d+) \/ \1 /)).toBeVisible({

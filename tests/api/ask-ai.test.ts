@@ -2,11 +2,11 @@ import { describe, expect, it } from 'vitest'
 import {
   costUsd,
   handleAskAiRequest,
-  MAX_NOTE_LENGTH,
   MESSAGES,
   readAnswer,
   sanitizeQuery,
 } from '../../api/_lib/ask-ai'
+import { CATALOGUE_LINES } from '../../api/_lib/catalogue'
 
 // Not shaped like a real key on purpose: the repository check fails on that prefix.
 const FAKE_KEY = 'test-key-do-not-leak-0123456789'
@@ -27,33 +27,21 @@ function providerReply(text: string): Response {
 }
 
 describe('readAnswer', () => {
-  it('keeps known keys once, at most 10, cuts notes and drops every other field', () => {
-    const entries = [
-      { key: 'pokemon:pikachu', note: 'x'.repeat(200), extra: '<b>' },
-      { key: 'pokemon:pikachu', note: 'twice' },
-      { key: 'pokemon:missingno', note: 'invented' },
-      ...[
-        'raichu',
-        'jolteon',
-        'zapdos',
-        'magnemite',
-        'voltorb',
-        'electrode',
-        'electabuzz',
-        'magneton',
-        'bulbasaur',
-        'ivysaur',
-      ].map((name) => ({ key: `pokemon:${name}`, note: 'ok' })),
+  it('keeps known keys once, at most 30, and drops anything else', () => {
+    const others = CATALOGUE_LINES.map((line) =>
+      line.slice(0, line.indexOf(' |')),
+    ).filter((key) => key !== 'pokemon:pikachu')
+    const answer = [
+      'pokemon:pikachu',
+      'pokemon:pikachu',
+      'pokemon:missingno',
+      { key: 'pokemon:raichu', note: 'the v1 shape' },
+      '<img src=x onerror=alert(1)>',
+      ...others.slice(0, 31),
     ]
-    const { results, note } = readAnswer(JSON.stringify({ results: entries }))
+    const { results, note } = readAnswer(JSON.stringify({ results: answer }))
     expect(note).toBeUndefined()
-    expect(results).toHaveLength(10)
-    expect(results[0]).toEqual({
-      key: 'pokemon:pikachu',
-      note: 'x'.repeat(MAX_NOTE_LENGTH),
-    })
-    expect(results.map((r) => r.key)).not.toContain('pokemon:missingno')
-    expect(results.map((r) => r.key)).not.toContain('pokemon:ivysaur')
+    expect(results).toEqual(['pokemon:pikachu', ...others.slice(0, 29)])
   })
 
   it('an invalid or misshapen answer is an empty list with a note', () => {
@@ -111,21 +99,19 @@ describe('handleAskAiRequest', () => {
         model: 'server-model',
         fetch: async (_url, init) => {
           sent = JSON.parse(String(init?.body))
-          return providerReply(
-            '{"results":[{"key":"pokemon:pikachu","note":"named"}]}',
-          )
+          return providerReply('{"results":["pokemon:pikachu"]}')
         },
       },
     )
     expect(sent.model).toBe('server-model')
-    expect(sent.max_tokens).toBe(800)
+    expect(sent.max_tokens).toBe(320)
     expect(JSON.stringify(sent.system)).not.toContain('pirate')
     expect(sent.messages).toEqual([
       { role: 'user', content: '<query>pikachu</query>' },
     ])
     expect(reply.status).toBe(200)
     expect(reply.body).toMatchObject({
-      results: [{ key: 'pokemon:pikachu', note: 'named' }],
+      results: ['pokemon:pikachu'],
       usage: { inputTokens: 400, cacheReadTokens: 14000, outputTokens: 120 },
     })
   })

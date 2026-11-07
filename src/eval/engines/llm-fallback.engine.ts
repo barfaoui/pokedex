@@ -4,16 +4,13 @@ import type { EngineDefinition } from './engine'
 import { llmSource } from './llm-source'
 
 export const NEEDS_LLM_RUN = 'needs an LLM run'
-export const FALLBACK_NAMES = {
-  name: 'Deterministic + LLM fallback',
-  shortName: 'LLM fallback',
-}
+export const FALLBACK_NAME = 'Hybrid (D + LLM)'
 
 // The deterministic search when it is confident, the LLM otherwise. Never the weak deterministic
 // results: an empty LLM answer stays empty, so noise queries stay empty too.
 const llmFallback: EngineDefinition = {
   id: 'llm-fallback',
-  order: 4,
+  order: 6,
   create: ({ llm: options }) => {
     const source = llmSource(options)
     if (!source) {
@@ -23,7 +20,7 @@ const llmFallback: EngineDefinition = {
     const sent = new Set<string>()
     let spentEur = 0
     return {
-      ...FALLBACK_NAMES,
+      name: FALLBACK_NAME,
       about: `fallback: ${source.modelName}, ${source.about}`,
       search: async (query) => {
         const start = performance.now()

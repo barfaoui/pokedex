@@ -1,11 +1,11 @@
-import type { AiAnswer, AiEntry } from '../../api/_lib/ask-ai'
+import type { AiAnswer } from '../../api/_lib/ask-ai'
 
 export const NO_RUN_YET = 'no run yet'
 
 export interface SnapshotCase {
   id: string
   query: string
-  results: AiEntry[]
+  results: string[]
   note?: string
   latencyMs: number
   inputTokens: number
@@ -103,9 +103,9 @@ export function promptLabel(promptVersion: string): string {
   return number === null ? promptVersion : `v${number}`
 }
 
-/** "recorded on 2026-11-06, prompt v1". */
+/** "recorded on 2026-11-06". */
 export function recordedLabel(snapshot: LlmSnapshot): string {
-  return `recorded on ${snapshot.date.slice(0, 10)}, prompt ${promptLabel(snapshot.promptVersion)}`
+  return `recorded on ${snapshot.date.slice(0, 10)}`
 }
 
 function readSnapshot(value: unknown): LlmSnapshot | null {
@@ -113,9 +113,24 @@ function readSnapshot(value: unknown): LlmSnapshot | null {
     return null
   }
   const snapshot = value as Partial<LlmSnapshot>
-  return typeof snapshot.model === 'string' &&
-    typeof snapshot.date === 'string' &&
-    Array.isArray(snapshot.cases)
-    ? (snapshot as LlmSnapshot)
-    : null
+  if (
+    typeof snapshot.model !== 'string' ||
+    typeof snapshot.date !== 'string' ||
+    !Array.isArray(snapshot.cases)
+  ) {
+    return null
+  }
+  return {
+    ...(snapshot as LlmSnapshot),
+    cases: snapshot.cases.map((c) => ({ ...c, results: keysOf(c.results) })),
+  }
+}
+
+// Prompt v1 answered { key, note } for each result, later prompts the key alone.
+function keysOf(results: unknown[]): string[] {
+  return results.flatMap((entry) => {
+    const key =
+      typeof entry === 'string' ? entry : (entry as { key?: unknown })?.key
+    return typeof key === 'string' ? [key] : []
+  })
 }

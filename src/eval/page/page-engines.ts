@@ -9,7 +9,7 @@ import {
   type AvailableEngine,
 } from '@/eval/engines/engines'
 import fallbackDefinition, {
-  FALLBACK_NAMES,
+  FALLBACK_NAME,
   NEEDS_LLM_RUN,
 } from '@/eval/engines/llm-fallback.engine'
 import llmDefinition from '@/eval/engines/llm.engine'
@@ -121,8 +121,7 @@ export function llmEngines(
   return {
     llm: {
       ...(llmDefinition.create(llmContext) ?? {
-        name: `LLM: ${modelLabel(model)}`,
-        shortName: 'LLM',
+        name: `LLM (${modelLabel(model)})`,
         placeholder: NO_RUN_YET,
         search: async () => [],
       }),
@@ -130,7 +129,7 @@ export function llmEngines(
     },
     fallback: {
       ...(fallbackDefinition.create(llmContext) ?? {
-        ...FALLBACK_NAMES,
+        name: FALLBACK_NAME,
         placeholder: NEEDS_LLM_RUN,
         search: async () => [],
       }),

@@ -88,7 +88,7 @@ export function describeMatch(match: Match): MatchLine | undefined {
         label: `Evolves into ${displayName(String(value))}`,
       }
     case 'ai':
-      return withDetail('AI', String(value))
+      return { kind: 'text', label: 'Found by AI' }
   }
 }
 
