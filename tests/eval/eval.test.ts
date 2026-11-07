@@ -7,15 +7,18 @@ import { mkdirSync, writeFileSync } from 'node:fs'
 import { arch, cpus, platform } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
+import { PROMPT_VERSION } from '../../api/_lib/ask-ai'
 import { estimateRunCostUsd } from '../../api/_lib/pricing'
 import type { SemanticSearch } from '@/eval/engines/engine'
 import { availableEngines, ENGINE_DEFINITIONS } from '@/eval/engines/engines'
+import { NEEDS_LLM_RUN } from '@/eval/engines/llm-fallback.engine'
 import { DEFAULT_LLM_MODEL, LLM_MODELS } from '@/eval/llm-models'
 import {
   buildSnapshot,
   dollars,
-  LLM_SNAPSHOTS,
   NO_RUN_YET,
+  promptNumber,
+  snapshotFor,
   snapshotPath,
 } from '@/eval/llm-snapshot'
 import { summarize } from '@/eval/metrics'
@@ -31,6 +34,18 @@ test('search evaluation', { timeout: 900_000 }, async () => {
   const model = process.env.EVAL_MODEL ?? DEFAULT_LLM_MODEL
   const live = only === 'llm'
   const save = process.env.EVAL_SAVE === '1'
+  const promptVersion = process.env.EVAL_PROMPT_VERSION
+    ? Number(process.env.EVAL_PROMPT_VERSION)
+    : undefined
+  if (
+    live &&
+    promptVersion !== undefined &&
+    promptVersion !== promptNumber(PROMPT_VERSION)
+  ) {
+    throw new Error(
+      `A live run uses the current prompt, ${PROMPT_VERSION}: leave out --prompt-version`,
+    )
+  }
   if (!LLM_MODELS.includes(model)) {
     throw new Error(`Unknown model ${model}: one of ${LLM_MODELS.join(', ')}`)
   }
@@ -76,7 +91,11 @@ test('search evaluation', { timeout: 900_000 }, async () => {
   const engines = availableEngines({
     semantic: () => (semantic ??= nodeSemantic()),
     env: process.env,
-    llm: { model, ...(cli ? { askAi: cli.askAi } : {}) },
+    llm: {
+      model,
+      ...(promptVersion !== undefined ? { promptVersion } : {}),
+      ...(cli ? { askAi: cli.askAi } : {}),
+    },
   }).filter((engine) => !only || engine.id === only)
   const skipped = ENGINE_DEFINITIONS.filter(
     (definition) => !engines.some((engine) => engine.id === definition.id),
@@ -98,7 +117,7 @@ test('search evaluation', { timeout: 900_000 }, async () => {
       })),
     )
     const recorded = buildSnapshot(answers)
-    const file = new URL(snapshotPath(model), root)
+    const file = new URL(snapshotPath(model, recorded.promptVersion), root)
     mkdirSync(new URL('./', file), { recursive: true })
     writeFileSync(file, `${JSON.stringify(recorded, null, 2)}\n`)
     const summary = summarize(runs)
@@ -124,9 +143,9 @@ test('search evaluation', { timeout: 900_000 }, async () => {
     modelLoadMs,
     skipped,
     llmNote:
-      live || LLM_SNAPSHOTS.has(model) || only
+      live || snapshotFor(model, promptVersion) || only
         ? ''
-        : `${model}: ${NO_RUN_YET}. Record one with \`npm run eval -- --engine llm --model ${model} --save\`.`,
+        : `${model}${promptVersion === undefined ? '' : `, prompt v${promptVersion}`}: ${NO_RUN_YET}. Record one with \`npm run eval -- --engine llm --model ${model} --save\`.`,
   })
 
   const folder = new URL('eval-reports/', root)
@@ -161,6 +180,7 @@ function snapshot(engines: { id: string; name: string }[], runs: CaseRun[]) {
       check: run.evalCase.check,
       top: run.results.slice(0, 10).map(keyOf),
       count: run.results.length,
+      ...(run.sentToLlm !== undefined ? { sentToLlm: run.sentToLlm } : {}),
     })),
   }
 }
@@ -169,6 +189,8 @@ function whyNotRun(id: string): string {
   switch (id) {
     case 'llm':
       return NO_RUN_YET
+    case 'llm-fallback':
+      return NEEDS_LLM_RUN
     default:
       return 'no key'
   }

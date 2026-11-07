@@ -140,6 +140,8 @@ export interface ScoredRun {
   score: CaseScore
   ms: number
   costEur: number
+  /** Set by an engine with an LLM fallback: whether this query went to the LLM. */
+  sentToLlm?: boolean
 }
 
 export interface Summary {
@@ -157,6 +159,8 @@ export interface Summary {
   latencyP50: number
   latencyP95: number
   costPer1000: number
+  /** Queries sent to the LLM; null for an engine without a fallback. */
+  sentToLlm: number | null
 }
 
 export function summarize(runs: ScoredRun[]): Summary {
@@ -178,6 +182,9 @@ export function summarize(runs: ScoredRun[]): Summary {
     latencyP50: percentile(latencies, 50),
     latencyP95: percentile(latencies, 95),
     costPer1000: runs.length ? (spent / runs.length) * 1000 : 0,
+    sentToLlm: runs.some((run) => run.sentToLlm !== undefined)
+      ? runs.filter((run) => run.sentToLlm).length
+      : null,
   }
 }
 

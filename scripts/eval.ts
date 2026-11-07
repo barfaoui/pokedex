@@ -2,7 +2,8 @@
 // options it doesn't know, so they reach tests/eval/eval.test.ts as EVAL_* variables.
 //   --engine <id>  only this engine; `llm` runs the LLM live (key from .env.local, see .env.example)
 //   --model <id>   the LLM's model, one of src/eval/llm-models.ts
-//   --save         with --engine llm: write tests/eval/llm-snapshots/<model>.json, no report
+//   --prompt-version <n>  which recorded run of that model (default: the latest)
+//   --save         with --engine llm: write tests/eval/llm-snapshots/<model>.prompt-v<n>.json, no report
 //   --fresh        with --engine llm: ignore the answers cached in .cache/ask-ai/
 //   --yes          with --engine llm: spend the estimated cost printed without it
 import { spawnSync } from 'node:child_process'
@@ -13,11 +14,12 @@ const valueOf = (name: string): string | undefined => {
   const at = args.indexOf(name)
   return at === -1 ? undefined : args[at + 1]
 }
-const known = ['--engine', '--model', '--save', '--fresh', '--yes']
+const withValue = ['--engine', '--model', '--prompt-version']
+const known = [...withValue, '--save', '--fresh', '--yes']
 const unknown = args.filter((arg, at) =>
   arg.startsWith('--')
     ? !known.includes(arg)
-    : !['--engine', '--model'].includes(args[at - 1]),
+    : !withValue.includes(args[at - 1]),
 )
 if (unknown.length) {
   console.error(`Unknown: ${unknown.join(' ')}. Options: ${known.join(' ')}`)
@@ -33,6 +35,7 @@ const flag = (name: string) => (args.includes(name) ? '1' : undefined)
 const variables = {
   EVAL_ENGINE: engine,
   EVAL_MODEL: valueOf('--model'),
+  EVAL_PROMPT_VERSION: valueOf('--prompt-version'),
   EVAL_SAVE: flag('--save'),
   EVAL_FRESH: flag('--fresh'),
   EVAL_YES: flag('--yes'),

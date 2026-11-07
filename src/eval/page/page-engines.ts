@@ -1,3 +1,5 @@
+import type { AiAnswer } from '../../../api/_lib/ask-ai'
+import { USD_TO_EUR } from '../../../api/_lib/pricing'
 import csv from '../../../tests/eval/cases.csv?raw'
 import { parseCases } from '@/eval/cases'
 import type { SemanticSearch } from '@/eval/engines/engine'
@@ -6,6 +8,10 @@ import {
   ENGINE_DEFINITIONS,
   type AvailableEngine,
 } from '@/eval/engines/engines'
+import fallbackDefinition, {
+  FALLBACK_NAMES,
+  NEEDS_LLM_RUN,
+} from '@/eval/engines/llm-fallback.engine'
 import llmDefinition from '@/eval/engines/llm.engine'
 import { modelLabel } from '@/eval/format'
 import { NO_RUN_YET } from '@/eval/llm-snapshot'
@@ -18,6 +24,7 @@ import {
 
 export const CASES = parseCases(csv)
 export const LLM_ID = llmDefinition.id
+export const FALLBACK_ID = fallbackDefinition.id
 
 let semantic: SemanticSearch | undefined
 
@@ -52,15 +59,17 @@ const context = {
   env,
 }
 
-/** Every engine but the LLM, which depends on the model and live toggle picked on the page. */
+const LLM_IDS = [LLM_ID, FALLBACK_ID]
+
+/** Every engine but the two that use the LLM, which depend on the model and live toggle. */
 export const LOCAL_ENGINES = availableEngines(context).filter(
-  (engine) => engine.id !== LLM_ID,
+  (engine) => !LLM_IDS.includes(engine.id),
 )
 
 /** Engines that can't run here (a missing key), shown disabled. */
 export const UNAVAILABLE = ENGINE_DEFINITIONS.filter(
   (definition) =>
-    definition.id !== LLM_ID &&
+    !LLM_IDS.includes(definition.id) &&
     !LOCAL_ENGINES.some((engine) => engine.id === definition.id),
 ).map((definition) => definition.id)
 
@@ -68,23 +77,65 @@ export const ENGINE_ORDER = ENGINE_DEFINITIONS.map(
   (definition) => definition.id,
 )
 
+export interface LiveTransport {
+  askAi: (query: string) => Promise<AiAnswer>
+  spentEur: () => number
+}
+
 /**
- * Live: a new engine through /api/ask-ai (the browser never holds a key), so its spending starts
- * at 0. Otherwise the model's recorded run, or a placeholder whose column says there is none.
+ * One per live Run, through /api/ask-ai (the browser never holds a key). Shared by the LLM and the
+ * fallback, so a query both need is asked once and billed once.
  */
-export function llmEngine(model: string, live: boolean): AvailableEngine {
-  const engine = llmDefinition.create({
-    ...context,
-    llm: { model, ...(live ? { askAi: (query) => askAi(query) } : {}) },
-  })
+export function liveTransport(): LiveTransport {
+  const answers = new Map<string, Promise<AiAnswer>>()
+  let spentEur = 0
   return {
-    ...(engine ?? {
-      name: `LLM: ${modelLabel(model)}`,
-      shortName: 'LLM',
-      placeholder: NO_RUN_YET,
-      search: async () => [],
-    }),
-    id: LLM_ID,
+    askAi: (query) => {
+      let answer = answers.get(query)
+      if (!answer) {
+        answer = askAi(query).then((value) => {
+          spentEur += value.usage.costUsd * USD_TO_EUR
+          return value
+        })
+        answers.set(query, answer)
+        answer.catch(() => answers.delete(query))
+      }
+      return answer
+    },
+    spentEur: () => spentEur,
+  }
+}
+
+/**
+ * The LLM and the fallback for this model: live with a transport, else on its latest recorded run,
+ * else placeholders whose columns say there is none.
+ */
+export function llmEngines(
+  model: string,
+  transport: LiveTransport | null,
+): { llm: AvailableEngine; fallback: AvailableEngine } {
+  const llmContext = {
+    ...context,
+    llm: { model, ...(transport ? { askAi: transport.askAi } : {}) },
+  }
+  return {
+    llm: {
+      ...(llmDefinition.create(llmContext) ?? {
+        name: `LLM: ${modelLabel(model)}`,
+        shortName: 'LLM',
+        placeholder: NO_RUN_YET,
+        search: async () => [],
+      }),
+      id: LLM_ID,
+    },
+    fallback: {
+      ...(fallbackDefinition.create(llmContext) ?? {
+        ...FALLBACK_NAMES,
+        placeholder: NEEDS_LLM_RUN,
+        search: async () => [],
+      }),
+      id: FALLBACK_ID,
+    },
   }
 }
 

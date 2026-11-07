@@ -31,7 +31,7 @@ test('/eval loads without a key, with live runs off', async ({ page }) => {
   await expect(page.getByText('off: no AI key on this server')).toBeVisible()
 })
 
-test('the LLM column shows the recorded run, or says there is none', async ({
+test('the LLM and fallback columns show the recorded run, or say there is none', async ({
   page,
 }) => {
   await openWith(page, false)
@@ -42,9 +42,14 @@ test('the LLM column shows the recorded run, or says there is none', async ({
   const summary = page.getByRole('table', {
     name: 'Summary of the cases shown',
   })
-  await expect(summary.getByRole('columnheader', { name: 'LLM' })).toBeVisible()
+  await expect(
+    summary.getByRole('columnheader', { name: 'LLM', exact: true }),
+  ).toBeVisible()
   const passed = summary.getByRole('row', { name: /^Passed/ })
   await expect(passed).toContainText(recorded ? / of \d+ / : 'no run yet')
+  if (!recorded) {
+    await expect(passed).toContainText('needs an LLM run')
+  }
 })
 
 test('a live LLM run through a mocked endpoint completes', async ({ page }) => {

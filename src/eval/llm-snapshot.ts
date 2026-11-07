@@ -15,7 +15,10 @@ export interface SnapshotCase {
   costUsd: number
 }
 
-/** tests/eval/llm-snapshots/<model id>.json, written by `npm run eval -- --engine llm --save`. */
+/**
+ * tests/eval/llm-snapshots/<model id>.prompt-v<n>.json, written by `npm run eval -- --engine llm
+ * --save`: one file per prompt version, so a new prompt never overwrites an older run.
+ */
 export interface LlmSnapshot {
   model: string
   promptVersion: string
@@ -30,16 +33,39 @@ const files = import.meta.glob<unknown>('/tests/eval/llm-snapshots/*.json', {
   import: 'default',
 })
 
-/** Recorded runs by model id. */
-export const LLM_SNAPSHOTS: ReadonlyMap<string, LlmSnapshot> = new Map(
-  Object.values(files).flatMap((value) => {
-    const snapshot = readSnapshot(value)
-    return snapshot ? [[snapshot.model, snapshot] as const] : []
-  }),
-)
+const SNAPSHOTS: LlmSnapshot[] = Object.values(files).flatMap((value) => {
+  const snapshot = readSnapshot(value)
+  return snapshot ? [snapshot] : []
+})
 
-export function snapshotPath(model: string): string {
-  return `tests/eval/llm-snapshots/${model}.json`
+/** "ask-ai-1" → 1; null for a version without a number. */
+export function promptNumber(promptVersion: string): number | null {
+  const number = /\d+$/.exec(promptVersion)?.[0]
+  return number ? Number(number) : null
+}
+
+/** The model's recorded run for that prompt version, the latest version when left out. */
+export function snapshotFor(
+  model: string,
+  promptVersion?: number,
+): LlmSnapshot | undefined {
+  const own = SNAPSHOTS.filter((snapshot) => snapshot.model === model)
+  if (promptVersion !== undefined) {
+    return own.find((s) => promptNumber(s.promptVersion) === promptVersion)
+  }
+  return own.reduce<LlmSnapshot | undefined>(
+    (latest, s) =>
+      !latest ||
+      (promptNumber(s.promptVersion) ?? 0) >
+        (promptNumber(latest.promptVersion) ?? 0)
+        ? s
+        : latest,
+    undefined,
+  )
+}
+
+export function snapshotPath(model: string, promptVersion: string): string {
+  return `tests/eval/llm-snapshots/${model}.prompt-${promptLabel(promptVersion)}.json`
 }
 
 export function buildSnapshot(
@@ -73,8 +99,8 @@ export function dollars(value: number): string {
 
 /** "ask-ai-1" → "v1". */
 export function promptLabel(promptVersion: string): string {
-  const number = /\d+$/.exec(promptVersion)?.[0]
-  return number ? `v${number}` : promptVersion
+  const number = promptNumber(promptVersion)
+  return number === null ? promptVersion : `v${number}`
 }
 
 /** "recorded on 2026-11-06, prompt v1". */

@@ -60,6 +60,14 @@ export const SUMMARY_ROWS: SummaryRow[] = [
     value: (s) => euros(s.costPer1000),
     measured: true,
   },
+  {
+    label: 'Sent to the LLM',
+    help: 'Queries the deterministic search wasn’t confident about (top score under CONFIDENT_SCORE), answered by the LLM instead.',
+    value: (s) =>
+      s.sentToLlm === null
+        ? '—'
+        : `${s.sentToLlm} of ${s.cases} (${percent(s.sentToLlm / s.cases)})`,
+  },
 ]
 
 export function summaryCell(

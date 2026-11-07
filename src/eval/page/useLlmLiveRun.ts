@@ -22,39 +22,51 @@ export function useLlmLiveRun() {
   const stopping = useRef(false)
 
   const start = useCallback(
-    async (engine: AvailableEngine, cases: EvalCase[]) => {
+    /**
+     * One engine after the other, so the fallback finds the LLM's answers already asked.
+     * `spentEur` is the transport's: a query both engines need is billed once.
+     */
+    async (
+      engines: AvailableEngine[],
+      cases: EvalCase[],
+      spentEur: () => number,
+    ) => {
       stopping.current = false
       setRuns([])
       let done = 0
       let failed = 0
-      let spentEur = 0
+      const total = engines.length * cases.length
       const report = (state: 'running' | 'stopped' | 'done') =>
-        setStatus({ state, done, total: cases.length, failed, spentEur })
+        setStatus({ state, done, total, failed, spentEur: spentEur() })
       report('running')
-
-      const one = async (evalCase: EvalCase) => {
-        try {
-          const run = await runCase(engine, evalCase)
-          spentEur += run.costEur
-          setRuns((previous) => [...previous, run])
-        } catch {
-          failed++
-        }
-        done++
-        report('running')
+      for (const engine of engines) {
+        await runEngine(engine)
       }
+      report(stopping.current ? 'stopped' : 'done')
 
-      let next = 0
-      const worker = async () => {
-        while (next < cases.length && !stopping.current) {
+      async function runEngine(engine: AvailableEngine) {
+        const one = async (evalCase: EvalCase) => {
+          try {
+            const run = await runCase(engine, evalCase)
+            setRuns((previous) => [...previous, run])
+          } catch {
+            failed++
+          }
+          done++
+          report('running')
+        }
+
+        let next = 0
+        const worker = async () => {
+          while (next < cases.length && !stopping.current) {
+            await one(cases[next++])
+          }
+        }
+        if (cases.length && !stopping.current) {
           await one(cases[next++])
         }
+        await Promise.all(Array.from({ length: CONCURRENCY }, worker))
       }
-      if (cases.length) {
-        await one(cases[next++])
-      }
-      await Promise.all(Array.from({ length: CONCURRENCY }, worker))
-      report(stopping.current ? 'stopped' : 'done')
     },
     [],
   )

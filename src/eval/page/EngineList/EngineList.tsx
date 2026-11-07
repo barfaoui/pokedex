@@ -4,15 +4,15 @@ import { modelLabel } from '@/eval/format'
 import { LLM_MODELS } from '@/eval/llm-models'
 import {
   dollars,
-  LLM_SNAPSHOTS,
   NO_RUN_YET,
   recordedLabel,
+  snapshotFor,
 } from '@/eval/llm-snapshot'
 import type { LiveStatus } from '../useLlmLiveRun'
 import './EngineList.scss'
 
 interface EngineListProps {
-  /** Every engine but the LLM, in page order around it. */
+  /** The other engines, in page order around the LLM. */
   before: AvailableEngine[]
   after: AvailableEngine[]
   unavailable: string[]
@@ -75,7 +75,7 @@ function LlmItem({
   liveStatus,
   onStop,
 }: EngineListProps) {
-  const snapshot = LLM_SNAPSHOTS.get(model)
+  const snapshot = snapshotFor(model)
   const running = liveStatus.state === 'running'
   return (
     <li className="engine-list__item">

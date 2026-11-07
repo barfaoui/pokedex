@@ -4,7 +4,7 @@ import type { EvalCase } from '@/eval/cases'
 import type { AvailableEngine } from '@/eval/engines/engines'
 import { modelLabel, ms } from '@/eval/format'
 import { DEFAULT_LLM_MODEL } from '@/eval/llm-models'
-import { LLM_SNAPSHOTS } from '@/eval/llm-snapshot'
+import { snapshotFor } from '@/eval/llm-snapshot'
 import type { CaseRun } from '@/eval/run'
 import { aiStatus, type AiStatus } from '@/features/ask-ai/ask-ai-client'
 import { CaseTable } from '../CaseTable/CaseTable'
@@ -13,8 +13,10 @@ import { FilterSelect } from '../FilterSelect/FilterSelect'
 import {
   CASES,
   ENGINE_ORDER,
+  FALLBACK_ID,
   LLM_ID,
-  llmEngine,
+  llmEngines,
+  liveTransport,
   LOCAL_ENGINES,
   UNAVAILABLE,
 } from '../page-engines'
@@ -27,6 +29,7 @@ interface Filters {
   category: string
   source: string
   failingOnly: boolean
+  fallbackOnly: boolean
 }
 
 const ALL = ''
@@ -34,18 +37,28 @@ const NO_FILTERS: Filters = {
   category: ALL,
   source: ALL,
   failingOnly: false,
+  fallbackOnly: false,
 }
+const byOrder = (a: AvailableEngine, b: AvailableEngine) =>
+  ENGINE_ORDER.indexOf(a.id) - ENGINE_ORDER.indexOf(b.id)
 const LLM_ORDER = ENGINE_ORDER.indexOf(LLM_ID)
-const BEFORE_LLM = LOCAL_ENGINES.filter(
+// The fallback's name only: which run it uses is picked at Run time.
+const LISTED = [...LOCAL_ENGINES, llmEngines(DEFAULT_LLM_MODEL, null).fallback]
+const BEFORE_LLM = LISTED.filter(
   (engine) => ENGINE_ORDER.indexOf(engine.id) < LLM_ORDER,
-)
-const AFTER_LLM = LOCAL_ENGINES.filter(
+).sort(byOrder)
+const AFTER_LLM = LISTED.filter(
   (engine) => ENGINE_ORDER.indexOf(engine.id) > LLM_ORDER,
-)
+).sort(byOrder)
 
 export function EvalPage() {
   const [selected, setSelected] = useState<ReadonlySet<string>>(
-    () => new Set([...LOCAL_ENGINES.map((engine) => engine.id), LLM_ID]),
+    () =>
+      new Set([
+        ...LOCAL_ENGINES.map((engine) => engine.id),
+        LLM_ID,
+        FALLBACK_ID,
+      ]),
   )
   const [model, setModel] = useState(DEFAULT_LLM_MODEL)
   const [live, setLive] = useState(false)
@@ -60,7 +73,7 @@ export function EvalPage() {
   }, [])
 
   const liveBlocked = liveBlockedReason(server, model)
-  const snapshot = LLM_SNAPSHOTS.get(model)
+  const snapshot = snapshotFor(model)
   // The recorded run's own average, when there is one: closer than a token count.
   const liveEstimateUsd = snapshot?.cases.length
     ? (snapshot.totalCostUsd / snapshot.cases.length) * CASES.length
@@ -82,19 +95,23 @@ export function EvalPage() {
 
   async function run() {
     const local = LOCAL_ENGINES.filter((engine) => selected.has(engine.id))
-    const runsLive = live && liveBlocked === null
-    const llm = selected.has(LLM_ID) ? llmEngine(model, runsLive) : null
-    const engines = [...local, ...(llm ? [llm] : [])].sort(
-      (a, b) => ENGINE_ORDER.indexOf(a.id) - ENGINE_ORDER.indexOf(b.id),
-    )
-    setRanEngines(engines)
+    const transport = live && liveBlocked === null ? liveTransport() : null
+    const { llm, fallback } = llmEngines(model, transport)
+    // The LLM first: a live fallback then finds its answers already asked.
+    const usingLlm = [
+      ...(selected.has(LLM_ID) ? [llm] : []),
+      ...(selected.has(FALLBACK_ID) ? [fallback] : []),
+    ]
+    setRanEngines([...local, ...usingLlm].sort(byOrder))
     liveRun.clear()
-    // A placeholder has nothing to run; a live LLM runs after the rest, so its calls don't skew
-    // the local timings.
-    const runsHere = llm && !runsLive && !llm.placeholder ? [llm] : []
+    // A placeholder has nothing to run; live engines run after the rest, so their calls don't
+    // skew the local timings.
+    const runsHere = transport
+      ? []
+      : usingLlm.filter((engine) => !engine.placeholder)
     await start([...local, ...runsHere], CASES)
-    if (llm && runsLive) {
-      await liveRun.start(llm, CASES)
+    if (transport && usingLlm.length) {
+      await liveRun.start(usingLlm, CASES, transport.spentEur)
     }
   }
 
@@ -121,7 +138,8 @@ export function EvalPage() {
         </p>
         <p className="eval-page__intro">
           The engines run live in this browser, except Claude Code (answers
-          written once) and the LLM (a recorded run, or live).
+          written once) and the LLM (a recorded run, or live), which the
+          fallback uses too.
         </p>
       </header>
 
@@ -180,6 +198,16 @@ export function EvalPage() {
           />
           Failing only
         </label>
+        <label className="eval-page__option">
+          <input
+            type="checkbox"
+            checked={filters.fallbackOnly}
+            onChange={(event) =>
+              setFilter('fallbackOnly', event.target.checked)
+            }
+          />
+          Fallback cases only
+        </label>
       </fieldset>
 
       {shownEngines.length > 0 && (
@@ -217,7 +245,9 @@ function matchesFilters(
     (filters.category === ALL || c.category === filters.category) &&
     (filters.source === ALL || c.source === filters.source) &&
     (!filters.failingOnly ||
-      runs.some((run) => run.evalCase.id === c.id && !run.score.passed))
+      runs.some((run) => run.evalCase.id === c.id && !run.score.passed)) &&
+    (!filters.fallbackOnly ||
+      runs.some((run) => run.evalCase.id === c.id && run.sentToLlm))
   )
 }
 

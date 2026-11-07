@@ -28,6 +28,9 @@ export async function runCase(
     ms: recorded?.ms ?? measured,
     costEur: recorded?.costEur ?? (engine.spentEur?.() ?? 0) - spentBefore,
     score: scoreCase(evalCase, results.map(keyOf)),
+    ...(engine.sentToLlm
+      ? { sentToLlm: engine.sentToLlm(evalCase.query) }
+      : {}),
   }
 }
 

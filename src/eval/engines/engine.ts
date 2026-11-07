@@ -24,6 +24,8 @@ export interface Engine {
   about?: string
   /** Set on an engine with nothing to show (an LLM model without a run): its cells say this instead. */
   placeholder?: string
+  /** Set by an engine that hands some queries to the LLM: whether this one was, read after `search`. */
+  sentToLlm?: (query: string) => boolean
 }
 
 /** One model, loaded once, shared by every engine. */
@@ -37,9 +39,11 @@ export interface EngineContext {
   semantic: () => SemanticSearch
   /** process.env in the CLI, import.meta.env in the page (only VITE_ names reach it). */
   env: Record<string, string | undefined>
-  /** The LLM engine's model (the default one when left out) and how it runs. */
+  /** The LLM's model (the default one when left out) and how it runs, for every engine that uses it. */
   llm?: {
     model?: string
+    /** Which recorded run: the latest prompt version when left out. */
+    promptVersion?: number
     /**
      * Given only for a live run: /api/ask-ai in the page, the provider in `npm run eval -- --engine
      * llm`. Left out, the engine shows the model's recorded run, so nothing is billed by accident.
