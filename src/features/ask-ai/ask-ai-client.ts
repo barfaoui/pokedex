@@ -80,19 +80,18 @@ export function aiResults(keys: string[]): SearchResult[] {
       return []
     }
     const [kind, name] = key.split(':')
-    const matched: SearchResult['matched'] = [{ field: 'ai', value: '' }]
     switch (kind) {
       case 'pokemon': {
         const item = index.pokemon.get(name)
-        return item ? [{ kind, item, score: 0, matched }] : []
+        return item ? [{ kind, item, score: 0, matched: [] }] : []
       }
       case 'move': {
         const item = index.moves.get(name)
-        return item ? [{ kind, item, score: 0, matched }] : []
+        return item ? [{ kind, item, score: 0, matched: [] }] : []
       }
       case 'ability': {
         const item = index.abilities.get(name)
-        return item ? [{ kind, item, score: 0, matched }] : []
+        return item ? [{ kind, item, score: 0, matched: [] }] : []
       }
       default:
         return []

@@ -1,5 +1,6 @@
 import { useId, useRef, type KeyboardEvent } from 'react'
 import { AI_NOTICE } from '@/features/ask-ai/ask-ai-client'
+import { AskAiIcon } from '@/features/ask-ai/AskAiIcon/AskAiIcon'
 import { PixelArt } from '@/shared/PixelArt/PixelArt'
 import './SearchBar.scss'
 
@@ -15,32 +16,6 @@ const CROSS = [
 ]
 
 const CROSS_PIXELS = { '#': 'search-bar__clear-pixel' }
-
-// 🔍 with gold sparkles above it: search, with AI.
-const ASK_AI = [
-  '...S.......S..',
-  '..SSS.....SSS.',
-  '...S.......S..',
-  '....FFFF......',
-  '..FFFFFFFF....',
-  '..FFGWGGFF....',
-  '.FFGWGGGGFF...',
-  '.FFGGGGGGFF...',
-  '.FFGGGGGGFF...',
-  '..FFGGGGFF....',
-  '..FFFFFFFFH...',
-  '....FFFF.HHH..',
-  '..........HHH.',
-  '...........HHH',
-]
-
-const ASK_AI_PIXELS = {
-  S: 'search-bar__ask-ai-sparkle',
-  F: 'search-bar__ask-ai-frame',
-  G: 'search-bar__ask-ai-glass',
-  W: 'search-bar__ask-ai-glint',
-  H: 'search-bar__ask-ai-handle',
-}
 
 interface SearchBarProps {
   query: string
@@ -114,11 +89,7 @@ export function SearchBar({
             disabled={askingAi}
             onClick={onAskAi}
           >
-            <PixelArt
-              className="search-bar__ask-ai-icon"
-              rows={ASK_AI}
-              pixelClasses={ASK_AI_PIXELS}
-            />
+            <AskAiIcon className="search-bar__ask-ai-icon" />
           </button>
           <span className="search-bar__ask-ai-note" id={noteId}>
             {AI_NOTICE}

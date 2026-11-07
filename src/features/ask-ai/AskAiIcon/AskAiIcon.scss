@@ -1,0 +1,26 @@
+@use 'styles/tokens' as *;
+
+.ask-ai-icon {
+  display: block;
+  flex-shrink: 0;
+
+  &__sparkle {
+    fill: $glow;
+  }
+
+  &__frame {
+    fill: $accent;
+  }
+
+  &__glass {
+    fill: $mint;
+  }
+
+  &__glint {
+    fill: $white;
+  }
+
+  &__handle {
+    fill: $ink;
+  }
+}

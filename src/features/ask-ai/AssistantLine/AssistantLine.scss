@@ -1,0 +1,14 @@
+@use 'styles/tokens' as *;
+
+.assistant-line {
+  display: flex;
+  align-items: center;
+  gap: $space-2;
+  margin-top: $space-4;
+  color: $ink;
+
+  &__icon {
+    width: $icon-size * 1.75;
+    height: $icon-size * 1.75;
+  }
+}

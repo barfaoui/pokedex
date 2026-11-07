@@ -60,29 +60,8 @@
   }
 
   &__ask-ai-icon {
-    display: block;
     width: $icon-size * 1.75;
     height: $icon-size * 1.75;
-  }
-
-  &__ask-ai-sparkle {
-    fill: $glow;
-  }
-
-  &__ask-ai-frame {
-    fill: $accent;
-  }
-
-  &__ask-ai-glass {
-    fill: $mint;
-  }
-
-  &__ask-ai-glint {
-    fill: $white;
-  }
-
-  &__ask-ai-handle {
-    fill: $ink;
   }
 
   &__ask-ai-note {

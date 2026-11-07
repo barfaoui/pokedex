@@ -17,7 +17,7 @@ import { NoResults } from '@/features/home/NoResults/NoResults'
 import { ProfessorChen } from '@/features/home/ProfessorChen/ProfessorChen'
 import { ResultsView } from '@/features/results/ResultsView/ResultsView'
 import { SearchBar } from '@/features/home/SearchBar/SearchBar'
-import { AiNote } from '@/features/ask-ai/AiNote/AiNote'
+import { AssistantLine } from '@/features/ask-ai/AssistantLine/AssistantLine'
 import { AskAiSuggestion } from '@/features/ask-ai/AskAiSuggestion/AskAiSuggestion'
 import { suggestsAskAi } from '@/features/ask-ai/ask-ai-suggestion'
 import { useAskAi } from '@/features/ask-ai/useAskAi'
@@ -99,7 +99,9 @@ export function SearchPage({
         />
         {isHome && <ExampleQueries onPick={onQueryChange} />}
       </div>
-      {aiState && <AiNote state={aiState} shown={aiShown?.length ?? 0} />}
+      {aiState && (
+        <AssistantLine state={aiState} shown={aiShown?.length ?? 0} />
+      )}
       {state === 'waiting' && <LabFilesWaiting />}
       {semantic.status === 'failed' && <SemanticUnavailable />}
       {state !== 'waiting' && !aiShown && (

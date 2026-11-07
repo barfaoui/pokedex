@@ -34,6 +34,8 @@ const searchBar = (page: Page) =>
 const askButton = (page: Page) => page.getByRole('button', { name: 'Ask AI' })
 const suggestion = (page: Page) =>
   page.getByText('Not what you’re looking for?')
+const assistantLine = (page: Page) =>
+  page.getByRole('status').filter({ hasText: /^Prof\. Chen’s assistant/ })
 
 test('without a key on the server, there is no Ask AI button', async ({
   page,
@@ -45,7 +47,7 @@ test('without a key on the server, there is no Ask AI button', async ({
   await expect(askButton(page)).toHaveCount(0)
 })
 
-test('Ask AI shows the AI results as found by AI, and typing goes back to the search', async ({
+test('Ask AI shows its results under the assistant line, and editing the query goes back to the search', async ({
   page,
 }) => {
   await mockAi(page, true, ['pokemon:pikachu'])
@@ -59,12 +61,30 @@ test('Ask AI shows the AI results as found by AI, and typing goes back to the se
   await askButton(page).click()
 
   const pikachu = page.getByRole('article', { name: 'Pikachu', exact: true })
-  await expect(page.getByText(/^AI answer/)).toBeVisible()
-  await expect(pikachu.getByText('Found by AI')).toBeVisible()
+  await expect(assistantLine(page)).toHaveText(
+    'Prof. Chen’s assistant found these',
+  )
+  await expect(assistantLine(page).locator('svg')).toHaveAttribute(
+    'aria-hidden',
+    'true',
+  )
+  await expect(page.getByRole('article')).toHaveCount(1)
+  await expect(pikachu.getByRole('list', { name: 'What matched' })).toHaveCount(
+    0,
+  )
   await expect(pikachu.getByText('Exact match')).toHaveCount(0)
+  await expect(page.getByText('Found by AI')).toHaveCount(0)
+  await expect(page.getByText(/^AI answer/)).toHaveCount(0)
+  await expect(
+    page.getByRole('button', { name: 'Back to the normal results' }),
+  ).toHaveCount(0)
 
   await searchBar(page).fill('the yellow electric mice')
-  await expect(page.getByText(/^AI answer/)).toHaveCount(0)
+  await expect(assistantLine(page)).toHaveCount(0)
+  // The usual search may wait for the search by meaning, which loads its model first.
+  await expect(page.getByRole('article').nth(1)).toBeVisible({
+    timeout: 60_000,
+  })
 })
 
 test('markup in place of a key is dropped, never shown or run', async ({
@@ -97,12 +117,12 @@ test('an unsure search suggests Ask AI, and a click replaces the results with it
   expect(calls.count).toBe(0)
 
   await page.getByRole('button', { name: 'Let AI help you' }).click()
-  await expect(page.getByText(/^AI answer/)).toBeVisible()
+  await expect(assistantLine(page)).toHaveText(
+    'Prof. Chen’s assistant found these',
+  )
   await expect(page.getByRole('article')).toHaveCount(1)
   await expect(
-    page
-      .getByRole('article', { name: 'Jigglypuff', exact: true })
-      .getByText('Found by AI'),
+    page.getByRole('article', { name: 'Jigglypuff', exact: true }),
   ).toBeVisible()
   await expect(suggestion(page)).toHaveCount(0)
   expect(calls.count).toBe(1)
@@ -115,9 +135,9 @@ test('an empty AI answer shows nothing', async ({ page }) => {
   await expect(page.getByRole('article').first()).toBeVisible()
   await askButton(page).click()
 
-  await expect(
-    page.getByText('AI answer: nothing in the Pokédex fits.'),
-  ).toBeVisible()
+  await expect(assistantLine(page)).toHaveText(
+    'Prof. Chen’s assistant found nothing either',
+  )
   await expect(page.getByRole('article')).toHaveCount(0)
 })
 
