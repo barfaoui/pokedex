@@ -3,12 +3,12 @@
 // No imports from src/: the serverless function can't resolve them.
 import { CATALOGUE_HEADER, CATALOGUE_LINES } from './catalogue.js'
 import { catalogueBlock } from './catalogue-text.js'
+import { DEFAULT_CONFIG } from './models.js'
 import { costUsd } from './pricing.js'
 import { MAX_RESULTS, SYSTEM_PROMPT } from './system-prompt.js'
 
-export { costUsd, PRICES_PER_MILLION, USD_TO_EUR } from './pricing.js'
+export { costUsd, USD_TO_EUR } from './pricing.js'
 
-const DEFAULT_MODEL = 'claude-haiku-5-5'
 // Bump when the prompt changes, so cached answers and snapshots from an older prompt are told apart.
 export const PROMPT_VERSION = 'ask-ai-3'
 const MAX_QUERY_LENGTH = 200
@@ -66,6 +66,8 @@ export interface AiAnswer {
 export interface AskAiConfig {
   apiKey: string | undefined
   model?: string
+  /** AI_THINKING: "disabled" turns thinking off; anything else keeps the model's default. */
+  thinking?: string
   /** Swapped in tests for a stand-in response. */
   fetch?: typeof fetch
   /** Server logs only: never given a key, a header or an upstream body. */
@@ -126,7 +128,7 @@ export async function askAi(
   if (!config.apiKey) {
     throw new AiError('not configured')
   }
-  const model = config.model || DEFAULT_MODEL
+  const model = config.model || DEFAULT_CONFIG.model
   const query = sanitizeQuery(rawQuery).slice(0, MAX_QUERY_LENGTH)
   const start = performance.now()
   const response = await postWithRetry(
@@ -134,6 +136,9 @@ export async function askAi(
       model,
       max_tokens: MAX_TOKENS,
       output_config: { format: ANSWER_FORMAT },
+      ...(thinkingOff(config.thinking)
+        ? { thinking: { type: 'disabled' } }
+        : {}),
       system: [
         { type: 'text', text: SYSTEM_PROMPT },
         // The catalogue is the same for every query: cached, it costs a tenth of the input price.
@@ -166,7 +171,7 @@ export async function askAi(
     ...readAnswer(text, truncated),
     stopReason,
     truncated,
-    usage: { latencyMs, ...tokens, costUsd: costUsd(tokens) },
+    usage: { latencyMs, ...tokens, costUsd: costUsd(tokens, model) },
     model,
     promptVersion: PROMPT_VERSION,
   }
@@ -223,11 +228,20 @@ export async function handleAskAiRequest(
 export function statusReply(
   apiKey: string | undefined,
   model: string | undefined,
+  thinking: string | undefined,
 ): HttpReply {
   return {
     status: 200,
-    body: { configured: Boolean(apiKey), model: model || DEFAULT_MODEL },
+    body: {
+      configured: Boolean(apiKey),
+      model: model || DEFAULT_CONFIG.model,
+      thinking: thinkingOff(thinking) ? 'disabled' : 'default',
+    },
   }
+}
+
+function thinkingOff(thinking: string | undefined): boolean {
+  return thinking === 'disabled'
 }
 
 async function postWithRetry(

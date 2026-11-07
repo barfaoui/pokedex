@@ -23,6 +23,8 @@ export interface SnapshotCase {
  * --save`: one file per prompt version, so a new prompt never overwrites an older run.
  */
 export interface LlmSnapshot {
+  /** The model config (api/_lib/models.ts); runs recorded before it existed go by `model`. */
+  key?: string
   model: string
   promptVersion: string
   date: string
@@ -47,12 +49,14 @@ export function promptNumber(promptVersion: string): number | null {
   return number ? Number(number) : null
 }
 
-/** The model's recorded run for that prompt version, the latest version when left out. */
+/** The config's recorded run for that prompt version, the latest version when left out. */
 export function snapshotFor(
-  model: string,
+  key: string,
   promptVersion?: number,
 ): LlmSnapshot | undefined {
-  const own = SNAPSHOTS.filter((snapshot) => snapshot.model === model)
+  const own = SNAPSHOTS.filter(
+    (snapshot) => (snapshot.key ?? snapshot.model) === key,
+  )
   if (promptVersion !== undefined) {
     return own.find((s) => promptNumber(s.promptVersion) === promptVersion)
   }
@@ -67,11 +71,12 @@ export function snapshotFor(
   )
 }
 
-export function snapshotPath(model: string, promptVersion: string): string {
-  return `tests/eval/llm-snapshots/${model}.prompt-${promptLabel(promptVersion)}.json`
+export function snapshotPath(key: string, promptVersion: string): string {
+  return `tests/eval/llm-snapshots/${key}.prompt-${promptLabel(promptVersion)}.json`
 }
 
 export function buildSnapshot(
+  key: string,
   answers: { id: string; query: string; answer: AiAnswer }[],
   date = new Date(),
 ): LlmSnapshot {
@@ -90,6 +95,7 @@ export function buildSnapshot(
     truncated: answer.truncated,
   }))
   return {
+    key,
     model: answers[0]?.answer.model ?? 'unknown',
     promptVersion: answers[0]?.answer.promptVersion ?? 'unknown',
     date: date.toISOString(),

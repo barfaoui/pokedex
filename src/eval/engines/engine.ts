@@ -39,8 +39,8 @@ export interface EngineContext {
   semantic: () => SemanticSearch
   /** process.env in the CLI, import.meta.env in the page (only VITE_ names reach it). */
   env: Record<string, string | undefined>
-  /** The LLM's model (the default one when left out) and how it runs, for every engine that uses it. */
   llm?: {
+    /** A config key from api/_lib/models.ts; the default config when left out. */
     model?: string
     /** Which recorded run: the latest prompt version when left out. */
     promptVersion?: number

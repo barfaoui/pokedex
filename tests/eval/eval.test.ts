@@ -8,11 +8,22 @@ import { arch, cpus, platform } from 'node:os'
 import { fileURLToPath } from 'node:url'
 import { expect, test } from 'vitest'
 import { PROMPT_VERSION } from '../../api/_lib/ask-ai'
+import {
+  configByKey,
+  DEFAULT_CONFIG,
+  MODEL_CONFIGS,
+} from '../../api/_lib/models'
 import { estimateRunCostUsd } from '../../api/_lib/pricing'
-import type { SemanticSearch } from '@/eval/engines/engine'
-import { availableEngines, ENGINE_DEFINITIONS } from '@/eval/engines/engines'
-import { NEEDS_LLM_RUN } from '@/eval/engines/llm-fallback.engine'
-import { DEFAULT_LLM_MODEL, LLM_MODELS } from '@/eval/llm-models'
+import type { EngineContext, SemanticSearch } from '@/eval/engines/engine'
+import {
+  availableEngines,
+  ENGINE_DEFINITIONS,
+  type AvailableEngine,
+} from '@/eval/engines/engines'
+import fallbackDefinition, {
+  NEEDS_LLM_RUN,
+} from '@/eval/engines/llm-fallback.engine'
+import llmDefinition from '@/eval/engines/llm.engine'
 import {
   buildSnapshot,
   dollars,
@@ -31,7 +42,7 @@ const root = new URL('../../', import.meta.url)
 
 test('search evaluation', { timeout: 900_000 }, async () => {
   const only = process.env.EVAL_ENGINE
-  const model = process.env.EVAL_MODEL ?? DEFAULT_LLM_MODEL
+  const config = configByKey(process.env.EVAL_MODEL ?? DEFAULT_CONFIG.key)
   const live = only === 'llm'
   const save = process.env.EVAL_SAVE === '1'
   const promptVersion = process.env.EVAL_PROMPT_VERSION
@@ -46,8 +57,10 @@ test('search evaluation', { timeout: 900_000 }, async () => {
       `A live run uses the current prompt, ${PROMPT_VERSION}: leave out --prompt-version`,
     )
   }
-  if (!LLM_MODELS.includes(model)) {
-    throw new Error(`Unknown model ${model}: one of ${LLM_MODELS.join(', ')}`)
+  if (!config) {
+    throw new Error(
+      `Unknown model ${process.env.EVAL_MODEL}: one of ${MODEL_CONFIGS.map((c) => c.key).join(', ')}`,
+    )
   }
   if (only && !ENGINE_DEFINITIONS.some((d) => d.id === only)) {
     throw new Error(
@@ -70,10 +83,10 @@ test('search evaluation', { timeout: 900_000 }, async () => {
         'ANTHROPIC_API_KEY is not set: add it to .env.local (see .env.example)',
       )
     }
-    cli = cliLlm(apiKey, model, process.env.EVAL_FRESH === '1')
+    cli = cliLlm(apiKey, config, process.env.EVAL_FRESH === '1')
     const uncached = cli.uncached(queries)
     console.log(
-      `LLM ${model}: ${uncached} of ${queries.length} queries to ask, the others are cached. Estimated cost: ${dollars(estimateRunCostUsd(uncached))}.`,
+      `${config.label}: ${uncached} of ${queries.length} queries to ask, the others are cached. Estimated cost: ${dollars(estimateRunCostUsd(uncached, config.model))}.`,
     )
     if (uncached > 0 && process.env.EVAL_YES !== '1') {
       console.log('Nothing was called. Add --yes to run it.')
@@ -88,17 +101,32 @@ test('search evaluation', { timeout: 900_000 }, async () => {
   }
 
   let semantic: SemanticSearch | undefined
-  const engines = availableEngines({
+  const context = {
     semantic: () => (semantic ??= nodeSemantic()),
     env: process.env,
-    llm: {
-      model,
-      ...(promptVersion !== undefined ? { promptVersion } : {}),
-      ...(cli ? { askAi: cli.askAi } : {}),
-    },
-  }).filter((engine) => !only || engine.id === only)
+  }
+  const local = availableEngines(context).filter(
+    (engine) => !USING_LLM.includes(engine.id),
+  )
+  const usingLlm = cli
+    ? llmEngines(context, { model: config.key, askAi: cli.askAi }, config.label)
+    : MODEL_CONFIGS.flatMap((recorded) =>
+        llmEngines(
+          context,
+          {
+            model: recorded.key,
+            ...(promptVersion !== undefined ? { promptVersion } : {}),
+          },
+          recorded.label,
+        ),
+      )
+  const engines = [
+    ...local,
+    ...usingLlm.filter((engine) => idOf(engine) === llmDefinition.id),
+    ...usingLlm.filter((engine) => idOf(engine) === fallbackDefinition.id),
+  ].filter((engine) => !only || idOf(engine) === only)
   const skipped = ENGINE_DEFINITIONS.filter(
-    (definition) => !engines.some((engine) => engine.id === definition.id),
+    (definition) => !engines.some((engine) => idOf(engine) === definition.id),
   ).map(
     (definition) =>
       `${definition.id} (${only ? 'not selected' : whyNotRun(definition.id)})`,
@@ -116,8 +144,8 @@ test('search evaluation', { timeout: 900_000 }, async () => {
         answer: await cli.askAi(query),
       })),
     )
-    const recorded = buildSnapshot(answers)
-    const file = new URL(snapshotPath(model, recorded.promptVersion), root)
+    const recorded = buildSnapshot(config.key, answers)
+    const file = new URL(snapshotPath(config.key, recorded.promptVersion), root)
     mkdirSync(new URL('./', file), { recursive: true })
     writeFileSync(file, `${JSON.stringify(recorded, null, 2)}\n`)
     const summary = summarize(runs)
@@ -143,9 +171,11 @@ test('search evaluation', { timeout: 900_000 }, async () => {
     modelLoadMs,
     skipped,
     llmNote:
-      live || snapshotFor(model, promptVersion) || only
+      live ||
+      only ||
+      MODEL_CONFIGS.some((recorded) => snapshotFor(recorded.key, promptVersion))
         ? ''
-        : `${model}${promptVersion === undefined ? '' : `, prompt v${promptVersion}`}: ${NO_RUN_YET}. Record one with \`npm run eval -- --engine llm --model ${model} --save\`.`,
+        : `${NO_RUN_YET}${promptVersion === undefined ? '' : ` for prompt v${promptVersion}`}. Record one with \`npm run eval -- --engine llm --model ${config.key} --save\`.`,
   })
 
   const folder = new URL('eval-reports/', root)
@@ -184,6 +214,36 @@ function snapshot(engines: { id: string; name: string }[], runs: CaseRun[]) {
       ...(run.cutOff !== undefined ? { cutOff: run.cutOff } : {}),
     })),
   }
+}
+
+const USING_LLM = [llmDefinition.id, fallbackDefinition.id]
+
+// Ids and names carry the config, so each recorded model gets its own columns in one report.
+function llmEngines(
+  context: Omit<EngineContext, 'llm'>,
+  llm: NonNullable<EngineContext['llm']>,
+  label: string,
+): AvailableEngine[] {
+  return [llmDefinition, fallbackDefinition].flatMap((definition) => {
+    const engine = definition.create({ ...context, llm })
+    if (!engine) {
+      return []
+    }
+    return [
+      {
+        ...engine,
+        id: `${definition.id}:${llm.model}`,
+        name:
+          definition === fallbackDefinition
+            ? `${engine.name}, ${label}`
+            : engine.name,
+      },
+    ]
+  })
+}
+
+function idOf(engine: AvailableEngine): string {
+  return engine.id.split(':')[0]
 }
 
 function whyNotRun(id: string): string {

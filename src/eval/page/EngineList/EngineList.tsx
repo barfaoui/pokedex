@@ -1,7 +1,6 @@
 import { USD_TO_EUR } from '../../../../api/_lib/pricing'
 import type { AvailableEngine } from '@/eval/engines/engines'
-import { modelLabel } from '@/eval/format'
-import { LLM_MODELS } from '@/eval/llm-models'
+import { MODEL_CONFIGS } from '../../../../api/_lib/models'
 import {
   dollars,
   NO_RUN_YET,
@@ -94,9 +93,9 @@ function LlmItem({
         disabled={running}
         onChange={(event) => onModel(event.target.value)}
       >
-        {LLM_MODELS.map((id) => (
-          <option key={id} value={id}>
-            {modelLabel(id)}
+        {MODEL_CONFIGS.map((config) => (
+          <option key={config.key} value={config.key}>
+            {config.label}
           </option>
         ))}
       </select>

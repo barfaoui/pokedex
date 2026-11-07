@@ -16,7 +16,10 @@ function askAiDevServer(): Plugin {
     configureServer(server) {
       const env = loadEnv(server.config.mode, process.cwd(), '')
       server.middlewares.use('/api/ask-ai-status', (_request, response) =>
-        sendReply(response, statusReply(env.ANTHROPIC_API_KEY, env.AI_MODEL)),
+        sendReply(
+          response,
+          statusReply(env.ANTHROPIC_API_KEY, env.AI_MODEL, env.AI_THINKING),
+        ),
       )
       server.middlewares.use('/api/ask-ai', async (request, response) => {
         const body =
@@ -29,7 +32,11 @@ function askAiDevServer(): Plugin {
               contentType: request.headers['content-type'],
               body,
             },
-            { apiKey: env.ANTHROPIC_API_KEY, model: env.AI_MODEL },
+            {
+              apiKey: env.ANTHROPIC_API_KEY,
+              model: env.AI_MODEL,
+              thinking: env.AI_THINKING,
+            },
           ),
         )
       })

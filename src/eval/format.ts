@@ -1,21 +1,3 @@
-/** "claude-haiku-5-5" → "Claude Haiku 5.5": words capitalised, consecutive numbers as a version. */
-export function modelLabel(model: string): string {
-  return model
-    .split('-')
-    .reduce<string[]>((words, part) => {
-      const previous = words.at(-1)
-      if (/^\d+$/.test(part) && previous && /\d$/.test(previous)) {
-        words[words.length - 1] = `${previous}.${part}`
-      } else {
-        words.push(
-          /^\d/.test(part) ? part : part[0].toUpperCase() + part.slice(1),
-        )
-      }
-      return words
-    }, [])
-    .join(' ')
-}
-
 export function euros(value: number): string {
   return `${value.toFixed(2)} €`
 }

@@ -1,4 +1,5 @@
 import type { AiAnswer } from '../../../api/_lib/ask-ai'
+import { configByKey, DEFAULT_CONFIG } from '../../../api/_lib/models'
 import { USD_TO_EUR } from '../../../api/_lib/pricing'
 import csv from '../../../tests/eval/cases.csv?raw'
 import { parseCases } from '@/eval/cases'
@@ -13,7 +14,6 @@ import fallbackDefinition, {
   NEEDS_LLM_RUN,
 } from '@/eval/engines/llm-fallback.engine'
 import llmDefinition from '@/eval/engines/llm.engine'
-import { modelLabel } from '@/eval/format'
 import { NO_RUN_YET } from '@/eval/llm-snapshot'
 import { askAi } from '@/features/ask-ai/ask-ai-client'
 import {
@@ -121,7 +121,7 @@ export function llmEngines(
   return {
     llm: {
       ...(llmDefinition.create(llmContext) ?? {
-        name: `LLM (${modelLabel(model)})`,
+        name: `LLM (${(configByKey(model) ?? DEFAULT_CONFIG).label})`,
         placeholder: NO_RUN_YET,
         search: async () => [],
       }),

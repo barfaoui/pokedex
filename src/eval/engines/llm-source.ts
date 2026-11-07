@@ -1,6 +1,5 @@
 import { USD_TO_EUR } from '../../../api/_lib/pricing'
-import { modelLabel } from '@/eval/format'
-import { DEFAULT_LLM_MODEL } from '@/eval/llm-models'
+import { configByKey, DEFAULT_CONFIG } from '../../../api/_lib/models'
 import { recordedLabel, snapshotFor } from '@/eval/llm-snapshot'
 import { aiResults } from '@/features/ask-ai/ask-ai-client'
 import type { SearchResult } from '@/search/types/result'
@@ -25,10 +24,10 @@ export interface LlmSource {
   answer: (query: string) => Promise<LlmAnswer>
 }
 
-/** The LLM answers for the context's model: live when given a transport, else its recorded run. */
+/** The LLM answers for the context's config: live when given a transport, else its recorded run. */
 export function llmSource(options: EngineContext['llm']): LlmSource | null {
-  const model = options?.model ?? DEFAULT_LLM_MODEL
-  const modelName = `LLM (${modelLabel(model)})`
+  const config = configByKey(options?.model ?? '') ?? DEFAULT_CONFIG
+  const modelName = `LLM (${config.label})`
   const askAi = options?.askAi
   if (askAi) {
     return {
@@ -47,7 +46,7 @@ export function llmSource(options: EngineContext['llm']): LlmSource | null {
       },
     }
   }
-  const snapshot = snapshotFor(model, options?.promptVersion)
+  const snapshot = snapshotFor(config.key, options?.promptVersion)
   if (!snapshot) {
     return null
   }

@@ -1,9 +1,13 @@
 import { useEffect, useState } from 'react'
+import {
+  configByKey,
+  configOf,
+  DEFAULT_CONFIG,
+} from '../../../../api/_lib/models'
 import { estimateRunCostUsd } from '../../../../api/_lib/pricing'
 import type { EvalCase } from '@/eval/cases'
 import type { AvailableEngine } from '@/eval/engines/engines'
-import { modelLabel, ms } from '@/eval/format'
-import { DEFAULT_LLM_MODEL } from '@/eval/llm-models'
+import { ms } from '@/eval/format'
 import { snapshotFor } from '@/eval/llm-snapshot'
 import type { CaseRun } from '@/eval/run'
 import { aiStatus, type AiStatus } from '@/features/ask-ai/ask-ai-client'
@@ -43,7 +47,7 @@ const byOrder = (a: AvailableEngine, b: AvailableEngine) =>
   ENGINE_ORDER.indexOf(a.id) - ENGINE_ORDER.indexOf(b.id)
 const LLM_ORDER = ENGINE_ORDER.indexOf(LLM_ID)
 // The fallback's name only: which run it uses is picked at Run time.
-const LISTED = [...LOCAL_ENGINES, llmEngines(DEFAULT_LLM_MODEL, null).fallback]
+const LISTED = [...LOCAL_ENGINES, llmEngines(DEFAULT_CONFIG.key, null).fallback]
 const BEFORE_LLM = LISTED.filter(
   (engine) => ENGINE_ORDER.indexOf(engine.id) < LLM_ORDER,
 ).sort(byOrder)
@@ -60,7 +64,7 @@ export function EvalPage() {
         FALLBACK_ID,
       ]),
   )
-  const [model, setModel] = useState(DEFAULT_LLM_MODEL)
+  const [model, setModel] = useState(DEFAULT_CONFIG.key)
   const [liveChosen, setLiveChosen] = useState(false)
   const [server, setServer] = useState<AiStatus | null>(null)
   const [filters, setFilters] = useState(NO_FILTERS)
@@ -77,7 +81,10 @@ export function EvalPage() {
   // Without a recorded run, live is the only way to get answers.
   const live = liveChosen || !snapshot
   // Not the recorded run's average: it may come from an older, smaller prompt.
-  const liveEstimateUsd = estimateRunCostUsd(CASES.length)
+  const liveEstimateUsd = estimateRunCostUsd(
+    CASES.length,
+    (configByKey(model) ?? DEFAULT_CONFIG).model,
+  )
 
   const runs = [...localRuns, ...liveRun.runs]
   const shownEngines = ranEngines.filter((engine) => selected.has(engine.id))
@@ -222,7 +229,7 @@ export function EvalPage() {
 
 function liveBlockedReason(
   server: AiStatus | null,
-  model: string,
+  key: string,
 ): string | null {
   if (!server) {
     return 'checking the server…'
@@ -230,8 +237,12 @@ function liveBlockedReason(
   if (!server.configured) {
     return 'off: no AI key on this server'
   }
-  if (server.model && server.model !== model) {
-    return `off: this server runs ${modelLabel(server.model)}`
+  const serverConfig = configOf(
+    server.model ?? DEFAULT_CONFIG.model,
+    server.thinking === 'disabled' ? 'disabled' : undefined,
+  )
+  if (serverConfig?.key !== key) {
+    return `off: this server runs ${serverConfig?.label ?? server.model}`
   }
   return null
 }

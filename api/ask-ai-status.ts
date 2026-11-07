@@ -9,6 +9,10 @@ export default function handler(
 ): void {
   sendReply(
     response,
-    statusReply(process.env.ANTHROPIC_API_KEY, process.env.AI_MODEL),
+    statusReply(
+      process.env.ANTHROPIC_API_KEY,
+      process.env.AI_MODEL,
+      process.env.AI_THINKING,
+    ),
   )
 }

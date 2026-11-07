@@ -20,6 +20,7 @@ export default async function handler(
       {
         apiKey: process.env.ANTHROPIC_API_KEY,
         model: process.env.AI_MODEL,
+        thinking: process.env.AI_THINKING,
       },
     ),
   )

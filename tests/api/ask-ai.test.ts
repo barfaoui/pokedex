@@ -68,15 +68,19 @@ describe('sanitizeQuery', () => {
 })
 
 describe('costUsd', () => {
-  it('prices each kind of token per million', () => {
-    expect(
-      costUsd({
-        inputTokens: 1_000_000,
-        cacheWriteTokens: 1_000_000,
-        cacheReadTokens: 1_000_000,
-        outputTokens: 1_000_000,
-      }),
-    ).toBeCloseTo(0.1 + 0.125 + 0.01 + 0.5)
+  it("prices each kind of token per million, at the model's own rates", () => {
+    const million = {
+      inputTokens: 1_000_000,
+      cacheWriteTokens: 1_000_000,
+      cacheReadTokens: 1_000_000,
+      outputTokens: 1_000_000,
+    }
+    expect(costUsd(million, 'claude-haiku-5-5')).toBeCloseTo(
+      0.1 + 0.125 + 0.01 + 0.5,
+    )
+    expect(costUsd(million, 'claude-sonnet-5-5')).toBeCloseTo(
+      2 + 2.5 + 0.1 + 10,
+    )
   })
 })
 
@@ -105,6 +109,7 @@ describe('handleAskAiRequest', () => {
       },
     )
     expect(sent.model).toBe('server-model')
+    expect(sent).not.toHaveProperty('thinking')
     expect(sent.max_tokens).toBe(1024)
     expect(sent.output_config).toMatchObject({
       format: { type: 'json_schema' },
@@ -120,6 +125,22 @@ describe('handleAskAiRequest', () => {
       truncated: false,
       usage: { inputTokens: 400, cacheReadTokens: 14000, outputTokens: 120 },
     })
+  })
+
+  it('AI_THINKING=disabled turns thinking off in the request', async () => {
+    let sent: Record<string, unknown> = {}
+    await handleAskAiRequest(
+      { method: 'POST', contentType: 'application/json', body: { query: 'x' } },
+      {
+        apiKey: FAKE_KEY,
+        thinking: 'disabled',
+        fetch: async (_url, init) => {
+          sent = JSON.parse(String(init?.body))
+          return providerReply('{"results":[]}')
+        },
+      },
+    )
+    expect(sent.thinking).toEqual({ type: 'disabled' })
   })
 
   it('an answer cut at max_tokens keeps the keys written in full before the cut', async () => {

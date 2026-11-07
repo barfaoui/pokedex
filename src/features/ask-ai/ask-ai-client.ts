@@ -14,6 +14,7 @@ export interface AiStatus {
   configured: boolean
   /** The server's model id, e.g. claude-haiku-5-5; null when the server doesn't say. */
   model: string | null
+  thinking: 'disabled' | 'default'
 }
 
 let status: Promise<AiStatus> | undefined
@@ -23,13 +24,17 @@ export function aiStatus(): Promise<AiStatus> {
   status ??= fetch('/api/ask-ai-status')
     .then((response) => (response.ok ? response.json() : null))
     .then((body: unknown) => {
-      const { configured, model } = (body ?? {}) as Record<string, unknown>
+      const { configured, model, thinking } = (body ?? {}) as Record<
+        string,
+        unknown
+      >
       return {
         configured: configured === true,
         model: typeof model === 'string' ? model : null,
-      }
+        thinking: thinking === 'disabled' ? 'disabled' : 'default',
+      } satisfies AiStatus
     })
-    .catch(() => ({ configured: false, model: null }))
+    .catch(() => ({ configured: false, model: null, thinking: 'default' }))
   return status
 }
 

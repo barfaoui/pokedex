@@ -1,14 +1,7 @@
 // Prices and cost estimates for Ask AI. No catalogue and no key here: the eval page imports this.
 import { CACHED_PROMPT_TOKENS } from './catalogue-size.js'
+import { pricesOf } from './models.js'
 
-// USD per million tokens, for Claude Haiku 5.5. Check them on https://www.anthropic.com/pricing
-// before trusting a cost: they are not read from the API.
-export const PRICES_PER_MILLION = {
-  input: 0.1,
-  cacheWrite: 0.125,
-  cacheRead: 0.01,
-  output: 0.5,
-}
 // The eval counts in euros. Check the rate before trusting a converted cost.
 export const USD_TO_EUR = 0.92
 
@@ -19,35 +12,40 @@ export interface TokenCounts {
   outputTokens: number
 }
 
-export function costUsd(tokens: TokenCounts): number {
+export function costUsd(tokens: TokenCounts, model: string): number {
+  const prices = pricesOf(model)
   return (
-    (tokens.inputTokens * PRICES_PER_MILLION.input +
-      tokens.cacheWriteTokens * PRICES_PER_MILLION.cacheWrite +
-      tokens.cacheReadTokens * PRICES_PER_MILLION.cacheRead +
-      tokens.outputTokens * PRICES_PER_MILLION.output) /
+    (tokens.inputTokens * prices.input +
+      tokens.cacheWriteTokens * prices.cacheWrite +
+      tokens.cacheReadTokens * prices.cacheRead +
+      tokens.outputTokens * prices.output) /
     1_000_000
   )
 }
 
 // The query in its tags (18 tokens on average in the recorded v1 run), and a keys-only answer of
-// about ten keys: an estimate until a v2 run is recorded.
+// about ten keys. A model that thinks writes more: the estimate is low for it.
 const QUERY_TOKENS = 20
 const ANSWER_TOKENS = 100
 
 /** A rough cost for `queries` calls: the prompt and catalogue are written to the cache once, then read. */
-export function estimateRunCostUsd(queries: number): number {
+export function estimateRunCostUsd(queries: number, model: string): number {
   if (queries <= 0) {
     return 0
   }
+  // Each tokenizer counts the same prompt differently; an unlisted model gets the largest count.
+  const promptTokens =
+    CACHED_PROMPT_TOKENS[model] ??
+    Math.max(...Object.values(CACHED_PROMPT_TOKENS))
   const call = (cacheWriteTokens: number, cacheReadTokens: number) =>
-    costUsd({
-      inputTokens: QUERY_TOKENS,
-      cacheWriteTokens,
-      cacheReadTokens,
-      outputTokens: ANSWER_TOKENS,
-    })
-  return (
-    call(CACHED_PROMPT_TOKENS, 0) +
-    (queries - 1) * call(0, CACHED_PROMPT_TOKENS)
-  )
+    costUsd(
+      {
+        inputTokens: QUERY_TOKENS,
+        cacheWriteTokens,
+        cacheReadTokens,
+        outputTokens: ANSWER_TOKENS,
+      },
+      model,
+    )
+  return call(promptTokens, 0) + (queries - 1) * call(0, promptTokens)
 }

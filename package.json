@@ -21,7 +21,7 @@
     "eval": "node scripts/eval.ts",
     "concepts": "node scripts/build-concepts.ts && prettier --write src/search/concepts/generated.ts",
     "embeddings": "node scripts/build-embeddings.ts",
-    "catalogue": "node scripts/build-catalogue.ts && prettier --write api/_lib/catalogue.ts",
+    "catalogue": "node scripts/build-catalogue.ts && prettier --write api/_lib/catalogue.ts api/_lib/catalogue-size.ts",
     "check:secrets": "node scripts/check-secrets.ts",
     "test:watch": "vitest",
     "test:e2e": "playwright test"

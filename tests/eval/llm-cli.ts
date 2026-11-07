@@ -8,6 +8,7 @@ import {
   sanitizeQuery,
   type AiAnswer,
 } from '../../api/_lib/ask-ai'
+import type { ModelConfig } from '../../api/_lib/models'
 
 const CACHE = new URL('../../.cache/ask-ai/', import.meta.url)
 // Four calls at a time, after a first one alone so that it writes the prompt cache for the rest.
@@ -22,12 +23,16 @@ export interface CliLlm {
   fetchAll: (queries: string[]) => Promise<string[]>
 }
 
-export function cliLlm(apiKey: string, model: string, fresh: boolean): CliLlm {
+export function cliLlm(
+  apiKey: string,
+  config: ModelConfig,
+  fresh: boolean,
+): CliLlm {
   const answers = new Map<string, AiAnswer>()
   const fileOf = (query: string) =>
     new URL(
       `${createHash('sha256')
-        .update(`${model}\n${PROMPT_VERSION}\n${sanitizeQuery(query)}`)
+        .update(`${config.key}\n${PROMPT_VERSION}\n${sanitizeQuery(query)}`)
         .digest('hex')}.json`,
       CACHE,
     )
@@ -41,7 +46,8 @@ export function cliLlm(apiKey: string, model: string, fresh: boolean): CliLlm {
     }
     const answer = await askAi(query, {
       apiKey,
-      model,
+      model: config.model,
+      thinking: config.thinking,
       log: (message) => console.error(message),
     })
     mkdirSync(CACHE, { recursive: true })
