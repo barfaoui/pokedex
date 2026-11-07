@@ -7,6 +7,8 @@ import type { SearchResult } from '@/search/types/result'
 export type { AiAnswer } from '../../../api/_lib/ask-ai'
 
 const AI_UNAVAILABLE = 'AI unavailable'
+export const AI_NOTICE =
+  'Ask AI: sends your query to an AI provider (Anthropic)'
 // The server's own limit: checked here too, to say so before sending.
 export const AI_MAX_QUERY_LENGTH = 200
 

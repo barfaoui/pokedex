@@ -1,0 +1,34 @@
+@use 'styles/tokens' as *;
+@use 'styles/mixins' as *;
+
+.ask-ai-suggestion {
+  margin-top: $space-5;
+  text-align: center;
+
+  &__button {
+    @include focus-ring;
+
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: $accent;
+    font: inherit;
+    text-decoration: underline;
+    text-decoration-thickness: $bevel-edge;
+    text-underline-offset: $bevel-edge * 2;
+    cursor: pointer;
+
+    &:hover {
+      color: $ink;
+    }
+
+    // Inside a sentence: the usual offset would cover the words around it.
+    &:focus-visible {
+      outline-offset: $bevel-edge;
+    }
+  }
+
+  &__notice {
+    @include visually-hidden;
+  }
+}

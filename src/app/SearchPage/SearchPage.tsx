@@ -18,6 +18,8 @@ import { ProfessorChen } from '@/features/home/ProfessorChen/ProfessorChen'
 import { ResultsView } from '@/features/results/ResultsView/ResultsView'
 import { SearchBar } from '@/features/home/SearchBar/SearchBar'
 import { AiNote } from '@/features/ask-ai/AiNote/AiNote'
+import { AskAiSuggestion } from '@/features/ask-ai/AskAiSuggestion/AskAiSuggestion'
+import { suggestsAskAi } from '@/features/ask-ai/ask-ai-suggestion'
 import { useAskAi } from '@/features/ask-ai/useAskAi'
 import './SearchPage.scss'
 
@@ -55,10 +57,9 @@ export function SearchPage({
   // An AI answer belongs to the query it was asked for: typing anything else is the usual search.
   const ai = useAskAi()
   const aiState = ai.state?.query === query && !isHome ? ai.state : null
+  // An answer replaces the results, even an empty one: only a failure keeps the usual search.
   const aiShown =
-    aiState?.status === 'done' && aiState.results.length
-      ? aiState.results
-      : null
+    aiState?.status === 'done' && !aiState.note ? aiState.results : null
   const results = aiShown ?? searchResults
   const isWaiting =
     !aiShown &&
@@ -71,6 +72,15 @@ export function SearchPage({
       : results.length
         ? 'results'
         : 'no-results'
+  const suggestsAi =
+    !isHome &&
+    suggestsAskAi({
+      available: ai.available,
+      settled:
+        semantic.status !== 'searching' && semantic.status !== 'loading-model',
+      askedAi: aiState !== null,
+      deterministic: manualResults,
+    })
 
   return (
     <main className="search-page" data-state={state}>
@@ -104,9 +114,10 @@ export function SearchPage({
           onTabChange={onTabChange}
         />
       )}
-      {state === 'no-results' && (
+      {state === 'no-results' && !aiShown && (
         <NoResults query={query} onPick={onQueryChange} />
       )}
+      {suggestsAi && <AskAiSuggestion onAsk={() => ai.ask(query)} />}
       <p className="search-page__count" role="status">
         {isHome || state === 'waiting'
           ? ''

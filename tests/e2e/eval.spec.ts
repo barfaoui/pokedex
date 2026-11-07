@@ -10,7 +10,7 @@ const LOCAL_ENGINES = [
 
 async function openWith(page: Page, configured: boolean) {
   await page.route('**/api/ask-ai-status', (route) =>
-    route.fulfill({ json: { configured, model: MODEL } }),
+    route.fulfill({ json: { configured, model: MODEL, thinking: 'disabled' } }),
   )
   await page.goto('/eval')
 }

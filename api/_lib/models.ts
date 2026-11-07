@@ -26,18 +26,19 @@ const HAIKU_5_5: Prices = {
 }
 
 // First is the default. All of them take the same request, so none needs its own adapter.
+// The keys stay as recorded: runs before thinking was off by default have no key and go by model.
 export const MODEL_CONFIGS: readonly ModelConfig[] = [
-  {
-    key: 'claude-haiku-5-5',
-    model: 'claude-haiku-5-5',
-    label: 'Claude Haiku 5.5',
-    prices: HAIKU_5_5,
-  },
   {
     key: 'claude-haiku-5-5.no-thinking',
     model: 'claude-haiku-5-5',
-    label: 'Claude Haiku 5.5, thinking off',
+    label: 'Claude Haiku 5.5',
     thinking: 'disabled',
+    prices: HAIKU_5_5,
+  },
+  {
+    key: 'claude-haiku-5-5',
+    model: 'claude-haiku-5-5',
+    label: 'Claude Haiku 5.5, thinking on',
     prices: HAIKU_5_5,
   },
   {
@@ -67,6 +68,21 @@ export function configOf(
   return MODEL_CONFIGS.find(
     (config) => config.model === model && config.thinking === thinking,
   )
+}
+
+// Thinking goes off only where a config has it off: Sonnet 5.5 rejects `disabled` with a 400.
+export function serverSetup(
+  model: string | undefined,
+  thinking: string | undefined,
+): Pick<ModelConfig, 'model' | 'thinking'> {
+  const id = model || DEFAULT_CONFIG.model
+  const own = MODEL_CONFIGS.filter((config) => config.model === id)
+  const wanted = thinking === 'enabled' ? undefined : 'disabled'
+  const config = own.find((c) => c.thinking === wanted) ?? own[0]
+  return {
+    model: id,
+    ...(config?.thinking ? { thinking: config.thinking } : {}),
+  }
 }
 
 /** The model's prices; an unlisted model is costed at the default's, so check its rate card. */

@@ -1,4 +1,5 @@
 import { useId, useRef, type KeyboardEvent } from 'react'
+import { AI_NOTICE } from '@/features/ask-ai/ask-ai-client'
 import { PixelArt } from '@/shared/PixelArt/PixelArt'
 import './SearchBar.scss'
 
@@ -40,8 +41,6 @@ const ASK_AI_PIXELS = {
   W: 'search-bar__ask-ai-glint',
   H: 'search-bar__ask-ai-handle',
 }
-
-const AI_NOTICE = 'Ask AI: sends your query to an AI provider (Anthropic)'
 
 interface SearchBarProps {
   query: string

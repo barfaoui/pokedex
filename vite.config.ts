@@ -3,6 +3,7 @@ import react from '@vitejs/plugin-react'
 import { fileURLToPath } from 'node:url'
 import { defineConfig, loadEnv, type Plugin } from 'vite'
 import { handleAskAiRequest, statusReply } from './api/_lib/ask-ai.ts'
+import { serverSetup } from './api/_lib/models.ts'
 import { readJsonBody, sendReply } from './api/_lib/node-http.ts'
 
 const src = fileURLToPath(new URL('./src', import.meta.url))
@@ -15,11 +16,9 @@ function askAiDevServer(): Plugin {
     apply: 'serve',
     configureServer(server) {
       const env = loadEnv(server.config.mode, process.cwd(), '')
+      const setup = serverSetup(env.AI_MODEL, env.AI_THINKING)
       server.middlewares.use('/api/ask-ai-status', (_request, response) =>
-        sendReply(
-          response,
-          statusReply(env.ANTHROPIC_API_KEY, env.AI_MODEL, env.AI_THINKING),
-        ),
+        sendReply(response, statusReply(env.ANTHROPIC_API_KEY, setup)),
       )
       server.middlewares.use('/api/ask-ai', async (request, response) => {
         const body =
@@ -32,11 +31,7 @@ function askAiDevServer(): Plugin {
               contentType: request.headers['content-type'],
               body,
             },
-            {
-              apiKey: env.ANTHROPIC_API_KEY,
-              model: env.AI_MODEL,
-              thinking: env.AI_THINKING,
-            },
+            { apiKey: env.ANTHROPIC_API_KEY, ...setup },
           ),
         )
       })

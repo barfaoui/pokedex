@@ -66,8 +66,7 @@ export interface AiAnswer {
 export interface AskAiConfig {
   apiKey: string | undefined
   model?: string
-  /** AI_THINKING: "disabled" turns thinking off; anything else keeps the model's default. */
-  thinking?: string
+  thinking?: 'disabled'
   /** Swapped in tests for a stand-in response. */
   fetch?: typeof fetch
   /** Server logs only: never given a key, a header or an upstream body. */
@@ -136,7 +135,7 @@ export async function askAi(
       model,
       max_tokens: MAX_TOKENS,
       output_config: { format: ANSWER_FORMAT },
-      ...(thinkingOff(config.thinking)
+      ...(config.thinking === 'disabled'
         ? { thinking: { type: 'disabled' } }
         : {}),
       system: [
@@ -227,21 +226,16 @@ export async function handleAskAiRequest(
 /** For the UI: whether a key is set (never anything about it) and the model's name, not a secret. */
 export function statusReply(
   apiKey: string | undefined,
-  model: string | undefined,
-  thinking: string | undefined,
+  setup: Pick<AskAiConfig, 'model' | 'thinking'>,
 ): HttpReply {
   return {
     status: 200,
     body: {
       configured: Boolean(apiKey),
-      model: model || DEFAULT_CONFIG.model,
-      thinking: thinkingOff(thinking) ? 'disabled' : 'default',
+      model: setup.model || DEFAULT_CONFIG.model,
+      thinking: setup.thinking ?? 'default',
     },
   }
-}
-
-function thinkingOff(thinking: string | undefined): boolean {
-  return thinking === 'disabled'
 }
 
 async function postWithRetry(

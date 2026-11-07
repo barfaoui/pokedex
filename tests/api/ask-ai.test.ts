@@ -7,6 +7,7 @@ import {
   sanitizeQuery,
 } from '../../api/_lib/ask-ai'
 import { CATALOGUE_LINES } from '../../api/_lib/catalogue'
+import { serverSetup } from '../../api/_lib/models'
 
 // Not shaped like a real key on purpose: the repository check fails on that prefix.
 const FAKE_KEY = 'test-key-do-not-leak-0123456789'
@@ -56,6 +57,21 @@ describe('readAnswer', () => {
 
   it('an empty list is a valid answer: nothing fits', () => {
     expect(readAnswer('{"results": []}')).toEqual({ results: [] })
+  })
+})
+
+describe('serverSetup', () => {
+  it('runs Haiku 5.5 with thinking off unless AI_THINKING=enabled, and never sends it to a model without it', () => {
+    expect(serverSetup(undefined, undefined)).toEqual({
+      model: 'claude-haiku-5-5',
+      thinking: 'disabled',
+    })
+    expect(serverSetup(undefined, 'enabled')).toEqual({
+      model: 'claude-haiku-5-5',
+    })
+    expect(serverSetup('claude-sonnet-5-5', undefined)).toEqual({
+      model: 'claude-sonnet-5-5',
+    })
   })
 })
 
@@ -127,7 +143,7 @@ describe('handleAskAiRequest', () => {
     })
   })
 
-  it('AI_THINKING=disabled turns thinking off in the request', async () => {
+  it('a setup with thinking off sends it in the request', async () => {
     let sent: Record<string, unknown> = {}
     await handleAskAiRequest(
       { method: 'POST', contentType: 'application/json', body: { query: 'x' } },

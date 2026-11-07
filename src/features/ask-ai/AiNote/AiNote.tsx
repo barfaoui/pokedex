@@ -32,6 +32,6 @@ function noteText(state: AiState, shown: number): string {
       }
       return shown
         ? 'AI answer: what an AI model picked from the Pokédex for this query.'
-        : 'AI answer: nothing in the Pokédex fits. The results below are the usual search.'
+        : 'AI answer: nothing in the Pokédex fits.'
   }
 }
