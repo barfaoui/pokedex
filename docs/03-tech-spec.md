@@ -7,169 +7,169 @@
 - [3. Architecture](#3-architecture)
 - [4. Data](#4-data)
 - [5. Search](#5-search)
-- [6. Quality](#6-quality)
-- [7. Risks](#7-risks)
-- [8. 🤖 How I used AI for this document](#8--how-i-used-ai-for-this-document)
+- [6. LLM search](#6-llm-search)
+- [7. Quality](#7-quality)
+- [8. What changed from the initial plan](#8-what-changed-from-the-initial-plan)
+- [9. 🤖 How I used AI for this document](#9--how-i-used-ai-for-this-document)
 
 ## 1. Overview
 
-- A React app where **all search runs in the browser**: no server, no API key, no paid service.
-- **Deterministic search first** (names, criteria, concepts); **semantic search** with a small in-browser model when deterministic search isn't confident.
-- Every result gets a **match score from 0 to 1**; results are ranked by it.
+- **The search runs in the browser:** free, offline once loaded, no key.
+- **Deterministic first**, **meaning as a fallback** (a small local model), **an LLM as an option** (a button, on a server route).
+- **Every result has a score from 0 to 1** and shows what matched.
 
 ## 2. Stack
 
-- **Language:** TypeScript.
-- **Front end:** React, built with Vite. Everything runs in the browser, so there's no need for a server framework.
-- **Routing:** React Router.
-- **Styling:** SCSS. Variables and mixins keep type colours and spacing consistent.
-- **Semantic search:** Transformers.js with all-MiniLM-L6-v2, a small English sentence model that runs in the browser.
-- **Unit tests:** Vitest.
-- **End-to-end tests:** Playwright. Thunders for recorded checks on production.
-- **CI/CD:** GitHub Actions.
-- **Hosting:** Vercel.
+| Need              | Choice                                                            | Why                                                        |
+| ----------------- | ----------------------------------------------------------------- | ---------------------------------------------------------- |
+| Language          | TypeScript, strict                                                | Types catch the data's edge cases                          |
+| Front end         | React + Vite                                                      | Nothing needs server rendering                             |
+| Styling           | SCSS + BEM                                                        | Type colours and spacing as variables                      |
+| Search by meaning | Transformers.js, all-MiniLM-L12-v2 (8-bit, 33 MB)                 | Runs in the browser; measured against 4 other small models |
+| Optional AI       | One Vercel serverless function → Anthropic API (Claude Haiku 5.5) | Keeps the key on the server                                |
+| Tests             | Vitest, Playwright                                                | Unit + end-to-end                                          |
+| CI / hosting      | GitHub Actions, Vercel                                            | Every push tested; preview per branch                      |
 
 ## 3. Architecture
 
-**There is no back end.** The dataset is small (151 Pokémon, 164 moves, 114 abilities) and there's no secret to protect, so the app is a set of static files and every search runs in the user's browser. Only the concept dictionary is prepared ahead of time, because it needs my review.
+![Architecture: prepared once at dev time, served by Vercel, the search runs in the browser; Ask AI (dashed) is optional](./assets/architecture.png)
 
-```mermaid
-flowchart LR
-    subgraph Dev["Development · once, by me"]
-        D["Pokémon dataset"] --> X["Concept extraction<br/>+ my review"]
-    end
-    subgraph Host["Vercel · static hosting"]
-        F["App bundle<br/>dataset · concepts · model"]
-    end
-    subgraph Browser["User's browser"]
-        I["At start: build the index<br/>(objects in memory)"] --> C["Search core<br/>(pure TypeScript)"]
-        UI["UI<br/>(React)"] -->|function calls| C
-        UI <-->|messages| W["Web Worker<br/>model · embeddings computed<br/>on first use, then cached"]
-    end
-    X --> F
-    D --> F
-    F -->|downloaded once| Browser
-```
+*Dashed: optional, only when the user asks AI.*
 
-- **Development → app: prepared data only.** The app works offline once loaded, and the browser never does heavy work on the main thread.
-- **UI → search core: plain function calls.** The core has no UI dependency, so it's tested before any UI exists.
-- **UI ↔ semantic search: messages to a Web Worker.** The model never blocks typing, and it can be loaded late or swapped without touching the rest.
+- **The search core is pure TypeScript**, no UI dependency, so it was tested before any UI existed.
+- **The model runs in a Web Worker**, so typing never waits.
+- **The server route only exists for Ask AI.** Without a key, the app is fully static.
 
 ## 4. Data
 
-- **Index built at start:** the app loads the dataset and builds typed objects in memory (a few milliseconds): names normalised (lowercase, accents removed, hyphens to spaces), Pokémon ↔ moves ↔ abilities linked both ways (built from the Pokémon side; the dataset's reverse lists are identical), evolution families grouped by chain and ordered by Pokédex number (Eevee's, the only branching family here, shown as a branch).
-- **Data checks as tests:** expected counts (151 / 164 / 114), no empty effect texts, every move and ability named on a Pokémon exists. If the dataset ever changes, these fail first.
-- **Source:** a fixed copy of the dataset provided with the exercise, credited in the README.
+- **Index built at start** (a few ms): names normalised (lowercase, no accents, hyphens → spaces), Pokémon ↔ moves ↔ abilities linked both ways, evolution families grouped.
+- **Data checks as tests:** counts (151 / 164 / 114), no empty effects, every referenced move and ability exists.
+- **Source:** the dataset provided with the exercise, credited in the README.
 
 ## 5. Search
 
-### 5.1 Flow
+### 5.1 The pipeline
 
-Three layers, each for the job it does best: **deterministic matching** for names, types and numbers; a **concept dictionary** for effects like sleep or rain (keyword search gives wrong answers on this data, see [data discovery](./02-data-discovery.md)); **semantic search** for phrasings nothing else recognises (embeddings are good at meaning, bad at names and typos).
+![The search pipeline: parse, score, weigh kinds, families, exclusions, sort; below 0.7, the search by meaning](./assets/pipeline.png)
 
-```mermaid
-flowchart LR
-    Q["Query"] --> P["Normalise<br/>+ parse into parts"]
-    P --> M["Deterministic search<br/>+ 0–1 score"]
-    M --> C{"Confident?"}
-    C -- yes --> R["Ranked results<br/>(or 'nothing found')"]
-    C -- no --> S["Semantic search<br/>(Web Worker)"]
-    S --> R
-```
+### 5.2 What the parser recognises
 
-Deterministic search runs on every keystroke (about a millisecond over 151 Pokémon). Semantic search runs only when deterministic search isn't confident, debounced.
-
-### 5.2 Parsing and matching
-
-The normalised query is split into **parts**; each part is matched by its kind.
-
-| Kind | Examples | Matching |
-| --- | --- | --- |
-| Name | "bulba", "saur", "pikachoo" | Exact, start of the name, anywhere in it (3+ letters), or typo (see below) |
-| Type | "electric" | The 18 types in the data, typo-tolerant |
-| Descriptor | "green", "cave", "fish" | The colours, habitats and shapes in the data (e.g. users who only remember a Pokémon was green) |
-| Number | "speed over 150" | Stat name + comparison |
-| Concept | "sleep", "rain" | Concept dictionary (5.4) → the moves and abilities that **inflict** it, then the Pokémon that have them |
-| Sort word | "fast", "strong" | Sets the order only: fast → speed · slow → speed ascending · strong → attack · strongest → total stats · heavy → weight · tall → height · tanky → hp + defense |
-| Unknown | "spaghetti", "doze off" | Left to semantic search |
-
-- **Typos (fuzzy matching):** at most **30% of the matched word's letters** can be wrong (a swap of two letters counts as one change). Short words therefore need an exact match: 3 letters → 0 changes, 4–6 → 1, 7–9 → 2. "pikachoo" → Pikachu (2 / 7 = 29%) passes; "pikachooo" doesn't.
-- **Relationships:** a matched move or ability brings in the Pokémon that learn or have it, which keep *what* matched (shown on the result, [PRD M5](./01-prd.md#m5-show-what-matched)).
-- **Themes** ([PRD M4](./01-prd.md#m4-theme-search-across-categories-challenge-4)): results grouped by kind (abilities, moves, Pokémon). Gaps in the data aren't detected ([PRD limits](./01-prd.md#8-limits)).
-
-### 5.3 Scoring
-
-**Score of a result = the average, over the parts of the query, of how well the result meets each part.** This grades near misses (useful for ranking) and gives 0 to unrelated queries.
-
-| Part | Score |
+| Part | Examples |
 | --- | --- |
-| Name | Exact = 1 · start of the name > anywhere in it, both higher when they cover more of the name · typo = 1 − (changes ÷ length), so ≥ 0.7 |
-| Type, ability, move, descriptor | 1 or 0 |
-| Number | 1 if met, otherwise how close (150 for "over 150" ≈ 0.95) |
-| Concept | 1 if the item inflicts it |
-| Unknown | Semantic similarity, rescaled to 0–1 |
+| Name, with typos | "bulba", "pikachoo", "mr mime" |
+| Type | "electric", "fire" |
+| Descriptor | "green", "cave", "quadruped", "Mouse Pokémon" |
+| Number and unit | "speed over 150", "90kg" |
+| Concept (an effect) | "sleep", "burn", "rain" |
+| Sort word | "fast", "strongest", "heavy" |
+| Kind word | "pokemon that…", "move", "ability", "who" |
+| Family word | "evolution of pikachu" (both directions) |
+| Negation | "not", "no", "without", "except" |
+| Pokémon GO syntax | `@surf` (learns), `!fire` (not), `&` (and) |
+| Filler | "the", "a", "what", question words |
+| Unknown | left to the search by meaning |
 
-- Exact matches (every part = 1) are highlighted ([PRD M6](./01-prd.md#m6-ranked-by-how-well-it-matches)). Sort words only order results with equal scores.
-- **One global threshold:** below it, results are hidden ([PRD M7](./01-prd.md#m7-no-match-means-no-results)); if the best deterministic score is below it, semantic search runs. Its value, and every number above, is set with the [PRD's test queries](./01-prd.md#7-success-metrics) ("spaghetti" and "drain" below, "pikachoo" and "put my opponent to sleep" above).
+### 5.3 Scores
+
+**An item's score = the average of its scores on each part of the query** (or its name score on the whole query, when that's higher: "mr mime").
+
+| Match | Score | Why |
+| --- | --- | --- |
+| Exact name, type, number met | 1 | Only literal matches score 1, so "exact match" means something |
+| Start of a name | 0.7 + 0.3 × how much of the name it covers | A name start is a confident match; the more of the name typed, the higher |
+| Inside a name (3+ letters) | 0.5 + 0.3 × how much it covers | Weaker than a start ("saur" in Bulbasaur); 3 letters minimum so "in" doesn't match Insomnia |
+| Start of a type or descriptor (4+ letters) | 0.95 | "elec" clearly means Electric, but it isn't literal |
+| Typo | 1 − changes ÷ length; at most 40% of the name's letters, rounded down | One change in a long name barely costs; 40% came from a real user's "blaaastoiise" |
+| Concept stated in the effect | 0.85 | Matched through the dictionary, not literally, so below 1 |
+| Concept as a chance ("has a chance to burn") | 0.75 | A chance to burn ranks below a move that burns |
+| Concept copied ("copies the target's…") | 0.72 | Indirect: it passes a condition on rather than causing it |
+| Typed word in the name ("Sleep Powder" for "sleep") | + 0.05 | The user's own word in the name |
+| Pokémon brought in by a move or ability | × 0.9, + 0.02 per extra one (up to 3) | One step away from the effect; several matching moves make it more relevant |
+| Kind not asked for ("pokemon that…" → moves) | × 0.7 | Pokémon come first, but moves stay visible |
+| Search by meaning | Cosine rescaled to 0–1, capped at 0.95 | Meaning alone is never an exact match |
+
+- **0.7 is the confidence line:** below it, the search by meaning runs, and the app suggests Ask AI.
+- **These values are ranking rules I set, then checked on the eval.** None was tuned to make a specific query pass.
 
 ### 5.4 Concept dictionary
 
-Links the words a user types to the moves and abilities that do something with them, **and in which direction**. Built once during development:
+![The concept dictionary: a hand-written seed, a script that tags each effect with a direction, my review](./assets/concepts.png)
 
-1. **Seed (hand-written):** each concept with its word roots and the synonyms users might type, e.g. *sleep*: sleep, asleep · doze, nap. Concepts: status conditions (sleep, paralysis, poison, burn, freeze, confusion, flinch) and weather (rain, sun, sandstorm, hail).
-2. **Script:** reads every effect sentence containing a root **as a whole word** (so "drains" never matches "rain") and tags its direction with ordered rules: *mentions* (ignored, e.g. "cannot be selected by Sleep Talk") · *prevents* ("cannot be asleep") · *self* ("User falls to sleep") · *affected by* / *benefits from* (weather) · *inflicts* ("Puts the target to sleep") · *unclear* otherwise. Each tag keeps its sentence as evidence. Generating it this way is reproducible, and much faster than reading 278 effect texts by hand.
-3. **Review:** I check the unclear and suspicious tags; each correction is recorded separately, so the dictionary = script output + visible human corrections.
+- **Concepts:** status conditions (sleep, paralysis, poison, burn, freeze, confusion, flinch) and weather (rain, sun, sandstorm, hail).
+- **The direction matters:** Hypnosis *inflicts* sleep, Insomnia *prevents* it, Rest is *self*. "Put my opponent to sleep" returns only the first kind.
+- **Every tag keeps its sentence as evidence.** My 9 corrections are kept in a separate file (`corrections.ts`), so the dictionary = script output + visible human corrections.
 
-A prototype run on the dataset tagged most texts correctly and got a few wrong (Limber "cannot be paralyzed" as *inflicts*, Solar Beam as *benefits from* rain). Each such case becomes a unit test.
+### 5.5 Search by meaning
 
-**Species descriptions** are lore, not mechanics (Snorlax "sleeps" but has no sleep move): they're used by semantic search only, ranked below moves and abilities.
-
-### 5.5 Semantic search
-
-- **Model:** all-MiniLM-L6-v2 to start. Once the test queries run, compared with bge-small-en-v1.5 on the same queries; switched only if clearly better. Model files ship with the app, so it works offline.
-- **Embeddings** (a list of numbers representing a text's meaning; similar meanings give similar lists): the ~430 searchable texts (move and ability effects, species descriptions) are embedded **in the browser, in the background, right after the app starts**, then cached. Deterministic search works meanwhile; if a search needs meaning before they're ready, the UI says so. Computing them in the browser instead of shipping them means nothing generated to keep in sync, and swapping models is a setting.
-- **Per query:** embed the query, compare it with the cached embeddings (cosine similarity: ~1 = same meaning, ~0 = unrelated), rescale to 0–1.
+|                 |                                                                                                     |
+| --------------- | --------------------------------------------------------------------------------------------------- |
+| Model           | all-MiniLM-L12-v2, 8-bit, 33 MB, in the repo                                                        |
+| Texts           | 707 (move and ability effects, Pokémon descriptions), embedded at dev time                          |
+| When            | Only when no result scores 0.7 or more                                                              |
+| Scoring         | Cosine 0.3 → 0, 0.7 → 0.95 (never 1: never an exact match); below 0.24, hidden; descriptions × 0.85 |
+| Why L12, not L6 | L6 couldn't separate "doze off" from "spaghetti"; L12 put the sleep moves 1st–5th                   |
 
 ### 5.6 Example
 
-**"put my opponent to sleep":** "sleep" is a concept, the other words are filler → the dictionary gives Sing, Sleep Powder, Hypnosis, Lovely Kiss, Spore and the ability Effect Spore, but not Insomnia (*prevents*) or Rest (*self*) → each brings in its Pokémon → score 1, no semantic search needed → results grouped by kind, e.g. "Jigglypuff · Sing · Puts the target to sleep."
-
-**"make the enemy doze off":** "doze" isn't known → deterministic search isn't confident → semantic search finds the "Puts the target to sleep" texts → the same moves come back, ranked by similarity.
-
-## 6. Quality
-
-**Tests first:** the [PRD's test queries](./01-prd.md#7-success-metrics) are written as tests before the search exists.
-
-| Check | Tool | Covers |
-| --- | --- | --- |
-| Lint + type check | ESLint, TypeScript | Code style and types |
-| Unit tests | Vitest | Parsing, matching, the typo rule, scoring, concept tagging, data checks |
-| Test queries | Vitest | The PRD's queries, end to end through the search core |
-| Semantic search | Vitest | Our logic with a stand-in model (rescaling, threshold, when it runs); a few queries with the real model ("doze off" → sleep moves, "spaghetti" → nothing), also used to compare models and set the threshold |
-| End-to-end | Playwright | One scenario per [Must story](./01-prd.md#must), plus an accessibility check |
-| Production | Playwright, then Thunders | The same scenarios on the live site |
-
-Everything runs in GitHub Actions on every push, except the production checks, which run after each deploy. The test queries report "X / N pass" and only block a merge once they've all passed (they're written before the code); the real-model tests run in a separate job, since the model download is slow. Vercel deploys production from `main`, with a preview for every push.
-
-## 7. Risks
-
-| Risk | Mitigation |
+| Query | What happens |
 | --- | --- |
-| First visit: loading the model (~20–25 MB) and embedding ~430 texts takes seconds, more on slow devices | Done in the background; deterministic search never waits; cached for later visits |
-| Embeddings weak on short game texts | The concept dictionary covers the [PRD's test queries](./01-prd.md#7-success-metrics); measure before switching models |
-| Global threshold too blunt | Tuned with the test queries; revisited after implementation |
+| put my opponent to sleep | "sleep" is a concept → moves that *inflict* sleep (Sing, Hypnosis, Spore…) → their Pokémon. Insomnia and Rest left out. No model needed |
+| make the enemy doze off | "doze" is a sleep word, but "off" matches nothing → the average is about 0.43, below 0.7 → search by meaning → the same sleep moves, ranked by similarity |
 
-## 8. 🤖 How I used AI for this document
+## 6. LLM Search
 
-- **Organising my ideas.** I described how I imagined the solution: search in the browser with a small local model, a concept dictionary generated by a script, the 30% typo rule, tests and CI before code. Claude organised them into this document.
-- **Choosing the model.** It helped me pick a small embedding model that runs in the browser, and plan how to compare it with a bigger one once the tests run.
-- **Diagrams.** It generated the architecture and search-flow diagrams (Mermaid) from my descriptions; I asked for changes until they matched how I see the system.
+![Ask AI: the browser sends the query, the server builds the request, Claude Haiku 5.5 answers, the answer is checked](./assets/askai.png)
+
+| Concern             | How it's handled                                                                                                                                                                                                   |
+| ------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| The key             | Server env only, never `VITE_`, never logged or returned                                                                                                                                                           |
+| Prompt injection    | Fixed prompt, query as data in its own tags, no tools, no secrets in the prompt, answer checked against the catalogue (unknown keys and markup dropped)                                                            |
+| What it sends       | The whole dataset (80k tokens, cached), minus image URLs and duplicated reverse lists                                                                                                                              |
+| What it returns     | Up to 30 keys, best first, as structured output (a JSON schema); no notes, so it's faster                                                                                                                          |
+| Model               | Claude Haiku 5.5, thinking off by default (`AI_THINKING=enabled` turns it on); one file (`api/_lib/models.ts`) holds each model's id, prices and thinking setting                                                  |
+| Cost                | ~0.82 € per 1,000 queries with the cache warm, up to ~10 € with sparse traffic; capped in the Anthropic console                                                                                                    |
+| When it's suggested | When no deterministic result reaches 0.7, once the search by meaning has settled, if the server has a key and the AI wasn't already asked: "Not what you're looking for? Let AI help you". Never called on its own |
+| No key              | Button and suggestion hidden, the rest unchanged                                                                                                                                                                   |
+
+## 7. Quality
+
+| Check                         | Tool                                                     | Runs                                              |
+| ----------------------------- | -------------------------------------------------------- | ------------------------------------------------- |
+| Lint, types, styles, format   | ESLint, TypeScript, Stylelint, Prettier                  | Every push                                        |
+| Unit tests                    | Vitest                                                   | Every push                                        |
+| The PRD's queries             | Vitest                                                   | Every push                                        |
+| Search by meaning, real model | Vitest                                                   | Every push (a CI step; the model is in the repo)  |
+| End-to-end                    | Playwright                                               | Every push; on the live site by hand (`BASE_URL`) |
+| Key leak check                | Script on the build and tracked files (`sk-ant-` prefix) | Every push                                        |
+| Evaluation                    | `npm run eval`, `/eval`                                  | On demand, see [Evaluation](./05-evaluation.md)   |
+
+## 8. What changed from the initial plan
+
+| Planned                             | As built                                            | Why                                                                                                   |
+| ----------------------------------- | --------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| all-MiniLM-L6-v2                    | **L12**                                             | Measured: L6 couldn't separate meaning from noise                                                     |
+| Embeddings computed in the browser  | **Precomputed at dev time**                         | Faster first visit, simpler tests                                                                     |
+| Concepts score 1                    | **0.85 / 0.75 / 0.72**                              | Ranking: a stated effect beats a chance of it                                                         |
+| Typos: 30% of letters               | **40%, + start-of-name match**                      | A real user's "blaaastoiise" (3 changes in 9 letters) failed at 30% (2 allowed) and passes at 40% (3) |
+| No exclusion                        | **Negation + Pokémon GO syntax**                    | Real-user searches                                                                                    |
+| No server                           | **One optional server route**                       | The LLM needs a key kept off the browser                                                              |
+| LLM: a compact catalogue with notes | **The whole dataset, keys only, structured output** | Measured: v1 147 → v3 153; notes cost time, and thinking cut answers at the token cap                 |
+| —                                   | **Evolution families, units, kind words**           | Real-user searches                                                                                    |
+| —                                   | **An eval with 6 engines**                          | Pass/fail hid ranking (Sleep Powder was 33rd)                                                         |
+
+## 9. 🤖 How I used AI for this document
+
+- **Organising my ideas.** I described how I imagined the solution: search in the browser with a small local model, a concept dictionary generated by a script, the typo rule, tests and CI before code. Claude organised them into this document.
+- **Choosing the model.** It helped me pick a small embedding model that runs in the browser. Once the tests ran, Claude Code compared 5 small models on the same probes: all-MiniLM-L6-v2 couldn't separate "make the enemy doze off" from "spaghetti", so I switched to L12 from the numbers.
+- **Diagrams.** It drew the architecture and search-flow diagrams from my descriptions; I asked for changes until they matched how I see the system.
 - **Testing an idea before committing to it.** I wasn't convinced a script could build the concept dictionary, so I had it prototype one on the real dataset. Seeing what it got right and wrong convinced me, and its mistakes became test cases.
+- **Keeping this document true.** After the build, I had Claude Code fact-check it against the code, with a file and line for each statement; every mismatch was fixed.
 - **Where I changed its direction:**
-  - It first recommended Next.js, to keep an API key on a server. I chose to run the model in the browser, which removed that reason, and picked Vite.
+  - It first recommended Next.js, to keep an API key on a server. I chose to run the search in the browser and picked Vite. The one server route came later, only for the optional AI.
   - It proposed scoring a result by its highest signal. I pointed out that gives almost only 0 or 1, which led to the average-over-parts definition.
-  - It proposed shipping pre-computed embeddings. I chose to compute them in the browser and cache them.
-  - I found its first draft repetitive and too close to the code, and had it rewritten so every fact lives in one place.
+  - It suggested capping semantic scores at 0.80; I kept 0.95, so a strong meaning match can still lead.
+  - It proposed shipping pre-computed embeddings; I first chose to compute them in the browser, then reversed it when it measured a faster first visit and simpler tests.
+  - I found its first draft repetitive and too close to the code, and had it rewritten so every fact lives in one place. Later it rewrote this spec without being asked; I reverted it.
 
 ---
 

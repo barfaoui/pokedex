@@ -9,7 +9,7 @@ import { MAX_RESULTS, SYSTEM_PROMPT } from './system-prompt.js'
 export { costUsd, USD_TO_EUR } from './pricing.js'
 
 // Bump when the prompt changes, so cached answers and snapshots from an older prompt are told apart.
-export const PROMPT_VERSION = 'ask-ai-3'
+export const PROMPT_VERSION = 'ask-ai-4'
 const MAX_QUERY_LENGTH = 200
 // Thinking counts toward it too: at 320, prompt v2 lost 75 of 192 answers to the cut.
 const MAX_TOKENS = 1024
@@ -68,7 +68,6 @@ export interface AskAiConfig {
   thinking?: 'disabled'
   /** Swapped in tests for a stand-in response. */
   fetch?: typeof fetch
-  /** Server logs only: never given a key, a header or an upstream body. */
   log?: (message: string) => void
 }
 

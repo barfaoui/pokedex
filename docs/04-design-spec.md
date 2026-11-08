@@ -79,32 +79,44 @@ Before anything is typed, Professor Chen and the search bar are **centred and la
 
 ![Results, tabs, exact match, selection mode](./design/wireframe-v2-2-results.png)
 
-### 3.3 Detail card
+### 3.3 Ask AI (optional)
+
+| Element | Behaviour |
+| --- | --- |
+| 🔍 button in the search bar | Sends the current query to the AI; hidden without a key on the server |
+| When the search isn't sure | Below the results (or below "nothing found"): "Not what you're looking for? Let AI help you", a button styled as a link that runs Ask AI. Never called on its own |
+| While waiting | "Prof. Chen's assistant is looking…" |
+| Results | One line above them: the pixel 🔍 icon + "Prof. Chen's assistant found these" ("…found nothing either" when empty). Same cards, no "matched on" line, no exact-match glow |
+| Change the query | Back to the normal search |
+| Errors | A short note; the normal results stay |
+| Privacy | One line next to the button: the query goes to an AI provider |
+
+### 3.4 Detail card
 
 An overlay on top of the results.
 - **Desktop:** picture on the left; on the right the name and heart, the genus, a **"matched on"** line that keeps the search context ("Matched on: name 'pikachoo'"), stats as bars with their numbers, abilities, height and weight, the description, and the moves (the first few, then "show all").
 - **Mobile:** picture on top, the same details below, most important first.
 - **Evolution family:** in order (Pikachu → Raichu); Eevee's as a branch.
 
-### 3.4 Browse and filter — designed, then dropped
+### 3.5 Browse and filter — designed, then dropped
 
 Filters with include / exclude were designed for [PRD S3](./01-prd.md#s3-browse-and-filter--dropped) ([wireframe](./design/wireframe-v2-5-browse-and-filter.png)), then dropped after testing the built search: typing "electric", "green" or "fast fire" already narrows the results, and excluding a value fits better as negation in the search bar.
 
-### 3.5 Selection mode (compare, team)
+### 3.6 Selection mode (compare, team)
 
 Clicking **Compare 2** or **Create a team** turns the Pokémon cards into selectable cards: a tick box replaces the heart, and a selected card shows a filled box **with a tick**. A bar at the bottom shows "2 selected" with the action and Cancel. **Only on the Pokémon tab:** on the other tabs, the desktop buttons are greyed out and the mobile button is hidden.
 
-### 3.6 Compare
+### 3.7 Compare
 
 Two columns, the same on desktop and mobile (narrower): image, name and types on top; below, each stat on a line with both values and **▲ ▼ =**; shared types and abilities highlighted.
 
 ![Detail card and compare](./design/wireframe-v2-3-detail-and-compare.png)
 
-### 3.7 Team
+### 3.8 Team
 
 A rectangular overlay with **six slots**: each filled slot shows the Pokémon's picture and name, with a way to remove it; empty slots stay visible. "3 / 6" shows progress; when all six are filled: **"Oh, what a dream team!"**
 
-### 3.8 Pokédex (favourites)
+### 3.9 Pokédex (favourites)
 
 An overlay that looks like a **photo album**: cards with picture, name and a couple of stats, each with the pixel shine. Empty pockets stay visible.
 
@@ -181,7 +193,7 @@ Touch targets are at least 2.75 rem (44 px) square on mobile.
 - **No information by colour alone:** the glow comes with an "Exact match" label for screen readers; selection uses a tick; compare uses ▲ ▼ = and numbers; type badges carry the type's name.
 - **Announcements:** the result count is announced politely when it changes ("12 results"), so screen-reader users know the search reacted.
 - **Images:** Pokémon images have their name as alternative text; decorative pixel details are hidden from screen readers.
-- **Contrast:** WCAG AA for all text, checked on the pixel style too. An automated accessibility check runs in the end-to-end tests.
+- **Contrast:** WCAG AA for all text, checked on the pixel style too.
 
 ## 9. Scope
 
@@ -196,4 +208,4 @@ Everything above is designed; not everything is built in this first version. Bui
 
 ---
 
-**Previous:** [Tech spec](./03-tech-spec.md) · **Next:** Implementation notes · [All steps](./00-steps.md)
+**Previous:** [Tech spec](./03-tech-spec.md) · **Next:** [Evaluation](./05-evaluation.md) · [All steps](./00-steps.md)

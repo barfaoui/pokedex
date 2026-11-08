@@ -160,7 +160,7 @@ the stories above.
 - **Fast:** results update as you type.
 - **Accessible:** keyboard navigation, screen-reader labels, no information carried by colour alone.
 - **Responsive:** usable on mobile.
-- **Tested:** every Must story is covered by automated tests that run on every change; the queries in section 7 form the test set. End-to-end tests also run against the deployed version.
+- **Tested:** every Must story is covered by automated tests that run on every change; the queries in section 7 form the test set. The same end-to-end tests can run against the deployed version (`BASE_URL`).
 
 ## 6. Assumptions
 
@@ -193,13 +193,15 @@ Each query below is an automated test:
 - **Gaps aren't detected.** The app shows what the data has, not what it lacks: a search for a "rain team" doesn't say that nothing can start rain. Known gaps are in [data discovery](./02-data-discovery.md#2-what-the-data-can-answer-for-the-briefs-examples).
 - **Not a battle tool:** no damage calculation or optimisation.
 - **No accounts:** favourites and teams live in the browser (cleared with browser data, not shared across devices).
-- **No exclusion:** a search can't leave a value out ("not electric", "fire but not flying"). Negation in the search bar is a next step.
+- **Exclusion is word-based:** "not", "no", "without" and "except" leave a value out ("fire not flying"); negation inside a sentence ("doesn't put to sleep") isn't understood.
 - **English only.** Accents don't matter ("é" matches "e").
-- **Semantic search** uses a small model that prepares itself in the background on the first visit, so a search by meaning in the first few seconds takes a moment longer.
+- **An LLM is optional:** the "Ask AI" button needs an API key on the server; without it, the app works the same, minus the button.
+- **Semantic search** uses a small model that loads on the first query that needs it, so that first search by meaning takes a moment longer.
+- **Noise isn't always empty:** the deterministic search keeps any result scoring above 0, so a word like "hello" can return weak matches (6 of 13 noise cases in the [evaluation](./05-evaluation.md)). The LLM fallback brings that to 0.
 
 ## 9. 🤖 How I used AI for this document
 
-I used Claude (chat) as a thinking partner. The decisions in this document are mine. Full log for the project: [AI usage](./ai-usage.md).
+I used Claude (chat) as a thinking partner. The decisions in this document are mine. Every document ends with a section like this one.
 
 - **Organising my ideas.** I wrote the problem, my user stories and open questions first. I then used AI to challenge them against the brief's four challenges, prioritise them, rewrite them as "As a… I want… so that…" with acceptance criteria, and produce a first structured draft, which I reviewed and rewrote.
 - **Domain knowledge.** I'm not a Pokémon expert, so I asked how weather (rain), type matchups and evolutions work. I treated the answers as hypotheses and checked them in the data ([data discovery](./02-data-discovery.md)).
