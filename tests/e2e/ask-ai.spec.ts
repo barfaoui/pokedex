@@ -52,7 +52,6 @@ test('Ask AI shows its results under the assistant line, and editing the query g
 }) => {
   test.slow()
 
-  
   await mockAi(page, true, ['pokemon:pikachu'])
   await page.goto('/')
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
