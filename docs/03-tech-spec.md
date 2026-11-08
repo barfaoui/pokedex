@@ -140,7 +140,7 @@
 | The PRD's queries             | Vitest                                                   | Every push                                        |
 | Search by meaning, real model | Vitest                                                   | Every push (a CI step; the model is in the repo)  |
 | End-to-end                    | Playwright                                               | Every push; on the live site by hand (`BASE_URL`) |
-| Key leak check                | Script on the build and tracked files (`sk-ant-` prefix) | Every push                                        |
+| Key leak check                | Script on the build and tracked files (the api key prefix) | Every push                                        |
 | Evaluation                    | `npm run eval`, `/eval`                                  | On demand, see [Evaluation](./05-evaluation.md)   |
 
 ## 8. What changed from the initial plan
