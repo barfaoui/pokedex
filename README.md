@@ -14,8 +14,10 @@ A search for the first 151 Pokémon that understands what you mean: type part of
 
 ## Requirements
 
-- Node.js 22.12 or later (with nvm, `nvm use` picks the version in `.nvmrc`)
-- npm
+- **Node.js 22.12 or later** (developed on Node 24) and npm. Check with `node -v`.
+- If your version is older, install Node 24 from [nodejs.org](https://nodejs.org/), or with a version manager:
+  - macOS / Linux, with [nvm](https://github.com/nvm-sh/nvm): `nvm install` then `nvm use` (both read `.nvmrc`)
+  - Windows, with [nvm-windows](https://github.com/coreybutler/nvm-windows): `nvm install 24` then `nvm use 24` (it doesn't read `.nvmrc`)
 
 ## Data
 
@@ -26,7 +28,6 @@ The Pokémon dataset provided with the exercise (Pokémon #1–151 with their mo
 ```bash
 git clone https://github.com/barfaoui/pokedex.git
 cd pokedex
-nvm use
 npm install
 npm run dev
 ```
